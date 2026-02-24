@@ -13,19 +13,56 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#0a0c10;--surface:#111318;--surface2:#181c24;--border:#222733;--accent:#00e5a0;--accent2:#ff6b35;--accent3:#5b8cff;--text:#e8eaf0;--muted:#6b7280}
+  :root{--bg:#0a0c10;--surface:#111318;--surface2:#181c24;--border:#222733;--accent:#00e5a0;--accent2:#ff6b35;--accent3:#5b8cff;--text:#e8eaf0;--muted:#6b7280;--header-bg:rgba(10,12,16,.93)}
+  /* ── TEMA CLARO ── */
+  [data-theme="light"]{--bg:#f0f2f5;--surface:#ffffff;--surface2:#e8eaed;--border:#d1d5db;--accent:#00a372;--accent2:#e55a1c;--accent3:#3b6fd4;--text:#111827;--muted:#6b7280;--header-bg:rgba(240,242,245,.95)}
+  /* ── TEMA SEPIA ── */
+  [data-theme="sepia"]{--bg:#f5efe6;--surface:#fdf8f0;--surface2:#ede8df;--border:#d4c9b8;--accent:#a0722a;--accent2:#c0522a;--accent3:#7a6abf;--text:#3b2f1e;--muted:#8a7560;--header-bg:rgba(245,239,230,.95)}
+  /* ── TEMA UTESA ── */
+  [data-theme="utesa"]{--bg:#0a1a0a;--surface:#0f2410;--surface2:#162d17;--border:#1e3d20;--accent:#6db33f;--accent2:#f5c200;--accent3:#4caf50;--text:#e8f5e9;--muted:#81a682;--header-bg:rgba(10,26,10,.93)}
+
+  .theme-switcher{display:flex;align-items:center;gap:.3rem;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:.25rem .35rem}
+  .theme-btn{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0}
+  .theme-btn:hover{transform:scale(1.15)}
+  .theme-btn.active{border-color:var(--text);box-shadow:0 0 0 2px var(--accent)}
+  .theme-btn[data-t="dark"]{background:radial-gradient(circle at 30% 30%,#2a2f3d,#0a0c10)}
+  .theme-btn[data-t="light"]{background:radial-gradient(circle at 30% 30%,#ffffff,#d1d5db)}
+  .theme-btn[data-t="sepia"]{background:radial-gradient(circle at 30% 30%,#fdf8f0,#c4a882)}
+  .theme-btn[data-t="utesa"]{background:radial-gradient(circle at 30% 30%,#6db33f,#f5c200)}
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
   body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");opacity:.4}
-  header{position:sticky;top:0;z-index:100;background:rgba(10,12,16,.93);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;gap:1.5rem;height:64px}
+  header{position:sticky;top:0;z-index:100;background:var(--header-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;gap:1.5rem;height:64px}
   .logo{font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--accent);letter-spacing:.05em}
   .logo span{color:var(--muted)}
   .hdiv{width:1px;height:28px;background:var(--border)}
   .clock{font-family:'Space Mono',monospace;font-size:1.1rem;letter-spacing:.08em}
   .clock-date{font-size:.7rem;color:var(--muted);font-family:'Space Mono',monospace}
   .hright{margin-left:auto;display:flex;align-items:center;gap:1rem}
-  .alert-badge{display:none;align-items:center;gap:.4rem;background:rgba(255,107,53,.12);border:1px solid #ff6b35;padding:.35rem .75rem;border-radius:20px;font-size:.75rem;color:var(--accent2);animation:pulse-badge 2s infinite}
+  .alert-badge{display:none;align-items:center;gap:.4rem;background:rgba(255,107,53,.12);border:1px solid #ff6b35;padding:.35rem .75rem;border-radius:20px;font-size:.75rem;color:var(--accent2);animation:pulse-badge 2s infinite;cursor:pointer;transition:background .15s}
+  .alert-badge:hover{background:rgba(255,107,53,.22)}
   .alert-badge.show{display:flex}
+  .alert-modal-overlay{display:none;position:fixed;inset:0;z-index:9100;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem}
+  .alert-modal-overlay.open{display:flex;animation:fadeUp .25s ease}
+  .alert-modal-box{background:var(--surface);border:1px solid rgba(255,107,53,.3);border-radius:16px;max-width:480px;width:100%;max-height:85vh;display:flex;flex-direction:column;overflow:hidden}
+  .alert-modal-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid rgba(255,107,53,.2);background:rgba(255,107,53,.08);flex-shrink:0}
+  .alert-modal-title{font-family:'Space Mono',monospace;font-size:.9rem;color:var(--accent2);font-weight:700}
+  .alert-modal-sub{font-size:.7rem;color:var(--muted);margin-top:.2rem}
+  .alert-modal-close{background:transparent;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1}
+  .alert-modal-close:hover{border-color:var(--accent2);color:var(--accent2)}
+  .alert-modal-body{overflow-y:auto;flex:1}
+  .alert-modal-class{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:.4rem}
+  .alert-modal-class:last-child{border-bottom:none}
+  .alert-modal-lab{display:flex;align-items:center;gap:.5rem}
+  .alert-modal-lab-code{font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--accent)}
+  .alert-modal-lab-name{font-size:.75rem;color:var(--muted)}
+  .alert-modal-mat{font-family:'Space Mono',monospace;font-size:.9rem;color:var(--text);font-weight:700}
+  .alert-modal-grp{font-size:.72rem;color:var(--muted)}
+  .alert-modal-meta{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-top:.1rem}
+  .alert-modal-hora{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--accent3)}
+  .alert-modal-cred{font-size:.7rem;color:var(--muted);background:rgba(91,140,255,.1);border:1px solid rgba(91,140,255,.2);padding:.15rem .5rem;border-radius:10px}
+  .alert-modal-mins{font-size:.75rem;color:var(--accent2);font-weight:700;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2);padding:.15rem .5rem;border-radius:10px}
+  .alert-modal-empty{padding:2.5rem;text-align:center;color:var(--muted);font-size:.85rem}
   .alert-dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:blink 1s infinite}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
   @keyframes pulse-badge{0%,100%{box-shadow:0 0 0 0 rgba(255,107,53,0)}50%{box-shadow:0 0 12px 2px rgba(255,107,53,.3)}}
@@ -101,11 +138,22 @@
   .empty-state svg{color:var(--border);margin-bottom:1rem}
   .empty-state p{color:var(--muted);font-size:.9rem}
   #toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.75rem;pointer-events:none}
-  .toast{background:var(--surface);border:1px solid #ff6b35;border-left:4px solid var(--accent2);border-radius:10px;padding:1rem 1.25rem;max-width:340px;box-shadow:0 8px 30px rgba(0,0,0,.5);animation:toastIn .4s ease both;pointer-events:auto}
-  .toast-title{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--accent2);margin-bottom:.25rem}
-  .toast-body{font-size:.85rem;color:var(--text)}
-  .toast-sub{font-size:.75rem;color:var(--muted);margin-top:.25rem}
+  .toast{background:var(--surface);border:1px solid rgba(255,107,53,.4);border-radius:12px;padding:0;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.6);animation:toastIn .4s ease both;pointer-events:auto;overflow:hidden}
   .toast.fade-out{animation:toastOut .4s ease forwards}
+  .toast-header{background:rgba(255,107,53,.12);border-bottom:1px solid rgba(255,107,53,.2);padding:.6rem 1rem;display:flex;align-items:center;gap:.5rem}
+  .toast-header-title{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--accent2);font-weight:700;flex:1}
+  .toast-header-count{background:var(--accent2);color:#fff;font-family:'Space Mono',monospace;font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:20px}
+  .toast-classes{display:flex;flex-direction:column}
+  .toast-class{padding:.75rem 1rem;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:.3rem}
+  .toast-class:last-child{border-bottom:none}
+  .toast-class-lab{display:flex;align-items:center;gap:.4rem}
+  .toast-class-lab-code{font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;color:var(--accent)}
+  .toast-class-lab-name{font-size:.72rem;color:var(--muted)}
+  .toast-class-mat{font-family:'Space Mono',monospace;font-size:.82rem;color:var(--text)}
+  .toast-class-meta{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+  .toast-class-hora{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--accent3)}
+  .toast-class-cred{font-size:.68rem;color:var(--muted);background:rgba(91,140,255,.1);border:1px solid rgba(91,140,255,.2);padding:.1rem .4rem;border-radius:10px}
+  .toast-class-mins{font-size:.68rem;color:var(--accent2);font-weight:600}
   .modal-overlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem}
   .modal-overlay.open{display:flex;animation:fadeUp .25s ease}
   .modal-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;max-width:960px;width:100%;max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
@@ -134,6 +182,12 @@
   <div class="hdiv"></div>
   <div class="clock" id="clockDisplay">--:--:--</div>
   <div class="hright">
+    <div class="theme-switcher">
+      <button class="theme-btn active" data-t="dark" title="Oscuro" onclick="setTheme('dark')"></button>
+      <button class="theme-btn" data-t="light" title="Claro" onclick="setTheme('light')"></button>
+      <button class="theme-btn" data-t="sepia" title="Sepia" onclick="setTheme('sepia')"></button>
+      <button class="theme-btn" data-t="utesa" title="UTESA" onclick="setTheme('utesa')"></button>
+    </div>
     <div class="alert-badge" id="alertBadge"><div class="alert-dot"></div><span id="alertBadgeText">Clase próxima</span></div>
   </div>
 </header>
@@ -225,6 +279,18 @@
     </div>
     <div class="modal-body"><img id="modalImg" src="" alt="Distribución del laboratorio"></div>
     <div class="modal-foot">ESC o clic fuera para cerrar · Distribución del laboratorio</div>
+  </div>
+</div>
+<div class="alert-modal-overlay" id="alertModal">
+  <div class="alert-modal-box">
+    <div class="alert-modal-header">
+      <div>
+        <div class="alert-modal-title" id="alertModalTitle">⏰ Clases próximas</div>
+        <div class="alert-modal-sub">Clases que comienzan pronto hoy</div>
+      </div>
+      <button class="alert-modal-close" onclick="closeAlertModal()">✕</button>
+    </div>
+    <div class="alert-modal-body" id="alertModalBody"></div>
   </div>
 </div>
 <script>
@@ -416,6 +482,18 @@ document.addEventListener('DOMContentLoaded',function(){
     });
   }
 
+  // ── TEMAS ──
+  const THEMES=['dark','light','sepia','utesa'];
+  window.setTheme=function(t){
+    if(!THEMES.includes(t))t='dark';
+    document.documentElement.setAttribute('data-theme',t==='dark'?'':t);
+    document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
+    localStorage.setItem('utesa-theme',t);
+  };
+  // Cargar tema guardado
+  const savedTheme=localStorage.getItem('utesa-theme')||'dark';
+  setTheme(savedTheme);
+
   function updateClock(){
     const n=new Date(),pad=x=>String(x).padStart(2,'0');
     const cd=document.getElementById('clockDisplay'),dd=document.getElementById('dateDisplay');
@@ -427,26 +505,58 @@ document.addEventListener('DOMContentLoaded',function(){
     if(dd)dd.textContent=`${ds[n.getDay()]} ${n.getDate()} ${ms[n.getMonth()]} ${n.getFullYear()}`;
   }
 
-  function showToast(c,diff){
+  function showToast(pending){
+    lastPending=pending;
+    // Vibración: patrón corto-largo-corto
+    if('vibrate'in navigator)navigator.vibrate([200,100,200,100,400]);
+    const count=pending.length;
+    const label=count===1?`Clase en ${pending[0].diff} min`:`${count} clases próximas`;
+    let classesHTML=pending.map(({c,diff})=>{
+      const lab=LABS[c.aula];
+      const cred=c.durMin/45;
+      return`<div class="toast-class">
+        <div class="toast-class-lab">
+          <span class="toast-class-lab-code">📍 ${c.aula}</span>
+          <span class="toast-class-lab-name">— ${lab?lab.name:''}</span>
+        </div>
+        <div class="toast-class-mat">${c.mat} <span style="color:var(--muted);font-size:.72rem">grp. ${c.grp}</span></div>
+        <div class="toast-class-meta">
+          <span class="toast-class-hora">⏰ ${c.inicio} → ${c.fin}</span>
+          <span class="toast-class-cred">${cred} crédito${cred>1?'s':''}</span>
+          <span class="toast-class-mins">Empieza en ${diff} min</span>
+        </div>
+      </div>`;
+    }).join('');
     const el=document.createElement('div');
     el.className='toast';
-    el.innerHTML=`<div class="toast-title">⏰ Clase en ${diff} min</div><div class="toast-body">${c.mat} grp. ${c.grp} — ${c.aula}</div><div class="toast-sub">${LABS[c.aula].name} · ${c.inicio}–${c.fin} · ${c.durMin} min</div>`;
-    document.getElementById('toast-container').appendChild(el);
+    el.innerHTML=`<div class="toast-header"><span class="toast-header-title">⏰ ${label}</span><span class="toast-header-count">${count}</span></div><div class="toast-classes">${classesHTML}</div>`;
+    el.style.cursor='pointer';
+    el.addEventListener('click',openAlertModal);
+    const container=document.getElementById('toast-container');
+    container.querySelectorAll('.toast').forEach(t=>t.remove());
+    container.appendChild(el);
     document.getElementById('alertBadge').classList.add('show');
-    document.getElementById('alertBadgeText').textContent=`${c.mat} grp.${c.grp}`;
-    setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),400);},7000);
-    if('Notification'in window&&Notification.permission==='granted')
-      new Notification(`⏰ Clase en ${diff} min`,{body:`${c.mat} grp.${c.grp} — ${LABS[c.aula].name}\n${c.inicio}–${c.fin}`});
+    document.getElementById('alertBadgeText').textContent=label;
+    setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),400);},9000);
+    if('Notification'in window&&Notification.permission==='granted'){
+      const body=pending.map(({c,diff})=>`${c.mat} grp.${c.grp} — ${LABS[c.aula].name}\n${c.inicio}→${c.fin} · Empieza en ${diff} min`).join('\n\n');
+      new Notification(`⏰ ${label}`,{body});
+    }
   }
 
   function checkAlerts(){
     if(!alertEnabled)return;
     const today=todayName(),m=nowM();
+    const pending=[];
     classes.forEach(c=>{
       if(c.dia!==today)return;
       const diff=c.inicioM-m,key=`${c.aula}-${c.mat}${c.grp}-${c.inicio}`;
-      if(diff>0&&diff<=alertMinutes&&!notified.has(key)){notified.add(key);showToast(c,diff);}
+      if(diff>0&&diff<=alertMinutes&&!notified.has(key)){
+        notified.add(key);
+        pending.push({c,diff});
+      }
     });
+    if(pending.length>0)showToast(pending);
     if(!classes.some(c=>{if(c.dia!==today)return false;const d=c.inicioM-m;return d>0&&d<=alertMinutes;}))
       document.getElementById('alertBadge').classList.remove('show');
   }
@@ -458,7 +568,46 @@ document.addEventListener('DOMContentLoaded',function(){
   };
   window.closeModal=function(){document.getElementById('imgModal').classList.remove('open');};
   document.getElementById('imgModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+  // Alert modal
+  let lastPending=[];
+  function buildAlertModalContent(pending){
+    const body=document.getElementById('alertModalBody');
+    const title=document.getElementById('alertModalTitle');
+    if(!pending||pending.length===0){
+      title.textContent='⏰ Clases próximas';
+      body.innerHTML='<div class="alert-modal-empty">No hay clases próximas en este momento</div>';
+      return;
+    }
+    title.textContent=`⏰ ${pending.length} clase${pending.length>1?'s':''} próxima${pending.length>1?'s':''}`;
+    body.innerHTML=pending.map(({c,diff})=>{
+      const lab=LABS[c.aula];
+      const cred=c.durMin/45;
+      return`<div class="alert-modal-class">
+        <div class="alert-modal-lab">
+          <span class="alert-modal-lab-code">📍 ${c.aula}</span>
+          <span class="alert-modal-lab-name">— ${lab?lab.name:''}</span>
+        </div>
+        <div class="alert-modal-mat">${c.mat} <span class="alert-modal-grp">grp. ${c.grp}</span></div>
+        <div class="alert-modal-meta">
+          <span class="alert-modal-hora">⏰ ${c.inicio} → ${c.fin}</span>
+          <span class="alert-modal-cred">${cred} crédito${cred>1?'s':''}</span>
+          <span class="alert-modal-mins">Empieza en ${diff} min</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  window.openAlertModal=function(){
+    buildAlertModalContent(lastPending);
+    document.getElementById('alertModal').classList.add('open');
+  };
+  window.closeAlertModal=function(){document.getElementById('alertModal').classList.remove('open');};
+  document.getElementById('alertModal').addEventListener('click',function(e){if(e.target===this)closeAlertModal();});
+  document.getElementById('alertBadge').addEventListener('click',openAlertModal);
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){closeModal();closeAlertModal();}
+  });
 
   document.getElementById('filterDia').addEventListener('change',e=>{filterDia=e.target.value;render();});
   document.getElementById('filterLab').addEventListener('change',e=>{filterLab=e.target.value;render();});
