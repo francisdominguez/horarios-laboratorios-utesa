@@ -97,7 +97,8 @@
   .stat-val{font-family:'Space Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--accent)}
   .stat-lbl{font-size:.75rem;color:var(--muted)}
   .stat-sep{color:var(--border)}
-  .table-wrapper{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;animation:fadeUp .6s .3s ease both}
+  .table-wrapper{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow-x:auto;animation:fadeUp .6s .3s ease both}
+  .table-wrapper table{min-width:720px}
   table{width:100%;border-collapse:collapse}
   thead{background:var(--surface2)}
   thead th{padding:.85rem 1.25rem;text-align:left;font-family:'Space Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap}
@@ -249,10 +250,10 @@
   </div>
   <div class="stats-bar">
     <div class="stat"><span class="stat-val" id="statTotal">0</span><span class="stat-lbl">clases totales</span></div>
+    <span class="stat-sep" id="sepFiltered">·</span>
+    <div class="stat" id="statFilteredWrap" style="display:none"><span class="stat-val" id="statFiltered">0</span><span class="stat-lbl" id="statFilteredLbl">mostrando</span></div>
     <span class="stat-sep">·</span>
-    <div class="stat"><span class="stat-val" id="statFiltered">0</span><span class="stat-lbl">mostrando</span></div>
-    <span class="stat-sep">·</span>
-    <div class="stat"><span class="stat-val" id="statToday">0</span><span class="stat-lbl">hoy</span></div>
+    <div class="stat"><span class="stat-val" id="statToday">0</span><span class="stat-lbl" id="statTodayLbl">hoy</span></div>
   </div>
   <div class="table-wrapper">
     <table>
@@ -456,8 +457,26 @@ document.addEventListener('DOMContentLoaded',function(){
       return dd||a.inicioM-b.inicioM;
     });
     document.getElementById('statTotal').textContent=classes.length;
-    document.getElementById('statFiltered').textContent=filtered.length;
-    document.getElementById('statToday').textContent=classes.filter(c=>c.dia===todayName()).length;
+    // Contador dinámico según filtro activo
+    const wrap=document.getElementById('statFilteredWrap');
+    const sep=document.getElementById('sepFiltered');
+    if(filterDia||filterLab||filterMateria||filterHora){
+      wrap.style.display='flex';
+      sep.style.display='';
+      document.getElementById('statFiltered').textContent=filtered.length;
+      const nombres={manana:'Mañana',mediodia:'Mediodía',tarde:'Tarde',noche:'Noche'};
+      let partes=[];
+      if(filterLab) partes.push(filterLab);
+      if(filterDia) partes.push(filterDia);
+      if(filterHora) partes.push(nombres[filterHora]||filterHora);
+      if(filterMateria) partes.push(`"${filterMateria}"`);
+      document.getElementById('statFilteredLbl').textContent=`en ${partes.join(' · ')}`;
+    } else {
+      wrap.style.display='none';
+      sep.style.display='none';
+    }
+    // Hoy dinámico según filtro
+    document.getElementById('statToday').textContent=filtered.filter(c=>c.dia===todayName()).length;
     if(!filtered.length){empty.classList.add('show');return;}
     empty.classList.remove('show');
     filtered.forEach((c,i)=>{
@@ -624,6 +643,8 @@ document.addEventListener('DOMContentLoaded',function(){
 
   if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
   if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+  filterDia=todayName();
+  document.getElementById('filterDia').value=todayName();
   updateClock();render();
   setInterval(()=>{updateClock();checkAlerts();},1000);
   setInterval(render,60000);
