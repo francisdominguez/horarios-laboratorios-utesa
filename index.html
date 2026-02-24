@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Horarios UTESA — Sede Santiago</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00e5a0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Horarios UTESA">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{--bg:#0a0c10;--surface:#111318;--surface2:#181c24;--border:#222733;--accent:#00e5a0;--accent2:#ff6b35;--accent3:#5b8cff;--text:#e8eaf0;--muted:#6b7280}
@@ -467,6 +474,7 @@ document.addEventListener('DOMContentLoaded',function(){
   };
 
   if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+  if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
   updateClock();render();
   setInterval(()=>{updateClock();checkAlerts();},1000);
   setInterval(render,60000);
