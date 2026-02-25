@@ -1,4 +1,4 @@
-const CACHE = 'utesa-labs-v8';
+const CACHE = 'utesa-labs-v9';
 const ASSETS = [
   '/horarios-laboratorios-utesa/',
   '/horarios-laboratorios-utesa/index.html',
