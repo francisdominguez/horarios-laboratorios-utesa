@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Horarios UTESA — Sede Santiago</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#00e5a0">
@@ -175,7 +175,82 @@
   @keyframes fadeUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
   @keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
   ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-  @media(max-width:768px){main{padding:1rem}td{padding:.6rem .7rem;font-size:.78rem}thead th{padding:.6rem .7rem}.btn-img span{display:none}}
+
+  /* ══ BOTTOM NAV BAR ══ */
+  #bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--surface);border-top:1px solid var(--border);backdrop-filter:blur(16px);padding:0 .5rem env(safe-area-inset-bottom,.5rem);height:60px;align-items:center;justify-content:space-around;gap:.25rem}
+  .bnav-btn{display:flex;flex-direction:column;align-items:center;gap:.18rem;background:transparent;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.58rem;font-weight:500;padding:.4rem .5rem;border-radius:10px;cursor:pointer;min-width:52px;transition:all .18s;letter-spacing:.02em;text-transform:uppercase}
+  .bnav-btn .bnav-icon{font-size:1.15rem;line-height:1}
+  .bnav-btn.active{color:var(--accent);background:rgba(0,229,160,.1)}
+  .bnav-btn.active .bnav-icon{filter:drop-shadow(0 0 6px var(--accent))}
+  .bnav-btn:active{transform:scale(.92)}
+
+  /* ══ FILTER SHEET (bottom drawer) ══ */
+  #filter-sheet{display:none;position:fixed;inset:0;z-index:500}
+  #filter-sheet.open{display:block}
+  .fs-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
+  .fs-box{position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;border-top:1px solid var(--border);padding:1rem 1rem calc(1rem + env(safe-area-inset-bottom,0px));max-height:90vh;overflow-y:auto;animation:sheetUp .3s cubic-bezier(.32,.72,0,1)}
+  .fs-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto .75rem}
+  .fs-title{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem}
+  .fs-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.75rem}
+  .fs-full{grid-column:1/-1}
+  .fs-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'Space Mono',monospace;margin-bottom:.25rem;display:block}
+  .fs-select,.fs-input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.6rem .9rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;-webkit-appearance:none;appearance:none}
+  .fs-select:focus,.fs-input:focus{border-color:var(--accent)}
+  .fs-actions{display:flex;gap:.6rem;margin-top:.5rem}
+  .fs-btn{flex:1;padding:.7rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+  .fs-btn-reset{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+  .fs-btn-apply{background:var(--accent);color:#000}
+  .fs-active-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(0,229,160,.15);border:1px solid var(--accent);padding:.15rem .5rem;border-radius:20px;font-size:.65rem;color:var(--accent);font-family:'Space Mono',monospace}
+
+  /* ══ ALERT SHEET ══ */
+  #alert-sheet{display:none;position:fixed;inset:0;z-index:500}
+  #alert-sheet.open{display:block}
+  .as-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
+  .as-box{position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;border-top:1px solid rgba(255,107,53,.3);padding:1rem 1rem calc(1rem + env(safe-area-inset-bottom,0px));max-height:80vh;overflow-y:auto;animation:sheetUp .3s cubic-bezier(.32,.72,0,1)}
+  .as-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto .75rem}
+  .as-title{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
+  .as-row{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;border-bottom:1px solid var(--border)}
+  .as-row:last-child{border-bottom:none}
+  .as-row-label{font-size:.85rem;color:var(--text)}
+  .as-row-sub{font-size:.72rem;color:var(--muted);margin-top:.15rem}
+  .as-input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.4rem .6rem;border-radius:8px;font-family:'Space Mono',monospace;font-size:.85rem;width:60px;outline:none;text-align:center}
+  @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+  @media(max-width:768px){
+    body{padding-bottom:60px}
+    main{padding:.75rem .75rem 1rem;width:100%;max-width:100vw;overflow-x:hidden}
+    header{padding:0 .75rem;height:52px}
+    .logo{font-size:.75rem}
+    .clock{font-size:.95rem}
+    .clock-date{font-size:.62rem}
+    .hdiv{height:20px}
+    .hright{gap:.5rem}
+    .theme-switcher{padding:.2rem .25rem;gap:.2rem}
+    .theme-btn{width:18px;height:18px}
+    /* Hide desktop filters, alert config, stats on mobile */
+    .filters{display:none}
+    .alert-config{display:none}
+    .stats-bar{display:none}
+    .page-title{margin-bottom:.75rem}
+    .page-title h1{font-size:1.1rem}
+    .page-title p{font-size:.72rem}
+    /* Table mobile */
+    .table-wrapper{border-radius:10px;border-left:none;border-right:none;border-radius:0;margin:0 -.75rem;width:calc(100% + 1.5rem)}
+    td{padding:.55rem .65rem;font-size:.78rem}
+    thead th{padding:.55rem .65rem;font-size:.62rem}
+    .btn-img span{display:none}
+    .btn-img{padding:.2rem .45rem}
+    /* Show bottom nav */
+    #bottom-nav{display:flex}
+    /* Mobile stats row */
+    #mobile-stats{display:flex;gap:.75rem;margin-bottom:.6rem;flex-wrap:wrap}
+  }
+  @media(min-width:769px){
+    #bottom-nav{display:none!important}
+    #filter-sheet{display:none!important}
+    #alert-sheet{display:none!important}
+    #mobile-stats{display:none!important}
+  }
 </style>
 </head>
 <body>
@@ -197,6 +272,14 @@
   </div>
 </header>
 <main>
+  <!-- Mobile stats row -->
+  <div id="mobile-stats" style="display:none">
+    <div class="stat"><span class="stat-val" id="mStatTotal">0</span><span class="stat-lbl">clases</span></div>
+    <span class="stat-sep">·</span>
+    <div class="stat"><span class="stat-val" id="mStatToday">0</span><span class="stat-lbl" id="mStatTodayLbl">hoy</span></div>
+    <span class="stat-sep" id="mSepFiltered">·</span>
+    <div class="stat" id="mStatFilteredWrap" style="display:none"><span class="stat-val" id="mStatFiltered">0</span><span class="stat-lbl" id="mStatFilteredLbl">filtradas</span></div>
+  </div>
   <div class="page-title">
     <h1>Distribución de <em>Laboratorios</em><br>Cuatrimestre 1-2026</h1>
     <p>UTESA Sede Santiago · Dirección de Registro · 19/Ene/2026</p>
@@ -338,6 +421,7 @@ const SLOTS=[
   {m:780,l:'1:00 PM'},{m:825,l:'1:45 PM'},{m:870,l:'2:30 PM'},{m:915,l:'3:15 PM'},
   {m:960,l:'4:00 PM'},{m:1005,l:'4:45 PM'},{m:1050,l:'5:30 PM'},{m:1095,l:'6:15 PM'},
   {m:1140,l:'7:00 PM'},{m:1185,l:'7:45 PM'},{m:1230,l:'8:30 PM'},{m:1275,l:'9:15 PM'},
+  {m:1320,l:'10:00 PM'},
 ];
 const SLOT_END_M=1320, SLOT_END_LBL='10:00 PM';
 const LABS={
@@ -465,99 +549,100 @@ const raw=[
   // C001 — Máquinas y Herramientas
   {aula:'C001',mat:'IMC215',grp:'001',dia:'Lunes',     si:14,ei:16},
   {aula:'C001',mat:'IMC105',grp:'002',dia:'Lunes',     si:17,ei:19},
-  {aula:'C001',mat:'IID631',grp:'002',dia:'Lunes',     si:19,ei:21},
+  {aula:'C001',mat:'IID631',grp:'002',dia:'Lunes',     si:18,ei:20},
   {aula:'C001',mat:'IMC305',grp:'003',dia:'Martes',    si:17,ei:19},
-  {aula:'C001',mat:'IID631',grp:'002',dia:'Miércoles', si:19,ei:21},
+  {aula:'C001',mat:'IID631',grp:'002',dia:'Miércoles', si:18,ei:20},
   {aula:'C001',mat:'IMC321',grp:'001',dia:'Jueves',    si:17,ei:19},
-  {aula:'C001',mat:'IMC321',grp:'003',dia:'Jueves',    si:19,ei:21},
+  {aula:'C001',mat:'IMC321',grp:'003',dia:'Jueves',    si:18,ei:20},
   // C1002 — Taller de Bancos
   {aula:'C1002',mat:'IMC105',grp:'011',dia:'Jueves',   si:14,ei:16},
   {aula:'C1002',mat:'IMC426',grp:'001',dia:'Lunes',    si:17,ei:19},
   {aula:'C1002',mat:'IID631',grp:'001',dia:'Martes',   si:17,ei:19},
-  {aula:'C1002',mat:'IMC321',grp:'002',dia:'Lunes',    si:19,ei:21},
-  {aula:'C1002',mat:'IMC321',grp:'004',dia:'Miércoles',si:19,ei:21},
-  {aula:'C1002',mat:'IID631',grp:'001',dia:'Viernes',  si:19,ei:21},
+  {aula:'C1002',mat:'IMC321',grp:'002',dia:'Lunes',    si:18,ei:20},
+  {aula:'C1002',mat:'IMC321',grp:'004',dia:'Miércoles',si:18,ei:20},
+  {aula:'C1002',mat:'IID631',grp:'001',dia:'Viernes',  si:18,ei:20},
   // C101 — Lab. Industrial
   {aula:'C101',mat:'ARQ540',grp:'001',dia:'Lunes',     si:3, ei:5},
   {aula:'C101',mat:'IID915',grp:'002',dia:'Lunes',     si:14,ei:16},
-  {aula:'C101',mat:'IID870',grp:'002',dia:'Lunes',     si:19,ei:21},
+  {aula:'C101',mat:'IID870',grp:'002',dia:'Lunes',     si:18,ei:20},
   {aula:'C101',mat:'IID522',grp:'002',dia:'Martes',    si:9, ei:11},
   {aula:'C101',mat:'ARQ605',grp:'001',dia:'Martes',    si:9, ei:11},
-  {aula:'C101',mat:'IET921',grp:'001',dia:'Martes',    si:17,ei:21},
+  {aula:'C101',mat:'IET921',grp:'001',dia:'Martes',    si:17,ei:20},
   {aula:'C101',mat:'IID522',grp:'002',dia:'Miércoles', si:14,ei:16},
   {aula:'C101',mat:'IID915',grp:'002',dia:'Miércoles', si:17,ei:19},
-  {aula:'C101',mat:'IID870',grp:'002',dia:'Miércoles', si:19,ei:21},
+  {aula:'C101',mat:'IID870',grp:'002',dia:'Miércoles', si:18,ei:20},
   {aula:'C101',mat:'IEL425',grp:'001',dia:'Jueves',    si:14,ei:16},
   {aula:'C101',mat:'IID500',grp:'001',dia:'Jueves',    si:17,ei:19},
-  {aula:'C101',mat:'IID481',grp:'003',dia:'Jueves',    si:19,ei:21},
+  {aula:'C101',mat:'IID481',grp:'003',dia:'Jueves',    si:18,ei:20},
   {aula:'C101',mat:'ARQ605',grp:'001',dia:'Viernes',   si:9, ei:11},
   {aula:'C101',mat:'IEL905',grp:'003',dia:'Viernes',   si:14,ei:16},
-  {aula:'C101',mat:'IID950',grp:'003',dia:'Viernes',   si:17,ei:21},
+  {aula:'C101',mat:'IID950',grp:'003',dia:'Viernes',   si:17,ei:20},
   {aula:'C101',mat:'IID522',grp:'001',dia:'Sábado',    si:2, ei:8},
   {aula:'C101',mat:'IID950',grp:'001',dia:'Sábado',    si:13,ei:17},
   // C102 — Automatización
   {aula:'C102',mat:'IID420',grp:'001',dia:'Lunes',     si:7, ei:10},
   {aula:'C102',mat:'IID615',grp:'002',dia:'Lunes',     si:14,ei:16},
-  {aula:'C102',mat:'IID420',grp:'002',dia:'Lunes',     si:17,ei:21},
+  {aula:'C102',mat:'IID420',grp:'002',dia:'Lunes',     si:17,ei:20},
   {aula:'C102',mat:'IID420',grp:'007',dia:'Martes',    si:14,ei:17},
   {aula:'C102',mat:'IMC925',grp:'003',dia:'Martes',    si:17,ei:19},
   {aula:'C102',mat:'IMC915',grp:'001',dia:'Miércoles', si:16,ei:18},
-  {aula:'C102',mat:'IID420',grp:'008',dia:'Miércoles', si:19,ei:21},
+  {aula:'C102',mat:'IID420',grp:'008',dia:'Miércoles', si:18,ei:20},
   {aula:'C102',mat:'IID980',grp:'001',dia:'Jueves',    si:14,ei:17},
-  {aula:'C102',mat:'IID420',grp:'004',dia:'Jueves',    si:17,ei:21},
+  {aula:'C102',mat:'IID420',grp:'004',dia:'Jueves',    si:17,ei:20},
   {aula:'C102',mat:'IEL405',grp:'008',dia:'Viernes',   si:14,ei:16},
-  {aula:'C102',mat:'IID420',grp:'003',dia:'Viernes',   si:17,ei:21},
+  {aula:'C102',mat:'IID420',grp:'003',dia:'Viernes',   si:17,ei:20},
   // C103 — Lab. Industrial 02
   {aula:'C103',mat:'ICV215',grp:'006',dia:'Miércoles', si:9, ei:12},
   {aula:'C103',mat:'IID480',grp:'001',dia:'Lunes',     si:16,ei:18},
-  {aula:'C103',mat:'IID481',grp:'001',dia:'Lunes',     si:19,ei:21},
+  {aula:'C103',mat:'IID481',grp:'001',dia:'Lunes',     si:18,ei:20},
   {aula:'C103',mat:'INF705',grp:'002',dia:'Martes',    si:17,ei:19},
-  {aula:'C103',mat:'IID480',grp:'003',dia:'Martes',    si:19,ei:21},
-  {aula:'C103',mat:'IID481',grp:'001',dia:'Miércoles', si:19,ei:21},
+  {aula:'C103',mat:'IID480',grp:'003',dia:'Martes',    si:18,ei:20},
+  {aula:'C103',mat:'IID481',grp:'001',dia:'Miércoles', si:18,ei:20},
   {aula:'C103',mat:'IET725',grp:'003',dia:'Miércoles', si:16,ei:18},
   {aula:'C103',mat:'IID481',grp:'003',dia:'Jueves',    si:17,ei:19},
-  {aula:'C103',mat:'IID481',grp:'003',dia:'Jueves',    si:19,ei:21},
+  {aula:'C103',mat:'IID481',grp:'003',dia:'Jueves',    si:18,ei:20},
   {aula:'C103',mat:'IID481',grp:'005',dia:'Viernes',   si:9, ei:12},
-  {aula:'C103',mat:'ICV215',grp:'001',dia:'Viernes',   si:17,ei:21},
+  {aula:'C103',mat:'ICV215',grp:'001',dia:'Viernes',   si:17,ei:20},
   // C104 — Lab. CAD CAM
   {aula:'C104',mat:'IET825',grp:'001',dia:'Lunes',     si:14,ei:16},
   {aula:'C104',mat:'INF706',grp:'004',dia:'Martes',    si:14,ei:16},
-  {aula:'C104',mat:'IMC500',grp:'001',dia:'Martes',    si:17,ei:21},
+  {aula:'C104',mat:'IMC500',grp:'001',dia:'Martes',    si:17,ei:20},
   {aula:'C104',mat:'IMC102',grp:'001',dia:'Miércoles', si:17,ei:19},
   {aula:'C104',mat:'IMC070',grp:'001',dia:'Jueves',    si:14,ei:16},
-  {aula:'C104',mat:'IMC102',grp:'001',dia:'Viernes',   si:17,ei:21},
+  {aula:'C104',mat:'IMC102',grp:'001',dia:'Viernes',   si:17,ei:20},
   {aula:'C104',mat:'IMC530',grp:'001',dia:'Sábado',    si:12,ei:15},
   // C105 — Ing. Térmica
   {aula:'C105',mat:'IMC960',grp:'001',dia:'Lunes',     si:14,ei:18},
-  {aula:'C105',mat:'IMC965',grp:'001',dia:'Lunes',     si:19,ei:21},
+  {aula:'C105',mat:'IMC965',grp:'001',dia:'Lunes',     si:18,ei:20},
   {aula:'C105',mat:'IMC075',grp:'001',dia:'Martes',    si:17,ei:19},
   {aula:'C105',mat:'IMC070',grp:'001',dia:'Martes',    si:14,ei:16},
   {aula:'C105',mat:'IEL140',grp:'001',dia:'Miércoles', si:14,ei:16},
   {aula:'C105',mat:'IMC805',grp:'002',dia:'Miércoles', si:17,ei:19},
-  {aula:'C105',mat:'IEL405',grp:'001',dia:'Miércoles', si:19,ei:21},
+  {aula:'C105',mat:'IEL405',grp:'001',dia:'Miércoles', si:18,ei:20},
   {aula:'C105',mat:'IEL520',grp:'001',dia:'Viernes',   si:17,ei:19},
   {aula:'C105',mat:'IMC805',grp:'001',dia:'Sábado',    si:9, ei:11},
   // C106 — Lab. Neumática
   {aula:'C106',mat:'IMC675',grp:'001',dia:'Lunes',     si:16,ei:18},
   {aula:'C106',mat:'IMC635',grp:'003',dia:'Martes',    si:17,ei:19},
-  {aula:'C106',mat:'IMC110',grp:'002',dia:'Martes',    si:19,ei:21},
+  {aula:'C106',mat:'IMC110',grp:'002',dia:'Martes',    si:18,ei:20},
   {aula:'C106',mat:'IMC920',grp:'001',dia:'Miércoles', si:16,ei:19},
   {aula:'C106',mat:'INF706',grp:'004',dia:'Jueves',    si:14,ei:16},
   {aula:'C106',mat:'IID241',grp:'002',dia:'Jueves',    si:17,ei:19},
-  {aula:'C106',mat:'IID241',grp:'004',dia:'Jueves',    si:19,ei:21},
+  {aula:'C106',mat:'IID241',grp:'004',dia:'Jueves',    si:18,ei:20},
   {aula:'C106',mat:'IMC815',grp:'001',dia:'Viernes',   si:14,ei:16},
   {aula:'C106',mat:'IEL915',grp:'003',dia:'Sábado',    si:12,ei:14},
   // C107 — Inst. Eléctricas
   {aula:'C107',mat:'IEL315',grp:'004',dia:'Lunes',     si:14,ei:16},
-  {aula:'C107',mat:'IEL405',grp:'006',dia:'Martes',    si:19,ei:21},
-  {aula:'C107',mat:'IET930',grp:'001',dia:'Martes',    si:14,ei:19},
-  {aula:'C107',mat:'IEL640',grp:'001',dia:'Miércoles', si:7, ei:11},
+  {aula:'C107',mat:'IEL405',grp:'009',dia:'Martes',    si:13,ei:15},
+  {aula:'C107',mat:'IET930',grp:'001',dia:'Martes',    si:14,ei:17},
+  {aula:'C107',mat:'IEL405',grp:'006',dia:'Martes',    si:18,ei:20},
+  {aula:'C107',mat:'IEL640',grp:'001',dia:'Miércoles', si:7, ei:10},
   {aula:'C107',mat:'IEL505',grp:'001',dia:'Miércoles', si:14,ei:16},
-  {aula:'C107',mat:'IEL500',grp:'001',dia:'Miércoles', si:17,ei:21},
+  {aula:'C107',mat:'IEL500',grp:'001',dia:'Miércoles', si:17,ei:20},
   {aula:'C107',mat:'IEL405',grp:'002',dia:'Jueves',    si:14,ei:16},
-  {aula:'C107',mat:'IEL640',grp:'001',dia:'Jueves',    si:17,ei:21},
-  {aula:'C107',mat:'IEL640',grp:'001',dia:'Viernes',   si:7, ei:11},
-  {aula:'C107',mat:'IEL620',grp:'001',dia:'Viernes',   si:19,ei:21},
+  {aula:'C107',mat:'IEL640',grp:'001',dia:'Jueves',    si:17,ei:20},
+  {aula:'C107',mat:'IEL640',grp:'001',dia:'Viernes',   si:7, ei:10},
+  {aula:'C107',mat:'IEL620',grp:'001',dia:'Viernes',   si:18,ei:20},
   // C201 — Lab. Informática
   {aula:'C201',mat:'INF113',grp:'023',dia:'Martes',    si:2, ei:6},
   {aula:'C201',mat:'INF113',grp:'023',dia:'Miércoles', si:2, ei:6},
@@ -579,28 +664,28 @@ const raw=[
   {aula:'C201',mat:'INF204',grp:'003',dia:'Martes',    si:14,ei:16},
   {aula:'C201',mat:'INF117',grp:'007',dia:'Miércoles', si:14,ei:18},
   {aula:'C201',mat:'INF113',grp:'028',dia:'Viernes',   si:14,ei:18},
-  {aula:'C201',mat:'CCO222',grp:'004',dia:'Lunes',     si:17,ei:21},
-  {aula:'C201',mat:'INF103',grp:'009',dia:'Martes',    si:17,ei:21},
-  {aula:'C201',mat:'INF345',grp:'001',dia:'Jueves',    si:19,ei:21},
-  {aula:'C201',mat:'INF113',grp:'032',dia:'Viernes',   si:19,ei:21},
+  {aula:'C201',mat:'CCO222',grp:'004',dia:'Lunes',     si:17,ei:20},
+  {aula:'C201',mat:'INF103',grp:'009',dia:'Martes',    si:17,ei:20},
+  {aula:'C201',mat:'INF345',grp:'001',dia:'Jueves',    si:18,ei:20},
+  {aula:'C201',mat:'INF113',grp:'032',dia:'Viernes',   si:18,ei:20},
   {aula:'C201',mat:'INF445',grp:'001',dia:'Sábado',    si:2, ei:6},
   {aula:'C201',mat:'INF331',grp:'003',dia:'Sábado',    si:13,ei:16},
-  {aula:'C201',mat:'MED203',grp:'021',dia:'Miércoles', si:19,ei:21},
+  {aula:'C201',mat:'MED203',grp:'021',dia:'Miércoles', si:18,ei:20},
   // C202 — Lab. Informática 02
   {aula:'C202',mat:'INF113',grp:'009',dia:'Lunes',     si:2, ei:6},
   {aula:'C202',mat:'INF103',grp:'098',dia:'Lunes',     si:16,ei:19},
-  {aula:'C202',mat:'INF173',grp:'006',dia:'Lunes',     si:19,ei:21},
+  {aula:'C202',mat:'INF173',grp:'006',dia:'Lunes',     si:18,ei:20},
   {aula:'C202',mat:'INF113',grp:'011',dia:'Martes',    si:2, ei:6},
   {aula:'C202',mat:'INF103',grp:'017',dia:'Martes',    si:10,ei:13},
   {aula:'C202',mat:'INF103',grp:'035',dia:'Martes',    si:11,ei:14},
   {aula:'C202',mat:'INF103',grp:'016',dia:'Martes',    si:9, ei:12},
   {aula:'C202',mat:'INF103',grp:'001',dia:'Martes',    si:16,ei:19},
-  {aula:'C202',mat:'INF406',grp:'001',dia:'Martes',    si:19,ei:21},
+  {aula:'C202',mat:'INF406',grp:'001',dia:'Martes',    si:18,ei:20},
   {aula:'C202',mat:'INF103',grp:'007',dia:'Miércoles', si:2, ei:6},
   {aula:'C202',mat:'INF103',grp:'060',dia:'Miércoles', si:10,ei:13},
   {aula:'C202',mat:'INF103',grp:'021',dia:'Miércoles', si:7, ei:9},
   {aula:'C202',mat:'INF353',grp:'011',dia:'Miércoles', si:14,ei:15},
-  {aula:'C202',mat:'INF103',grp:'010',dia:'Miércoles', si:17,ei:21},
+  {aula:'C202',mat:'INF103',grp:'010',dia:'Miércoles', si:17,ei:20},
   {aula:'C202',mat:'INF103',grp:'019',dia:'Jueves',    si:9, ei:12},
   {aula:'C202',mat:'INF165',grp:'006',dia:'Jueves',    si:9, ei:11},
   {aula:'C202',mat:'CON500',grp:'002',dia:'Viernes',   si:16,ei:18},
@@ -608,9 +693,9 @@ const raw=[
   {aula:'C202',mat:'INF113',grp:'026',dia:'Viernes',   si:2, ei:6},
   {aula:'C202',mat:'INF113',grp:'027',dia:'Viernes',   si:10,ei:14},
   {aula:'C202',mat:'INF113',grp:'025',dia:'Viernes',   si:9, ei:12},
-  {aula:'C202',mat:'INF113',grp:'033',dia:'Viernes',   si:19,ei:21},
+  {aula:'C202',mat:'INF113',grp:'033',dia:'Viernes',   si:18,ei:20},
   {aula:'C202',mat:'INF225',grp:'002',dia:'Sábado',    si:11,ei:17},
-  {aula:'C202',mat:'MED203',grp:'014',dia:'Jueves',    si:17,ei:21},
+  {aula:'C202',mat:'MED203',grp:'014',dia:'Jueves',    si:17,ei:20},
   {aula:'C202',mat:'INF103',grp:'098',dia:'Lunes',     si:17,ei:19},
   {aula:'C202',mat:'INF103',grp:'001',dia:'Martes',    si:17,ei:19},
   // C203 — Lab. Informática 03
@@ -618,12 +703,12 @@ const raw=[
   {aula:'C203',mat:'MED203',grp:'002',dia:'Lunes',     si:10,ei:13},
   {aula:'C203',mat:'INF117',grp:'003',dia:'Lunes',     si:9, ei:12},
   {aula:'C203',mat:'INF103',grp:'006',dia:'Lunes',     si:17,ei:19},
-  {aula:'C203',mat:'INF353',grp:'002',dia:'Lunes',     si:19,ei:21},
+  {aula:'C203',mat:'INF353',grp:'002',dia:'Lunes',     si:18,ei:20},
   {aula:'C203',mat:'MED203',grp:'001',dia:'Martes',    si:3, ei:7},
   {aula:'C203',mat:'MED203',grp:'002',dia:'Martes',    si:10,ei:13},
   {aula:'C203',mat:'MED203',grp:'003',dia:'Martes',    si:12,ei:15},
   {aula:'C203',mat:'INF103',grp:'023',dia:'Martes',    si:7, ei:10},
-  {aula:'C203',mat:'CON500',grp:'001',dia:'Martes',    si:19,ei:21},
+  {aula:'C203',mat:'CON500',grp:'001',dia:'Martes',    si:18,ei:20},
   {aula:'C203',mat:'INF113',grp:'038',dia:'Miércoles', si:10,ei:14},
   {aula:'C203',mat:'INF117',grp:'003',dia:'Miércoles', si:9, ei:12},
   {aula:'C203',mat:'INF173',grp:'002',dia:'Miércoles', si:16,ei:18},
@@ -634,10 +719,10 @@ const raw=[
   {aula:'C203',mat:'INF113',grp:'019',dia:'Jueves',    si:9, ei:12},
   {aula:'C203',mat:'INF113',grp:'046',dia:'Jueves',    si:14,ei:18},
   {aula:'C203',mat:'INF353',grp:'011',dia:'Jueves',    si:9, ei:11},
-  {aula:'C203',mat:'INF214',grp:'001',dia:'Jueves',    si:19,ei:21},
+  {aula:'C203',mat:'INF214',grp:'001',dia:'Jueves',    si:18,ei:20},
   {aula:'C203',mat:'INF113',grp:'029',dia:'Viernes',   si:14,ei:16},
   {aula:'C203',mat:'INF706',grp:'001',dia:'Viernes',   si:17,ei:19},
-  {aula:'C203',mat:'CON500',grp:'001',dia:'Miércoles', si:19,ei:21},
+  {aula:'C203',mat:'CON500',grp:'001',dia:'Miércoles', si:18,ei:20},
   {aula:'C203',mat:'INF706',grp:'006',dia:'Sábado',    si:9, ei:13},
   {aula:'C203',mat:'INF408',grp:'007',dia:'Sábado',    si:13,ei:17},
   // C204 — Lab. Informática 04
@@ -645,26 +730,26 @@ const raw=[
   {aula:'C204',mat:'INF113',grp:'035',dia:'Lunes',     si:10,ei:14},
   {aula:'C204',mat:'INF113',grp:'041',dia:'Lunes',     si:9, ei:13},
   {aula:'C204',mat:'INF204',grp:'004',dia:'Lunes',     si:17,ei:19},
-  {aula:'C204',mat:'INF165',grp:'007',dia:'Lunes',     si:19,ei:21},
+  {aula:'C204',mat:'INF165',grp:'007',dia:'Lunes',     si:18,ei:20},
   {aula:'C204',mat:'INF103',grp:'022',dia:'Martes',    si:2, ei:5},
   {aula:'C204',mat:'INF103',grp:'003',dia:'Martes',    si:10,ei:13},
   {aula:'C204',mat:'INF113',grp:'016',dia:'Martes',    si:9, ei:11},
   {aula:'C204',mat:'INF387',grp:'003',dia:'Martes',    si:14,ei:16},
   {aula:'C204',mat:'INF113',grp:'032',dia:'Martes',    si:17,ei:19},
-  {aula:'C204',mat:'INF103',grp:'032',dia:'Martes',    si:19,ei:21},
+  {aula:'C204',mat:'INF103',grp:'032',dia:'Martes',    si:18,ei:20},
   {aula:'C204',mat:'INF113',grp:'036',dia:'Miércoles', si:2, ei:6},
   {aula:'C204',mat:'INF113',grp:'016',dia:'Miércoles', si:9, ei:11},
   {aula:'C204',mat:'INF113',grp:'044',dia:'Miércoles', si:12,ei:15},
   {aula:'C204',mat:'INF113',grp:'016',dia:'Miércoles', si:9, ei:11},
-  {aula:'C204',mat:'MER402',grp:'003',dia:'Miércoles', si:19,ei:21},
+  {aula:'C204',mat:'MER402',grp:'003',dia:'Miércoles', si:18,ei:20},
   {aula:'C204',mat:'INF113',grp:'042',dia:'Jueves',    si:9, ei:12},
   {aula:'C204',mat:'INF103',grp:'019',dia:'Jueves',    si:9, ei:11},
   {aula:'C204',mat:'INF406',grp:'001',dia:'Jueves',    si:14,ei:16},
-  {aula:'C204',mat:'INF103',grp:'062',dia:'Jueves',    si:17,ei:21},
-  {aula:'C204',mat:'INF353',grp:'002',dia:'Jueves',    si:19,ei:21},
+  {aula:'C204',mat:'INF103',grp:'062',dia:'Jueves',    si:17,ei:20},
+  {aula:'C204',mat:'INF353',grp:'002',dia:'Jueves',    si:18,ei:20},
   {aula:'C204',mat:'INF113',grp:'015',dia:'Viernes',   si:11,ei:15},
   {aula:'C204',mat:'INF103',grp:'034',dia:'Viernes',   si:14,ei:16},
-  {aula:'C204',mat:'MER402',grp:'003',dia:'Viernes',   si:19,ei:21},
+  {aula:'C204',mat:'MER402',grp:'003',dia:'Viernes',   si:18,ei:20},
   {aula:'C204',mat:'INF408',grp:'002',dia:'Sábado',    si:9, ei:13},
   {aula:'C204',mat:'INF445',grp:'003',dia:'Sábado',    si:13,ei:17},
   {aula:'C204',mat:'MED203',grp:'009',dia:'Jueves',    si:2, ei:4},
@@ -675,15 +760,15 @@ const raw=[
   {aula:'C205',mat:'ICV915',grp:'003',dia:'Miércoles', si:11,ei:15},
   {aula:'C205',mat:'ICV915',grp:'002',dia:'Miércoles', si:14,ei:17},
   {aula:'C205',mat:'ICV945',grp:'002',dia:'Miércoles', si:17,ei:19},
-  {aula:'C205',mat:'ICV450',grp:'001',dia:'Miércoles', si:17,ei:21},
+  {aula:'C205',mat:'ICV450',grp:'001',dia:'Miércoles', si:17,ei:20},
   {aula:'C205',mat:'ICV945',grp:'001',dia:'Jueves',    si:9, ei:12},
   {aula:'C205',mat:'INF113',grp:'043',dia:'Jueves',    si:14,ei:16},
-  {aula:'C205',mat:'INF331',grp:'004',dia:'Jueves',    si:19,ei:21},
+  {aula:'C205',mat:'INF331',grp:'004',dia:'Jueves',    si:18,ei:20},
   {aula:'C205',mat:'ICV945',grp:'002',dia:'Viernes',   si:13,ei:16},
   {aula:'C205',mat:'ICV915',grp:'003',dia:'Sábado',    si:2, ei:5},
   {aula:'C205',mat:'ICV915',grp:'002',dia:'Sábado',    si:9, ei:12},
   {aula:'C205',mat:'ARQ545',grp:'001',dia:'Martes',    si:11,ei:14},
-  {aula:'C205',mat:'ICV945',grp:'001',dia:'Martes',    si:17,ei:21},
+  {aula:'C205',mat:'ICV945',grp:'001',dia:'Martes',    si:17,ei:20},
   // C206 — Lab. Informática 06
   {aula:'C206',mat:'INF113',grp:'003',dia:'Lunes',     si:1, ei:5},
   {aula:'C206',mat:'INF117',grp:'002',dia:'Lunes',     si:5, ei:9},
@@ -701,26 +786,26 @@ const raw=[
   {aula:'C206',mat:'INF113',grp:'018',dia:'Viernes',   si:9, ei:13},
   {aula:'C206',mat:'INF024',grp:'001',dia:'Sábado',    si:1, ei:5},
   {aula:'C206',mat:'INF840',grp:'002',dia:'Sábado',    si:5, ei:9},
-  {aula:'C206',mat:'INF113',grp:'030',dia:'Lunes',     si:19,ei:21},
+  {aula:'C206',mat:'INF113',grp:'030',dia:'Lunes',     si:18,ei:20},
   {aula:'C206',mat:'INF113',grp:'030',dia:'Martes',    si:17,ei:19},
   {aula:'C206',mat:'INF113',grp:'030',dia:'Viernes',   si:17,ei:19},
-  {aula:'C206',mat:'MED203',grp:'021',dia:'Miércoles', si:19,ei:21},
+  {aula:'C206',mat:'MED203',grp:'021',dia:'Miércoles', si:18,ei:20},
   // C207 — Lab. Informática 07
   {aula:'C207',mat:'INF117',grp:'005',dia:'Lunes',     si:1, ei:5},
   {aula:'C207',mat:'INF113',grp:'050',dia:'Lunes',     si:9, ei:13},
   {aula:'C207',mat:'INF173',grp:'001',dia:'Lunes',     si:16,ei:18},
-  {aula:'C207',mat:'INF482',grp:'002',dia:'Lunes',     si:19,ei:21},
+  {aula:'C207',mat:'INF482',grp:'002',dia:'Lunes',     si:18,ei:20},
   {aula:'C207',mat:'INF113',grp:'012',dia:'Martes',    si:9, ei:13},
   {aula:'C207',mat:'MED203',grp:'014',dia:'Martes',    si:16,ei:18},
   {aula:'C207',mat:'INF535',grp:'001',dia:'Martes',    si:17,ei:19},
-  {aula:'C207',mat:'INF482',grp:'002',dia:'Martes',    si:19,ei:21},
+  {aula:'C207',mat:'INF482',grp:'002',dia:'Martes',    si:18,ei:20},
   {aula:'C207',mat:'INF113',grp:'033',dia:'Miércoles', si:9, ei:13},
   {aula:'C207',mat:'INF103',grp:'005',dia:'Miércoles', si:9, ei:11},
-  {aula:'C207',mat:'INF168',grp:'001',dia:'Miércoles', si:17,ei:21},
+  {aula:'C207',mat:'INF168',grp:'001',dia:'Miércoles', si:17,ei:20},
   {aula:'C207',mat:'INF113',grp:'039',dia:'Jueves',    si:9, ei:13},
   {aula:'C207',mat:'INF103',grp:'078',dia:'Jueves',    si:13,ei:17},
   {aula:'C207',mat:'INF165',grp:'005',dia:'Jueves',    si:17,ei:19},
-  {aula:'C207',mat:'INF168',grp:'002',dia:'Jueves',    si:17,ei:21},
+  {aula:'C207',mat:'INF168',grp:'002',dia:'Jueves',    si:17,ei:20},
   {aula:'C207',mat:'INF117',grp:'001',dia:'Viernes',   si:1, ei:3},
   {aula:'C207',mat:'INF387',grp:'002',dia:'Viernes',   si:17,ei:19},
   {aula:'C207',mat:'INF103',grp:'030',dia:'Miércoles', si:9, ei:11},
@@ -736,18 +821,18 @@ const raw=[
   {aula:'C208',mat:'IEL905',grp:'001',dia:'Jueves',    si:14,ei:16},
   {aula:'C208',mat:'IEL955',grp:'002',dia:'Viernes',   si:14,ei:16},
   {aula:'C208',mat:'IEL955',grp:'004',dia:'Viernes',   si:17,ei:19},
-  {aula:'C208',mat:'IID750',grp:'001',dia:'Miércoles', si:17,ei:21},
+  {aula:'C208',mat:'IID750',grp:'001',dia:'Miércoles', si:17,ei:20},
   {aula:'C208',mat:'IEL415',grp:'001',dia:'Sábado',    si:7, ei:11},
   {aula:'C208',mat:'IEL625',grp:'002',dia:'Sábado',    si:7, ei:11},
   {aula:'C208',mat:'IEL525',grp:'002',dia:'Sábado',    si:11,ei:13},
   // C413 — Lab. Comunicación
   {aula:'C413',mat:'IET675',grp:'001',dia:'Lunes',     si:14,ei:16},
-  {aula:'C413',mat:'IET415',grp:'002',dia:'Lunes',     si:19,ei:21},
+  {aula:'C413',mat:'IET415',grp:'002',dia:'Lunes',     si:18,ei:20},
   {aula:'C413',mat:'IET325',grp:'002',dia:'Martes',    si:17,ei:19},
   {aula:'C413',mat:'IET545',grp:'002',dia:'Miércoles', si:17,ei:19},
-  {aula:'C413',mat:'IET325',grp:'001',dia:'Miércoles', si:19,ei:21},
+  {aula:'C413',mat:'IET325',grp:'001',dia:'Miércoles', si:18,ei:20},
   {aula:'C413',mat:'IET425',grp:'001',dia:'Jueves',    si:17,ei:19},
-  {aula:'C413',mat:'IET605',grp:'001',dia:'Jueves',    si:19,ei:21},
+  {aula:'C413',mat:'IET605',grp:'001',dia:'Jueves',    si:18,ei:20},
   {aula:'C413',mat:'IET745',grp:'001',dia:'Viernes',   si:17,ei:19},
   {aula:'C413',mat:'IET845',grp:'001',dia:'Sábado',    si:9, ei:13},
   {aula:'C413',mat:'IEL305',grp:'004',dia:'Sábado',    si:12,ei:14},
@@ -769,21 +854,25 @@ const raw=[
   {aula:'C415',mat:'IET405',grp:'001',dia:'Miércoles', si:9, ei:11},
   {aula:'C415',mat:'IEL115',grp:'001',dia:'Miércoles', si:9, ei:13},
   {aula:'C415',mat:'IEL205',grp:'004',dia:'Miércoles', si:14,ei:16},
-  {aula:'C415',mat:'IEL105',grp:'009',dia:'Jueves',    si:19,ei:21},
+  {aula:'C415',mat:'IEL105',grp:'009',dia:'Jueves',    si:18,ei:20},
   {aula:'C415',mat:'IEL105',grp:'001',dia:'Viernes',   si:14,ei:16},
   {aula:'C415',mat:'IEL105',grp:'002',dia:'Viernes',   si:14,ei:16},
   {aula:'C415',mat:'IEL105',grp:'003',dia:'Viernes',   si:14,ei:16},
   {aula:'C415',mat:'IEL115',grp:'003',dia:'Sábado',    si:13,ei:15},
 ];
 
-const classes=raw.map(c=>{
-  const last=c.ei>=20;
-  return{...c,durMin:(c.ei-c.si)*45,inicio:SLOTS[c.si].l,fin:last?SLOT_END_LBL:SLOTS[c.ei].l,inicioM:SLOTS[c.si].m,finM:last?SLOT_END_M:SLOTS[c.ei].m};
-});
+const classes=raw.map(c=>({
+  ...c,
+  durMin:(c.ei-c.si)*45,
+  inicio:SLOTS[c.si].l,
+  fin:SLOTS[c.ei]?SLOTS[c.ei].l:SLOT_END_LBL,
+  inicioM:SLOTS[c.si].m,
+  finM:SLOTS[c.ei]?SLOTS[c.ei].m:SLOT_END_M,
+}));
 
 document.addEventListener('DOMContentLoaded',function(){
   let filterDia='',filterLab='',filterMateria='',filterHora='',filterEdificio='',alertEnabled=true,alertMinutes=15;
-  let notified=new Set(), notifiedEnd=new Set();
+  let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true;
   const DIAS={0:'Domingo',1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado'};
   const DIA_ORDER=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
   const DIA_CSS={Lunes:'dL',Martes:'dM','Miércoles':'dX',Jueves:'dJ',Viernes:'dV','Sábado':'dS'};
@@ -899,10 +988,43 @@ document.addEventListener('DOMContentLoaded',function(){
     if(dd)dd.textContent=`${ds[n.getDay()]} ${n.getDate()} ${ms[n.getMonth()]} ${n.getFullYear()}`;
   }
 
+  // ── SONIDOS CON WEB AUDIO API ──
+  function playSound(type){
+    try{
+      const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      if(type==='upcoming'){
+        // Tres tonos ascendentes: alerta clase próxima
+        [[0,.12,880,.3],[.15,.12,1108,.3],[.32,.18,1318,.45]].forEach(([t,dur,freq,vol])=>{
+          const o=ctx.createOscillator(),g=ctx.createGain();
+          o.connect(g);g.connect(ctx.destination);
+          o.type='sine';o.frequency.value=freq;
+          g.gain.setValueAtTime(0,ctx.currentTime+t);
+          g.gain.linearRampToValueAtTime(vol,ctx.currentTime+t+.02);
+          g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+dur);
+          o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+dur+.05);
+        });
+      } else if(type==='ended'){
+        // Tres tonos descendentes suaves: clase terminada
+        [[0,.18,880,.22],[.22,.18,659,.22],[.44,.25,523,.28]].forEach(([t,dur,freq,vol])=>{
+          const o=ctx.createOscillator(),g=ctx.createGain();
+          o.connect(g);g.connect(ctx.destination);
+          o.type='triangle';o.frequency.value=freq;
+          g.gain.setValueAtTime(0,ctx.currentTime+t);
+          g.gain.linearRampToValueAtTime(vol,ctx.currentTime+t+.03);
+          g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+dur);
+          o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+dur+.05);
+        });
+      }
+      setTimeout(()=>ctx.close(),2000);
+    }catch(e){}
+  }
+
   function showToast(pending){
     lastPending=pending;
-    // Vibración: patrón corto-largo-corto
-    if('vibrate'in navigator)navigator.vibrate([200,100,200,100,400]);
+    // Sonido: 3 tonos ascendentes
+    if(soundEnabled)playSound('upcoming');
+    // Vibración fuerte patrón alerta
+    if('vibrate'in navigator)navigator.vibrate([100,50,100,50,300,100,300]);
     const count=pending.length;
     const label=count===1?`Clase en ${pending[0].diff} min`:`${count} clases próximas`;
     let classesHTML=pending.map(({c,diff})=>{
@@ -962,7 +1084,10 @@ document.addEventListener('DOMContentLoaded',function(){
     el.innerHTML=`<div class="toast-header"><span class="toast-header-title">✅ ${label}</span><span class="toast-header-count">${count}</span></div><div class="toast-classes">${classesHTML}</div>`;
     const container=document.getElementById('toast-container');
     container.appendChild(el);
-    if(navigator.vibrate)navigator.vibrate([150,80,150]);
+    // Sonido: 3 tonos descendentes suaves
+    if(soundEnabled)playSound('ended');
+    // Vibración suave doble: clase terminada
+    if(navigator.vibrate)navigator.vibrate([200,100,200]);
     const dur=8000;
     const tid=setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),400);},dur);
     el.addEventListener('click',()=>{clearTimeout(tid);el.classList.add('fade-out');setTimeout(()=>el.remove(),400);});
@@ -1069,7 +1194,266 @@ document.addEventListener('DOMContentLoaded',function(){
   updateClock();render();
   setInterval(()=>{updateClock();checkAlerts();},1000);
   setInterval(render,60000);
+
+  // ══ MOBILE NAV ══
+  let mobileNavMode = 'today'; // 'today' or 'all'
+
+  window.mobileNavTab = function(tab) {
+    mobileNavMode = tab;
+    document.getElementById('bnav-today').classList.toggle('active', tab==='today');
+    document.getElementById('bnav-all').classList.toggle('active', tab==='all');
+    if (tab === 'today') {
+      filterDia = todayName();
+      document.getElementById('filterDia').value = todayName();
+      document.getElementById('fs-dia').value = todayName();
+    } else {
+      filterDia = '';
+      document.getElementById('filterDia').value = '';
+      document.getElementById('fs-dia').value = '';
+    }
+    render();
+  };
+
+  window.openFilterSheet = function() {
+    // Sync current filter values into sheet selects
+    document.getElementById('fs-edificio').value = filterEdificio;
+    document.getElementById('fs-dia').value = filterDia;
+    document.getElementById('fs-lab').value = filterLab;
+    document.getElementById('fs-hora').value = filterHora;
+    document.getElementById('fs-materia').value = filterMateria;
+    document.getElementById('bnav-filter').classList.add('active');
+    document.getElementById('filter-sheet').classList.add('open');
+  };
+  window.closeFilterSheet = function() {
+    document.getElementById('filter-sheet').classList.remove('open');
+    document.getElementById('bnav-filter').classList.remove('active');
+  };
+  window.applyMobileFilters = function() {
+    filterEdificio = document.getElementById('fs-edificio').value;
+    filterDia = document.getElementById('fs-dia').value;
+    filterLab = document.getElementById('fs-lab').value;
+    filterHora = document.getElementById('fs-hora').value;
+    filterMateria = document.getElementById('fs-materia').value;
+    // Sync desktop selects too
+    document.getElementById('filterEdificio').value = filterEdificio;
+    document.getElementById('filterDia').value = filterDia;
+    document.getElementById('filterLab').value = filterLab;
+    document.getElementById('filterHora').value = filterHora;
+    document.getElementById('filterMateria').value = filterMateria;
+    // Update nav tab state
+    if (filterDia === todayName()) { mobileNavMode='today'; document.getElementById('bnav-today').classList.add('active'); document.getElementById('bnav-all').classList.remove('active'); }
+    else if (filterDia === '') { mobileNavMode='all'; document.getElementById('bnav-all').classList.add('active'); document.getElementById('bnav-today').classList.remove('active'); }
+    // Filter badge
+    const count = [filterEdificio,filterLab,filterHora,filterMateria].filter(Boolean).length;
+    const badge = document.getElementById('bnav-filter-count');
+    if(count > 0){ badge.style.display=''; badge.textContent=count; } else { badge.style.display='none'; }
+    closeFilterSheet();
+    render();
+  };
+  window.resetMobileFilters = function() {
+    ['fs-edificio','fs-dia','fs-lab','fs-hora','fs-materia'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('bnav-filter-count').style.display='none';
+  };
+
+  window.openAlertSheet = function() {
+    document.getElementById('bnav-alert').classList.add('active');
+    // Sync
+    document.getElementById('as-enabled').checked = alertEnabled;
+    document.getElementById('as-sound').checked = soundEnabled;
+    document.getElementById('as-minutes').value = alertMinutes;
+    // Show pending if any
+    const today=todayName(),m=nowM();
+    const pendingCount = classes.filter(c=>c.dia===today&&c.inicioM-m>0&&c.inicioM-m<=alertMinutes).length;
+    if(pendingCount>0){
+      document.getElementById('as-pending-row').style.display='flex';
+      document.getElementById('as-pending-text').textContent = pendingCount + ' clase' + (pendingCount>1?'s':'') + ' próxima' + (pendingCount>1?'s':'');
+    }
+    document.getElementById('alert-sheet').classList.add('open');
+  };
+  window.closeAlertSheet = function() {
+    document.getElementById('alert-sheet').classList.remove('open');
+    document.getElementById('bnav-alert').classList.remove('active');
+  };
+  window.syncAlertEnabled = function(el) { alertEnabled=el.checked; document.getElementById('alertEnabled').checked=el.checked; };
+  window.syncAlertMinutes = function(el) { alertMinutes=parseInt(el.value)||15; document.getElementById('alertMinutes').value=el.value; };
+  window.syncAlertSound = function(el) { soundEnabled=el.checked; };
+
+  // Patch render to also update mobile stats
+  const _origRender = render;
+  // Override render to sync mobile stats
+  const _renderOrig = render;
+  function updateMobileStats(){
+    const total=document.getElementById('statTotal');
+    const today=document.getElementById('statToday');
+    if(total) document.getElementById('mStatTotal').textContent=total.textContent;
+    if(today) document.getElementById('mStatToday').textContent=today.textContent;
+    const fwrap=document.getElementById('statFilteredWrap');
+    const mfwrap=document.getElementById('mStatFilteredWrap');
+    const msep=document.getElementById('mSepFiltered');
+    if(fwrap && fwrap.style.display!=='none'){
+      mfwrap.style.display='flex';
+      msep.style.display='';
+      document.getElementById('mStatFiltered').textContent=document.getElementById('statFiltered').textContent;
+      document.getElementById('mStatFilteredLbl').textContent=document.getElementById('statFilteredLbl').textContent;
+    } else {
+      mfwrap.style.display='none';
+      msep.style.display='none';
+    }
+    // Highlight bnav-today if today filter active
+    const isTodayFilter = filterDia===todayName();
+    document.getElementById('bnav-today').classList.toggle('active', isTodayFilter && mobileNavMode==='today');
+  }
+  // Wrap render to call updateMobileStats after
+  const __origRender = render;
+  window.render = function(){
+    __origRender();
+    updateMobileStats();
+  };
+
+
 });
 </script>
+
+<!-- ══ BOTTOM NAV ══ -->
+<nav id="bottom-nav">
+  <button class="bnav-btn active" id="bnav-today" onclick="mobileNavTab('today')">
+    <span class="bnav-icon">📅</span>Hoy
+  </button>
+  <button class="bnav-btn" id="bnav-filter" onclick="openFilterSheet()">
+    <span class="bnav-icon">🔍</span>Filtros
+    <span id="bnav-filter-count" style="display:none;font-size:.55rem;background:var(--accent);color:#000;border-radius:10px;padding:.05rem .35rem;margin-top:.1rem"></span>
+  </button>
+  <button class="bnav-btn" id="bnav-all" onclick="mobileNavTab('all')">
+    <span class="bnav-icon">📋</span>Todos
+  </button>
+  <button class="bnav-btn" id="bnav-alert" onclick="openAlertSheet()">
+    <span class="bnav-icon">⏰</span>Alertas
+  </button>
+
+</nav>
+
+<!-- ══ FILTER SHEET ══ -->
+<div id="filter-sheet">
+  <div class="fs-overlay" onclick="closeFilterSheet()"></div>
+  <div class="fs-box">
+    <div class="fs-handle"></div>
+    <div class="fs-title">Filtros</div>
+    <div class="fs-grid">
+      <div>
+        <span class="fs-label">Edificio</span>
+        <select class="fs-select" id="fs-edificio">
+          <option value="">Todos</option>
+          <option value="B">🏢 Edificio B</option>
+          <option value="C">🏛️ Edificio C</option>
+        </select>
+      </div>
+      <div>
+        <span class="fs-label">Día</span>
+        <select class="fs-select" id="fs-dia">
+          <option value="">Todos los días</option>
+          <option value="Lunes">Lunes</option>
+          <option value="Martes">Martes</option>
+          <option value="Miércoles">Miércoles</option>
+          <option value="Jueves">Jueves</option>
+          <option value="Viernes">Viernes</option>
+          <option value="Sábado">Sábado</option>
+        </select>
+      </div>
+      <div class="fs-full">
+        <span class="fs-label">Laboratorio</span>
+        <select class="fs-select" id="fs-lab">
+          <option value="">Todos los labs</option>
+          <optgroup label="🏢 Edificio B">
+          <option value="B120">B120 — Geol. y Topografía</option>
+          <option value="B121">B121 — Materiales</option>
+          <option value="B123">B123 — Hidráulica</option>
+          <option value="B213">B213 — Lab. TIC</option>
+          <option value="B217">B217 — Comunicación</option>
+          <option value="B211">B211 — Comunicación 02</option>
+          <option value="B219">B219 — Programación</option>
+          </optgroup>
+          <optgroup label="🏛️ Edificio C">
+          <option value="C001">C001 — Máq. y Herram.</option>
+          <option value="C1002">C1002 — Taller Bancos</option>
+          <option value="C101">C101 — Lab. Industrial</option>
+          <option value="C102">C102 — Automatización</option>
+          <option value="C103">C103 — Lab. Industrial 02</option>
+          <option value="C104">C104 — Lab. CAD CAM</option>
+          <option value="C105">C105 — Ing. Térmica</option>
+          <option value="C106">C106 — Lab. Neumática</option>
+          <option value="C107">C107 — Inst. Eléctricas</option>
+          <option value="C201">C201 — Lab. Informática</option>
+          <option value="C202">C202 — Lab. Inf. 02</option>
+          <option value="C203">C203 — Lab. Inf. 03</option>
+          <option value="C204">C204 — Lab. Inf. 04</option>
+          <option value="C205">C205 — Lab. AutoCAD</option>
+          <option value="C206">C206 — Lab. Inf. 06</option>
+          <option value="C207">C207 — Lab. Inf. 07</option>
+          <option value="C208">C208 — Lab. Mecatrónica</option>
+          <option value="C413">C413 — Lab. Comunicación</option>
+          <option value="C414A">C414A — Lab. Electrónica</option>
+          <option value="C414B">C414B — Lab. Electrónica 02</option>
+          <option value="C415">C415 — Lab. Electricidad</option>
+          </optgroup>
+        </select>
+      </div>
+      <div>
+        <span class="fs-label">Horario</span>
+        <select class="fs-select" id="fs-hora">
+          <option value="">Todo el día</option>
+          <option value="manana">🌅 Mañana</option>
+          <option value="mediodia">☀️ Mediodía</option>
+          <option value="tarde">🌇 Tarde</option>
+          <option value="noche">🌙 Noche</option>
+        </select>
+      </div>
+      <div>
+        <span class="fs-label">Código</span>
+        <input class="fs-input" id="fs-materia" placeholder="INF113...">
+      </div>
+    </div>
+    <div class="fs-actions">
+      <button class="fs-btn fs-btn-reset" onclick="resetMobileFilters()">✕ Limpiar</button>
+      <button class="fs-btn fs-btn-apply" onclick="applyMobileFilters()">Aplicar filtros</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ALERT SHEET ══ -->
+<div id="alert-sheet">
+  <div class="as-overlay" onclick="closeAlertSheet()"></div>
+  <div class="as-box">
+    <div class="as-handle"></div>
+    <div class="as-title">⏰ Configurar alertas</div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">Alertas activas</div>
+        <div class="as-row-sub">Notificar antes de cada clase</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="as-enabled" checked onchange="syncAlertEnabled(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">Anticipación</div>
+        <div class="as-row-sub">Minutos antes de la clase</div>
+      </div>
+      <input type="number" class="as-input" id="as-minutes" value="15" min="1" max="60" onchange="syncAlertMinutes(this)">
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">Sonido</div>
+        <div class="as-row-sub">Tono al alertar clase</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="as-sound" checked onchange="syncAlertSound(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="as-row" id="as-pending-row" style="display:none">
+      <div>
+        <div class="as-row-label">Próximas ahora</div>
+        <div class="as-row-sub" id="as-pending-text">—</div>
+      </div>
+      <button class="fs-btn fs-btn-apply" style="flex:0;padding:.4rem .8rem;font-size:.78rem" onclick="openAlertModal();closeAlertSheet()">Ver</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
