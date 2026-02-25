@@ -208,23 +208,29 @@
   #table-section.hidden{display:none}
   .grid-time-col{position:sticky;left:0;z-index:10}
   .gv-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);background:var(--surface)}
-  .gv-table{border-collapse:collapse;min-width:100%;table-layout:fixed}
-  .gv-th{background:var(--surface2);padding:.5rem .6rem;font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;text-align:center;min-width:110px}
-  .gv-th:first-child{min-width:64px;position:sticky;left:0;z-index:11;background:var(--surface2)}
-  .gv-time{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted);padding:.4rem .5rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border);position:sticky;left:0;background:var(--surface);z-index:5;white-space:nowrap;vertical-align:top;text-align:right}
-  .gv-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:.2rem;vertical-align:top;min-height:36px;position:relative}
-  .gv-cell.now-row{background:rgba(0,229,160,.03)}
-  .gv-block{border-radius:6px;padding:.35rem .45rem;margin:.1rem;font-size:.68rem;cursor:pointer;transition:all .15s;border-left:3px solid transparent}
-  .gv-block:hover{filter:brightness(1.15);transform:scale(1.02)}
-  .gv-block.s-active{background:rgba(0,229,160,.18);border-color:#00e5a0;color:#00e5a0}
-  .gv-block.s-imminent{background:rgba(255,107,53,.18);border-color:#ff6b35;color:#ff6b35;animation:pulse-badge 2s infinite}
-  .gv-block.s-upcoming{background:rgba(91,140,255,.15);border-color:#5b8cff;color:#7aa3ff}
-  .gv-block.s-later{background:rgba(255,200,50,.1);border-color:#ffc832;color:#ffc832}
-  .gv-block.s-past{background:rgba(107,114,128,.08);border-color:var(--border);color:var(--muted);opacity:.6}
-  .gv-block.s-nottoday{background:rgba(107,114,128,.06);border-color:var(--border);color:var(--muted)}
-  .gv-block-mat{font-family:'Space Mono',monospace;font-weight:700;font-size:.7rem;line-height:1.2}
-  .gv-block-grp{font-size:.6rem;opacity:.8}
-  .gv-block-fav{font-size:.65rem}
+  .gv-table{border-collapse:collapse;min-width:100%}
+  .gv-th{background:var(--surface2);padding:.7rem .9rem;font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;text-align:center;min-width:140px}
+  .gv-th:first-child{min-width:72px;position:sticky;left:0;z-index:11;background:var(--surface2)}
+  .gv-time{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--muted);padding:.6rem .7rem;border-right:2px solid var(--border);border-bottom:1px solid var(--border);position:sticky;left:0;background:var(--surface);z-index:5;white-space:nowrap;vertical-align:middle;text-align:right;min-width:72px}
+  .gv-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:.35rem .4rem;vertical-align:top;min-height:52px;min-width:140px;position:relative}
+  .gv-cell.now-row{background:rgba(0,229,160,.04)}
+  .gv-block{border-radius:8px;padding:.5rem .65rem;margin:.15rem;cursor:pointer;transition:all .15s;border-left:4px solid transparent;display:flex;flex-direction:column;gap:.25rem}
+  .gv-block:hover{filter:brightness(1.15);transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.3)}
+  .gv-block.s-active{background:rgba(0,229,160,.15);border-color:#00e5a0}
+  .gv-block.s-imminent{background:rgba(255,107,53,.15);border-color:#ff6b35;animation:pulse-badge 2s infinite}
+  .gv-block.s-upcoming{background:rgba(91,140,255,.12);border-color:#5b8cff}
+  .gv-block.s-later{background:rgba(255,200,50,.09);border-color:#ffc832}
+  .gv-block.s-past{background:rgba(107,114,128,.07);border-color:var(--border);opacity:.55}
+  .gv-block.s-nottoday{background:rgba(107,114,128,.05);border-color:var(--border)}
+  .gv-block-top{display:flex;align-items:center;justify-content:space-between;gap:.3rem}
+  .gv-block-mat{font-family:'Space Mono',monospace;font-weight:700;font-size:.75rem;line-height:1.2;color:inherit}
+  .gv-block-fav{font-size:.7rem;flex-shrink:0}
+  .gv-block-grp{font-size:.65rem;opacity:.75;font-family:'Space Mono',monospace}
+  .gv-block-time{font-size:.6rem;opacity:.6;font-family:'Space Mono',monospace}
+  .gv-block.s-active .gv-block-mat{color:#00e5a0}
+  .gv-block.s-imminent .gv-block-mat{color:#ff6b35}
+  .gv-block.s-upcoming .gv-block-mat{color:#7aa3ff}
+  .gv-block.s-later .gv-block-mat{color:#ffc832}
   .gv-now-line{position:absolute;left:0;right:0;height:2px;background:var(--accent);z-index:8;pointer-events:none}
   .gv-now-line::before{content:'';position:absolute;left:-4px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
   .view-toggle{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.2rem;gap:.2rem;margin-bottom:1rem}
@@ -411,6 +417,17 @@
         <option value="C414B">C414B — Lab. Electrónica 02</option>
         <option value="C415">C415 — Lab. Electricidad</option>
         </optgroup>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Estado</label>
+      <select id="filterEstado">
+        <option value="">Todos los estados</option>
+        <option value="active">🟢 En curso</option>
+        <option value="imminent">⚡ Inminente</option>
+        <option value="upcoming">⏳ Próxima</option>
+        <option value="later">🕐 Más tarde</option>
+        <option value="past">✓ Finalizada</option>
       </select>
     </div>
     <div class="fg">
@@ -970,7 +987,7 @@ const classes=raw.map(c=>({
 }));
 
 document.addEventListener('DOMContentLoaded',function(){
-  let filterDia='',filterLab='',filterMateria='',filterHora='',filterEdificio='',alertEnabled=true,alertMinutes=15;
+  let filterDia='',filterLab='',filterMateria='',filterHora='',filterEdificio='',filterEstado='',alertEnabled=true,alertMinutes=15;
   let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true, endAlertEnabled=true, noMolestar=false, noMolestarStart=22, noMolestarEnd=7;
   let favorites=new Set(JSON.parse(localStorage.getItem('utesa-favs')||'[]')), favOnly=false;
   function saveFavs(){localStorage.setItem('utesa-favs',JSON.stringify([...favorites]));}
@@ -1321,6 +1338,7 @@ document.addEventListener('DOMContentLoaded',function(){
   });
   document.getElementById('filterDia').addEventListener('change',e=>{filterDia=e.target.value;render();});
   document.getElementById('filterLab').addEventListener('change',e=>{filterLab=e.target.value;render();});
+  document.getElementById('filterEstado').addEventListener('change',e=>{filterEstado=e.target.value;render();});
   document.getElementById('filterHora').addEventListener('change',e=>{filterHora=e.target.value;render();});
   document.getElementById('filterMateria').addEventListener('input',e=>{filterMateria=e.target.value;render();});
   document.getElementById('alertEnabled').addEventListener('change',e=>{alertEnabled=e.target.checked;});
@@ -1360,8 +1378,8 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 
   window.resetFilters=function(){
-    filterDia='';filterLab='';filterMateria='';filterHora='';filterEdificio='';
-    ['filterEdificio','filterDia','filterLab','filterHora','filterMateria'].forEach(id=>{document.getElementById(id).value='';});
+    filterDia='';filterLab='';filterMateria='';filterHora='';filterEdificio='';filterEstado='';
+    ['filterEdificio','filterDia','filterLab','filterHora','filterMateria','filterEstado'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     filterLabByEdificio('','filterLab');
     render();
   };
@@ -1406,6 +1424,7 @@ document.addEventListener('DOMContentLoaded',function(){
       if(filterMateria&&!(c.mat+c.grp).toLowerCase().includes(filterMateria.toLowerCase()))return false;
       if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
       if(favOnly&&!favorites.has(c.aula))return false;
+      if(filterEstado){const s=getStatus(c);if(s!==filterEstado)return false;}
       return true;
     });
 
@@ -1465,9 +1484,12 @@ document.addEventListener('DOMContentLoaded',function(){
           for(let x=1;x<span;x++) rendered[aula][slotIdx+x]=true;
           html2 += `<td class="gv-cell${isNowRow?' now-row':''}" rowspan="${span}">
             <div class="gv-block s-${s||'nottoday'}" onclick="openModal('${c.aula}','${LABS[c.aula]?LABS[c.aula].name:''}','${LABS[c.aula]?LABS[c.aula].img:''}')">
-              ${isFav?'<span class="gv-block-fav">⭐</span>':''}
-              <div class="gv-block-mat">${c.mat}</div>
-              <div class="gv-block-grp">grp.${c.grp}</div>
+              <div class="gv-block-top">
+                <span class="gv-block-mat">${c.mat}</span>
+                ${isFav?'<span class="gv-block-fav">⭐</span>':''}
+              </div>
+              <div class="gv-block-grp">grp. ${c.grp}</div>
+              <div class="gv-block-time">${c.inicio} – ${c.fin}</div>
             </div>
           </td>`;
         } else if(!entry) {
@@ -1508,6 +1530,7 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('fs-hora').value = filterHora;
     document.getElementById('fs-materia').value = filterMateria;
     document.getElementById('fs-favonly').checked = favOnly;
+    document.getElementById('fs-estado').value = filterEstado;
     document.getElementById('bnav-filter').classList.add('active');
     document.getElementById('filter-sheet').classList.add('open');
   };
@@ -1526,6 +1549,8 @@ document.addEventListener('DOMContentLoaded',function(){
     filterDia = document.getElementById('fs-dia').value;
     filterLab = document.getElementById('fs-lab').value;
     filterHora = document.getElementById('fs-hora').value;
+    filterEstado = document.getElementById('fs-estado').value;
+    if(document.getElementById('filterEstado'))document.getElementById('filterEstado').value=filterEstado;
     filterMateria = document.getElementById('fs-materia').value;
     // Sync desktop selects too
     document.getElementById('filterEdificio').value = filterEdificio;
@@ -1880,6 +1905,17 @@ document.addEventListener('DOMContentLoaded',function(){
           <option value="mediodia">☀️ Mediodía</option>
           <option value="tarde">🌇 Tarde</option>
           <option value="noche">🌙 Noche</option>
+        </select>
+      </div>
+      <div>
+        <span class="fs-label">Estado</span>
+        <select class="fs-select" id="fs-estado">
+          <option value="">Todos</option>
+          <option value="active">🟢 En curso</option>
+          <option value="imminent">⚡ Inminente</option>
+          <option value="upcoming">⏳ Próxima</option>
+          <option value="later">🕐 Más tarde</option>
+          <option value="past">✓ Finalizada</option>
         </select>
       </div>
       <div>
