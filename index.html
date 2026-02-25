@@ -166,6 +166,10 @@
   .modal-body{overflow:auto;display:flex;align-items:center;justify-content:center;padding:1rem;flex:1}
   .modal-body img{max-width:100%;max-height:75vh;object-fit:contain;border-radius:8px;border:1px solid var(--border)}
   .modal-foot{padding:.7rem 1.5rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted);font-family:'Space Mono',monospace;flex-shrink:0}
+  .toast.toast-end{border-color:rgba(100,200,120,.4)}
+  .toast.toast-end .toast-header{background:rgba(100,200,120,.12);border-bottom-color:rgba(100,200,120,.2)}
+  .toast.toast-end .toast-header-title{color:#5cb870}
+  .toast.toast-end .toast-header-count{background:#5cb870}
   @keyframes toastIn{from{transform:translateX(100px);opacity:0}to{transform:translateX(0);opacity:1}}
   @keyframes toastOut{from{opacity:1}to{transform:translateX(100px);opacity:0}}
   @keyframes fadeUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -779,7 +783,7 @@ const classes=raw.map(c=>{
 
 document.addEventListener('DOMContentLoaded',function(){
   let filterDia='',filterLab='',filterMateria='',filterHora='',filterEdificio='',alertEnabled=true,alertMinutes=15;
-  let notified=new Set();
+  let notified=new Set(), notifiedEnd=new Set();
   const DIAS={0:'Domingo',1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado'};
   const DIA_ORDER=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
   const DIA_CSS={Lunes:'dL',Martes:'dM','Miércoles':'dX',Jueves:'dJ',Viernes:'dV','Sábado':'dS'};
@@ -934,19 +938,64 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   }
 
+  function showEndToast(ended){
+    const count=ended.length;
+    const label=count===1?'Clase finalizada':`${count} clases finalizadas`;
+    const classesHTML=ended.map(({c})=>{
+      const lab=LABS[c.aula];
+      const cred=c.durMin/45;
+      return`<div class="toast-class">
+        <div class="toast-class-lab">
+          <span class="toast-class-lab-code">✅ ${c.aula}</span>
+          <span class="toast-class-lab-name">— ${lab?lab.name:''}</span>
+        </div>
+        <div class="toast-class-mat">${c.mat} <span style="color:var(--muted);font-size:.72rem">grp. ${c.grp}</span></div>
+        <div class="toast-class-meta">
+          <span class="toast-class-hora">🏁 ${c.inicio} → ${c.fin}</span>
+          <span class="toast-class-cred">${cred} crédito${cred>1?'s':''}</span>
+          <span style="font-size:.68rem;color:#5cb870;font-weight:600">Clase terminada</span>
+        </div>
+      </div>`;
+    }).join('');
+    const el=document.createElement('div');
+    el.className='toast toast-end';
+    el.innerHTML=`<div class="toast-header"><span class="toast-header-title">✅ ${label}</span><span class="toast-header-count">${count}</span></div><div class="toast-classes">${classesHTML}</div>`;
+    const container=document.getElementById('toast-container');
+    container.appendChild(el);
+    if(navigator.vibrate)navigator.vibrate([150,80,150]);
+    const dur=8000;
+    const tid=setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),400);},dur);
+    el.addEventListener('click',()=>{clearTimeout(tid);el.classList.add('fade-out');setTimeout(()=>el.remove(),400);});
+    if('Notification'in window&&Notification.permission==='granted'){
+      const body=ended.map(({c})=>`${c.mat} grp.${c.grp} — ${LABS[c.aula].name}\n${c.inicio} → ${c.fin}`).join('\n\n');
+      new Notification(`✅ ${label}`,{body});
+    }
+  }
+
   function checkAlerts(){
     if(!alertEnabled)return;
     const today=todayName(),m=nowM();
     const pending=[];
+    const ended=[];
     classes.forEach(c=>{
       if(c.dia!==today)return;
-      const diff=c.inicioM-m,key=`${c.aula}-${c.mat}${c.grp}-${c.inicio}`;
+      const diff=c.inicioM-m;
+      const diffEnd=c.finM-m;
+      const key=`${c.aula}-${c.mat}${c.grp}-${c.inicio}`;
+      const keyEnd=`END-${key}`;
+      // Upcoming alert
       if(diff>0&&diff<=alertMinutes&&!notified.has(key)){
         notified.add(key);
         pending.push({c,diff});
       }
+      // Ended alert: within 2 min after class ended
+      if(diffEnd<=0&&diffEnd>=-2&&!notifiedEnd.has(keyEnd)){
+        notifiedEnd.add(keyEnd);
+        ended.push({c});
+      }
     });
     if(pending.length>0)showToast(pending);
+    if(ended.length>0)showEndToast(ended);
     if(!classes.some(c=>{if(c.dia!==today)return false;const d=c.inicioM-m;return d>0&&d<=alertMinutes;}))
       document.getElementById('alertBadge').classList.remove('show');
   }
