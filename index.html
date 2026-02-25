@@ -426,7 +426,7 @@
         <option value="active">🟢 En curso</option>
         <option value="imminent">⚡ Inminente</option>
         <option value="upcoming">⏳ Próxima</option>
-        <option value="later">🕐 Más tarde</option>
+        
         <option value="past">✓ Finalizada</option>
       </select>
     </div>
@@ -473,7 +473,7 @@
     </div>
     <div style="display:flex;align-items:center;gap:.5rem">
       <span style="width:10px;height:10px;border-radius:50%;background:#ff6b35;display:inline-block;animation:pulse-badge 2s infinite"></span>
-      <span style="font-size:.78rem;color:var(--muted)">Por empezar:</span>
+      <span style="font-size:.78rem;color:var(--muted)">Inminentes:</span>
       <span id="occ-imm" style="font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:#ff6b35">0</span>
     </div>
     <div style="display:flex;align-items:center;gap:.5rem">
@@ -1008,18 +1008,20 @@ document.addEventListener('DOMContentLoaded',function(){
     if(m>=c.finM)return'past';
     const d=c.inicioM-m;
     if(d>0&&d<=alertMinutes)return'imminent';
-    if(d>0&&d<=90)return'upcoming';
-    if(d>90)return'later';
+    if(d>0)return'upcoming'; // todas las clases futuras de hoy muestran tiempo
     return'';
   }
 
-  function horasRestantes(c){
+  function timeUntil(c){
     const d=c.inicioM-nowM();
+    if(d<=0)return'';
     const h=Math.floor(d/60),m=d%60;
-    if(h===0)return`${m}min`;
-    if(m===0)return`${h}h`;
-    return`${h}h ${m}min`;
+    if(h===0)return`En ${m}min`;
+    if(m===0)return`En ${h}h`;
+    return`En ${h}h ${m}min`;
   }
+
+
 
   function updateOccupancy(){
     const today=todayName();
@@ -1102,9 +1104,8 @@ document.addEventListener('DOMContentLoaded',function(){
       tr.style.animationDelay=`${i*.018}s`;
       const badge=
         s==='active'   ?'<span class="b-active">🟢 En curso</span>':
-        s==='imminent' ?'<span class="b-imm">⚡ Inminente</span>':
-        s==='upcoming' ?'<span class="b-upcoming">⏳ Próxima</span>':
-        s==='later'    ?`<span class="b-later">🕐 En ${horasRestantes(c)}</span>`:
+        s==='imminent' ?`<span class="b-imm">⚡ ${timeUntil(c)}</span>`:
+        s==='upcoming' ?`<span class="b-upcoming">⏳ ${timeUntil(c)}</span>`:
         s==='past'     ?'<span class="b-past">✓ Finalizada</span>':
                         '<span class="b-nottoday">⏸ No es hoy</span>';
       const creditos=c.durMin/45;
@@ -1489,7 +1490,7 @@ document.addEventListener('DOMContentLoaded',function(){
                 ${isFav?'<span class="gv-block-fav">⭐</span>':''}
               </div>
               <div class="gv-block-grp">grp. ${c.grp}</div>
-              <div class="gv-block-time">${c.inicio} – ${c.fin}</div>
+              <div class="gv-block-time">${c.inicio}–${c.fin}${(s==="upcoming"||s==="imminent")?" · "+timeUntil(c):""}</div>
             </div>
           </td>`;
         } else if(!entry) {
@@ -1914,7 +1915,7 @@ document.addEventListener('DOMContentLoaded',function(){
           <option value="active">🟢 En curso</option>
           <option value="imminent">⚡ Inminente</option>
           <option value="upcoming">⏳ Próxima</option>
-          <option value="later">🕐 Más tarde</option>
+          
           <option value="past">✓ Finalizada</option>
         </select>
       </div>
