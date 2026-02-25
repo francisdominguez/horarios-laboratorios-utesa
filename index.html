@@ -1192,7 +1192,11 @@ document.addEventListener('DOMContentLoaded',function(){
     if(e.key==='Escape'){closeModal();closeAlertModal();}
   });
 
-  document.getElementById('filterEdificio').addEventListener('change',e=>{filterEdificio=e.target.value;render();});
+  document.getElementById('filterEdificio').addEventListener('change',e=>{
+    filterEdificio=e.target.value;
+    filterLabByEdificio(filterEdificio,'filterLab');
+    render();
+  });
   document.getElementById('filterDia').addEventListener('change',e=>{filterDia=e.target.value;render();});
   document.getElementById('filterLab').addEventListener('change',e=>{filterLab=e.target.value;render();});
   document.getElementById('filterHora').addEventListener('change',e=>{filterHora=e.target.value;render();});
@@ -1200,9 +1204,43 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('alertEnabled').addEventListener('change',e=>{alertEnabled=e.target.checked;});
   document.getElementById('alertMinutes').addEventListener('change',e=>{alertMinutes=parseInt(e.target.value)||15;});
 
+  function filterLabByEdificio(edif, selectId){
+    const sel=document.getElementById(selectId);
+    if(!sel)return;
+    Array.from(sel.options).forEach(opt=>{
+      if(!opt.value){opt.style.display='';return;} // "Todos"
+      const isB=opt.value.startsWith('B');
+      const isC=opt.value.startsWith('C');
+      if(!edif){opt.style.display='';}
+      else if(edif==='B'){opt.style.display=isB?'':'none';}
+      else if(edif==='C'){opt.style.display=isC?'':'none';}
+    });
+    // Also hide optgroups
+    Array.from(sel.querySelectorAll('optgroup')).forEach(og=>{
+      if(!edif){og.style.display='';}
+      else if(edif==='B'){og.style.display=og.label.includes('B')?'':' none';}
+      else if(edif==='C'){og.style.display=og.label.includes('C')?'':'none';}
+    });
+    // Reset lab if current selection doesn't match
+    if(sel.value && !sel.value.startsWith(edif) && edif){
+      sel.value='';
+      filterLab='';
+    }
+  }
+
+  function getCurrentFranja(){
+    const m=nowM();
+    if(m>=420&&m<690)return'manana';
+    if(m>=690&&m<870)return'mediodia';
+    if(m>=870&&m<1080)return'tarde';
+    if(m>=1080&&m<1320)return'noche';
+    return'';
+  }
+
   window.resetFilters=function(){
     filterDia='';filterLab='';filterMateria='';filterHora='';filterEdificio='';
     ['filterEdificio','filterDia','filterLab','filterHora','filterMateria'].forEach(id=>{document.getElementById(id).value='';});
+    filterLabByEdificio('','filterLab');
     render();
   };
 
@@ -1210,6 +1248,12 @@ document.addEventListener('DOMContentLoaded',function(){
   if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
   filterDia=todayName();
   document.getElementById('filterDia').value=todayName();
+  const autoFranja=getCurrentFranja();
+  if(autoFranja){
+    filterHora=autoFranja;
+    document.getElementById('filterHora').value=autoFranja;
+    document.getElementById('fs-hora').value=autoFranja;
+  }
   updateClock();render();
   setInterval(()=>{updateClock();checkAlerts();},1000);
   setInterval(render,60000);
@@ -1243,12 +1287,18 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('bnav-filter').classList.add('active');
     document.getElementById('filter-sheet').classList.add('open');
   };
+  document.getElementById('fs-edificio').addEventListener('change',function(){
+    filterLabByEdificio(this.value,'fs-lab');
+  });
+
   window.closeFilterSheet = function() {
     document.getElementById('filter-sheet').classList.remove('open');
     document.getElementById('bnav-filter').classList.remove('active');
   };
   window.applyMobileFilters = function() {
     filterEdificio = document.getElementById('fs-edificio').value;
+    filterLabByEdificio(filterEdificio,'fs-lab');
+    filterLabByEdificio(filterEdificio,'filterLab');
     filterDia = document.getElementById('fs-dia').value;
     filterLab = document.getElementById('fs-lab').value;
     filterHora = document.getElementById('fs-hora').value;
