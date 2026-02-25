@@ -202,6 +202,35 @@
   .tp-opt.active .tp-check{opacity:1}
   @keyframes tpIn{from{transform:translateY(8px) scale(.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
 
+  /* ── GRID VIEW ── */
+  #grid-view{display:none}
+  #grid-view.active{display:block}
+  #table-section.hidden{display:none}
+  .grid-time-col{position:sticky;left:0;z-index:10}
+  .gv-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);background:var(--surface)}
+  .gv-table{border-collapse:collapse;min-width:100%;table-layout:fixed}
+  .gv-th{background:var(--surface2);padding:.5rem .6rem;font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;text-align:center;min-width:110px}
+  .gv-th:first-child{min-width:64px;position:sticky;left:0;z-index:11;background:var(--surface2)}
+  .gv-time{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted);padding:.4rem .5rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border);position:sticky;left:0;background:var(--surface);z-index:5;white-space:nowrap;vertical-align:top;text-align:right}
+  .gv-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:.2rem;vertical-align:top;min-height:36px;position:relative}
+  .gv-cell.now-row{background:rgba(0,229,160,.03)}
+  .gv-block{border-radius:6px;padding:.35rem .45rem;margin:.1rem;font-size:.68rem;cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+  .gv-block:hover{filter:brightness(1.15);transform:scale(1.02)}
+  .gv-block.s-active{background:rgba(0,229,160,.18);border-color:#00e5a0;color:#00e5a0}
+  .gv-block.s-imminent{background:rgba(255,107,53,.18);border-color:#ff6b35;color:#ff6b35;animation:pulse-badge 2s infinite}
+  .gv-block.s-upcoming{background:rgba(91,140,255,.15);border-color:#5b8cff;color:#7aa3ff}
+  .gv-block.s-later{background:rgba(255,200,50,.1);border-color:#ffc832;color:#ffc832}
+  .gv-block.s-past{background:rgba(107,114,128,.08);border-color:var(--border);color:var(--muted);opacity:.6}
+  .gv-block.s-nottoday{background:rgba(107,114,128,.06);border-color:var(--border);color:var(--muted)}
+  .gv-block-mat{font-family:'Space Mono',monospace;font-weight:700;font-size:.7rem;line-height:1.2}
+  .gv-block-grp{font-size:.6rem;opacity:.8}
+  .gv-block-fav{font-size:.65rem}
+  .gv-now-line{position:absolute;left:0;right:0;height:2px;background:var(--accent);z-index:8;pointer-events:none}
+  .gv-now-line::before{content:'';position:absolute;left:-4px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+  .view-toggle{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.2rem;gap:.2rem;margin-bottom:1rem}
+  .vt-btn{flex:1;padding:.4rem;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.78rem;border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:.3rem}
+  .vt-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+
   /* ══ FILTER SHEET (bottom drawer) ══ */
   #filter-sheet{display:none;position:fixed;inset:0;z-index:500}
   #filter-sheet.open{display:block}
@@ -414,7 +443,12 @@
       <span id="occ-total" style="font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;color:var(--muted)">0</span>
     </div>
   </div>
-  <div class="table-wrapper">
+  <div class="view-toggle" id="view-toggle">
+    <button class="vt-btn active" id="vt-list" onclick="switchView('list')">📋 Lista</button>
+    <button class="vt-btn" id="vt-grid" onclick="switchView('grid')">📊 Cuadrícula</button>
+  </div>
+  <div id="grid-view"></div>
+  <div id="table-section" class="table-wrapper">
     <table>
       <thead>
         <tr>
@@ -1320,6 +1354,102 @@ document.addEventListener('DOMContentLoaded',function(){
   setInterval(()=>{updateClock();checkAlerts();},1000);
   setInterval(render,60000);
 
+  // ══ VIEW SWITCH ══
+  let currentView = 'list';
+  window.switchView = function(v) {
+    currentView = v;
+    document.getElementById('vt-list').classList.toggle('active', v==='list');
+    document.getElementById('vt-grid').classList.toggle('active', v==='grid');
+    document.getElementById('table-section').classList.toggle('hidden', v==='grid');
+    document.getElementById('grid-view').classList.toggle('active', v==='grid');
+    if(v==='grid') renderGrid();
+  };
+
+  function renderGrid(){
+    const gv = document.getElementById('grid-view');
+    // Get filtered classes same as render()
+    let filtered = classes.filter(c=>{
+      if(filterDia&&c.dia!==filterDia)return false;
+      if(filterEdificio&&!c.aula.startsWith(filterEdificio))return false;
+      if(filterLab&&c.aula!==filterLab)return false;
+      if(filterMateria&&!(c.mat+c.grp).toLowerCase().includes(filterMateria.toLowerCase()))return false;
+      if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
+      if(favOnly&&!favorites.has(c.aula))return false;
+      return true;
+    });
+
+    if(!filtered.length){
+      gv.innerHTML='<div style="text-align:center;padding:3rem;color:var(--muted);font-size:.88rem">No hay clases con los filtros seleccionados</div>';
+      return;
+    }
+
+    // Get unique labs and time range
+    const labs = [...new Set(filtered.map(c=>c.aula))].sort((a,b)=>{
+      const fa=favorites.has(a)?0:1, fb=favorites.has(b)?0:1;
+      return fa-fb||a.localeCompare(b);
+    });
+
+    const minSlot = Math.min(...filtered.map(c=>c.si));
+    const maxSlot = Math.max(...filtered.map(c=>c.ei));
+
+    // Build slot rows from minSlot to maxSlot
+    const slots = SLOTS.slice(minSlot, maxSlot+1);
+
+    // Build lookup: aula -> slot -> class
+    const lookup = {};
+    filtered.forEach(c=>{
+      if(!lookup[c.aula]) lookup[c.aula]={};
+      for(let s=c.si; s<c.ei; s++){
+        lookup[c.aula][s]={c, isFirst:s===c.si, span:c.ei-c.si};
+      }
+    });
+
+    const nowSlotM = nowM();
+    let html2 = `<div class="gv-wrap"><table class="gv-table"><thead><tr>`;
+    html2 += `<th class="gv-th" style="position:sticky;left:0;z-index:11">Hora</th>`;
+    labs.forEach(aula=>{
+      const lab=LABS[aula];
+      const isFav=favorites.has(aula);
+      html2 += `<th class="gv-th">${isFav?'⭐ ':''}${aula}<br><span style="font-weight:400;font-size:.58rem;color:var(--muted)">${lab?lab.name:''}</span></th>`;
+    });
+    html2 += `</tr></thead><tbody>`;
+
+    const rendered = {}; // track rowspan cells already rendered
+    labs.forEach(a=>{ rendered[a]={}; });
+
+    slots.forEach((slot, si)=>{
+      const slotIdx = minSlot + si;
+      const isNowRow = nowSlotM >= slot.m && nowSlotM < slot.m+45;
+      html2 += `<tr>`;
+      html2 += `<td class="gv-time${isNowRow?' now-row':''}">${slot.l}</td>`;
+
+      labs.forEach(aula=>{
+        if(rendered[aula][slotIdx]) return; // skip, covered by rowspan
+        const entry = lookup[aula]?.[slotIdx];
+        if(entry && entry.isFirst){
+          const {c, span} = entry;
+          const s = getStatus(c);
+          const isFav = favorites.has(c.aula);
+          // Mark future slots as rendered
+          for(let x=1;x<span;x++) rendered[aula][slotIdx+x]=true;
+          html2 += `<td class="gv-cell${isNowRow?' now-row':''}" rowspan="${span}">
+            <div class="gv-block s-${s||'nottoday'}" onclick="openModal('${c.aula}','${LABS[c.aula]?LABS[c.aula].name:''}','${LABS[c.aula]?LABS[c.aula].img:''}')">
+              ${isFav?'<span class="gv-block-fav">⭐</span>':''}
+              <div class="gv-block-mat">${c.mat}</div>
+              <div class="gv-block-grp">grp.${c.grp}</div>
+            </div>
+          </td>`;
+        } else if(!entry) {
+          html2 += `<td class="gv-cell${isNowRow?' now-row':''}"></td>`;
+        }
+      });
+      html2 += `</tr>`;
+    });
+
+    html2 += `</tbody></table></div>`;
+    gv.innerHTML = html2;
+  }
+
   // ══ MOBILE NAV ══
   let mobileNavMode = 'today'; // 'today' or 'all'
 
@@ -1473,6 +1603,7 @@ document.addEventListener('DOMContentLoaded',function(){
   window.render = function(){
     __origRender();
     updateMobileStats();
+    if(currentView==='grid') renderGrid();
   };
 
 
