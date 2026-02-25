@@ -263,6 +263,32 @@
   .as-input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.4rem .6rem;border-radius:8px;font-family:'Space Mono',monospace;font-size:.85rem;width:60px;outline:none;text-align:center}
   @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
+  /* ── COMPARE VIEW ── */
+  #compare-sheet{display:none;position:fixed;inset:0;z-index:500}
+  #compare-sheet.open{display:block}
+  .cmp-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
+  .cmp-box{position:absolute;bottom:0;left:0;right:0;background:#1a1f2e;border-radius:20px 20px 0 0;border-top:2px solid var(--accent3);box-shadow:0 -8px 40px rgba(0,0,0,.8);padding:1rem 1rem calc(1rem + env(safe-area-inset-bottom,0px));max-height:90vh;overflow-y:auto;animation:sheetUp .3s cubic-bezier(.32,.72,0,1)}
+  .cmp-handle{width:36px;height:4px;background:#3a4258;border-radius:2px;margin:0 auto .75rem}
+  .cmp-title{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--accent3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem}
+  .cmp-snapshots{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem}
+  .cmp-snap{display:flex;align-items:center;justify-content:space-between;background:#252c3d;border:1px solid #3a4258;border-radius:10px;padding:.65rem .85rem}
+  .cmp-snap-name{font-family:'Space Mono',monospace;font-size:.78rem;color:#e8eaf0;font-weight:700}
+  .cmp-snap-meta{font-size:.65rem;color:#a0a8bf;margin-top:.15rem}
+  .cmp-snap-actions{display:flex;gap:.4rem}
+  .cmp-snap-btn{background:transparent;border:1px solid #3a4258;color:#a0a8bf;padding:.3rem .55rem;border-radius:7px;font-size:.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+  .cmp-snap-btn:hover{border-color:var(--accent3);color:var(--accent3)}
+  .cmp-snap-btn.danger:hover{border-color:#ff6b35;color:#ff6b35}
+  .cmp-save-btn{width:100%;padding:.7rem;background:var(--accent3);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;margin-bottom:.5rem;transition:all .15s}
+  .cmp-save-btn:hover{filter:brightness(1.1)}
+  .cmp-result{margin-top:.75rem;border-top:1px solid #3a4258;padding-top:.75rem}
+  .cmp-result-title{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem}
+  .cmp-diff{display:flex;flex-direction:column;gap:.35rem}
+  .cmp-diff-item{display:flex;align-items:flex-start;gap:.5rem;padding:.5rem .65rem;border-radius:8px;font-size:.75rem}
+  .cmp-diff-item.added{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.2);color:#00e5a0}
+  .cmp-diff-item.removed{background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2);color:#ff8a5b}
+  .cmp-diff-icon{font-size:.85rem;flex-shrink:0;margin-top:.05rem}
+  .cmp-diff-text{line-height:1.4}
+  .cmp-empty{text-align:center;padding:1.5rem;color:#a0a8bf;font-size:.82rem}
   @media(max-width:768px){
     body{padding-bottom:60px}
     main{padding:.75rem .75rem 1rem;width:100%;max-width:100vw;overflow-x:hidden}
@@ -1568,6 +1594,105 @@ document.addEventListener('DOMContentLoaded',function(){
       closeThemePicker();
     }
   };
+  // ══ COMPARE CUATRIMESTRES ══
+  function getSnapshots(){
+    return JSON.parse(localStorage.getItem('utesa-snapshots')||'[]');
+  }
+  function saveSnapshots(snaps){
+    localStorage.setItem('utesa-snapshots', JSON.stringify(snaps));
+  }
+
+  window.saveSnapshot = function(){
+    const name = prompt('Nombre del cuatrimestre (ej: 1-2026):');
+    if(!name||!name.trim()) return;
+    const snaps = getSnapshots();
+    const snap = {
+      name: name.trim(),
+      date: new Date().toLocaleDateString('es-DO'),
+      classes: raw.map(c=>({aula:c.aula,mat:c.mat,grp:c.grp,dia:c.dia,si:c.si,ei:c.ei}))
+    };
+    snaps.unshift(snap);
+    if(snaps.length > 5) snaps.length = 5; // max 5 snapshots
+    saveSnapshots(snaps);
+    renderSnapshots();
+  };
+
+  function renderSnapshots(){
+    const snaps = getSnapshots();
+    const el = document.getElementById('cmp-snapshots');
+    if(!snaps.length){
+      el.innerHTML = '<div class="cmp-empty">No hay cuatrimestres guardados.<br>Guarda el actual antes de actualizar.</div>';
+      return;
+    }
+    el.innerHTML = snaps.map((s,i)=>`
+      <div class="cmp-snap">
+        <div>
+          <div class="cmp-snap-name">${s.name}</div>
+          <div class="cmp-snap-meta">Guardado: ${s.date} · ${s.classes.length} clases</div>
+        </div>
+        <div class="cmp-snap-actions">
+          <button class="cmp-snap-btn" onclick="compareWithCurrent(${i})">Comparar</button>
+          <button class="cmp-snap-btn danger" onclick="deleteSnapshot(${i})">✕</button>
+        </div>
+      </div>`).join('');
+  }
+
+  window.deleteSnapshot = function(i){
+    const snaps = getSnapshots();
+    snaps.splice(i,1);
+    saveSnapshots(snaps);
+    renderSnapshots();
+    document.getElementById('cmp-result').style.display='none';
+  };
+
+  window.compareWithCurrent = function(i){
+    const snaps = getSnapshots();
+    const old = snaps[i];
+    const oldKeys = new Set(old.classes.map(c=>`${c.aula}|${c.mat}|${c.grp}|${c.dia}|${c.si}|${c.ei}`));
+    const newKeys = new Set(raw.map(c=>`${c.aula}|${c.mat}|${c.grp}|${c.dia}|${c.si}|${c.ei}`));
+
+    const added = raw.filter(c=>!oldKeys.has(`${c.aula}|${c.mat}|${c.grp}|${c.dia}|${c.si}|${c.ei}`));
+    const removed = old.classes.filter(c=>!newKeys.has(`${c.aula}|${c.mat}|${c.grp}|${c.dia}|${c.si}|${c.ei}`));
+
+    const result = document.getElementById('cmp-result');
+    const diffEl = document.getElementById('cmp-diff');
+    const titleEl = document.getElementById('cmp-result-title');
+
+    titleEl.textContent = `Cambios vs ${old.name}`;
+    result.style.display = '';
+
+    if(!added.length && !removed.length){
+      diffEl.innerHTML = '<div class="cmp-empty">✅ Sin cambios — los horarios son idénticos</div>';
+      return;
+    }
+
+    let out = '';
+    added.forEach(c=>{
+      out += `<div class="cmp-diff-item added">
+        <span class="cmp-diff-icon">＋</span>
+        <div class="cmp-diff-text"><strong>${c.aula}</strong> · ${c.mat} grp.${c.grp}<br>${c.dia} ${SLOTS[c.si].l}→${SLOTS[c.ei]?SLOTS[c.ei].l:'10:00 PM'}</div>
+      </div>`;
+    });
+    removed.forEach(c=>{
+      out += `<div class="cmp-diff-item removed">
+        <span class="cmp-diff-icon">−</span>
+        <div class="cmp-diff-text"><strong>${c.aula}</strong> · ${c.mat} grp.${c.grp}<br>${c.dia} ${SLOTS[c.si].l}→${SLOTS[c.ei]?SLOTS[c.ei].l:'10:00 PM'}</div>
+      </div>`;
+    });
+    diffEl.innerHTML = out;
+    titleEl.textContent = `${added.length} nuevas · ${removed.length} eliminadas vs ${old.name}`;
+  };
+
+  window.openCompareSheet = function(){
+    document.getElementById('bnav-compare').classList.add('active');
+    renderSnapshots();
+    document.getElementById('compare-sheet').classList.add('open');
+  };
+  window.closeCompareSheet = function(){
+    document.getElementById('compare-sheet').classList.remove('open');
+    document.getElementById('bnav-compare').classList.remove('active');
+  };
+
   window.closeThemePicker = function() {
     document.getElementById('theme-picker').style.display='none';
     document.getElementById('bnav-theme-btn').classList.remove('active');
@@ -1624,6 +1749,9 @@ document.addEventListener('DOMContentLoaded',function(){
   </button>
   <button class="bnav-btn" id="bnav-alert" onclick="openAlertSheet()">
     <span class="bnav-icon">⏰</span>Alertas
+  </button>
+  <button class="bnav-btn" id="bnav-compare" onclick="openCompareSheet()">
+    <span class="bnav-icon">📅</span>Comparar
   </button>
   <button class="bnav-btn" id="bnav-theme-btn" onclick="toggleThemePicker()">
     <span class="bnav-icon" id="bnav-theme-icon">🎨</span>Tema
@@ -1750,6 +1878,21 @@ document.addEventListener('DOMContentLoaded',function(){
     <div class="fs-actions">
       <button class="fs-btn fs-btn-reset" onclick="resetMobileFilters()">✕ Limpiar</button>
       <button class="fs-btn fs-btn-apply" onclick="applyMobileFilters()">Aplicar filtros</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COMPARE SHEET ══ -->
+<div id="compare-sheet">
+  <div class="cmp-overlay" onclick="closeCompareSheet()"></div>
+  <div class="cmp-box">
+    <div class="cmp-handle"></div>
+    <div class="cmp-title">📅 Comparar cuatrimestres</div>
+    <button class="cmp-save-btn" onclick="saveSnapshot()">💾 Guardar cuatrimestre actual</button>
+    <div class="cmp-snapshots" id="cmp-snapshots"></div>
+    <div class="cmp-result" id="cmp-result" style="display:none">
+      <div class="cmp-result-title" id="cmp-result-title">Diferencias</div>
+      <div class="cmp-diff" id="cmp-diff"></div>
     </div>
   </div>
 </div>
