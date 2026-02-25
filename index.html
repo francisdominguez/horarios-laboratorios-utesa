@@ -1367,7 +1367,12 @@ document.addEventListener('DOMContentLoaded',function(){
   };
 
   if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
-  if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+  if('serviceWorker'in navigator){
+    navigator.serviceWorker.register('sw.js').then(reg=>{
+      // When SW is ready, send current config
+      navigator.serviceWorker.ready.then(()=>syncConfigToSW());
+    });
+  }
   filterDia=todayName();
   document.getElementById('filterDia').value=todayName();
   const autoFranja=getCurrentFranja();
@@ -1569,10 +1574,24 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('alert-sheet').classList.remove('open');
     document.getElementById('bnav-alert').classList.remove('active');
   };
-  window.syncAlertEnabled = function(el) { alertEnabled=el.checked; document.getElementById('alertEnabled').checked=el.checked; };
-  window.syncAlertMinutes = function(el) { alertMinutes=parseInt(el.value)||15; document.getElementById('alertMinutes').value=el.value; };
+  window.syncAlertEnabled = function(el) { alertEnabled=el.checked; document.getElementById('alertEnabled').checked=el.checked; syncConfigToSW(); };
+  window.syncAlertMinutes = function(el) { alertMinutes=parseInt(el.value)||15; document.getElementById('alertMinutes').value=el.value; syncConfigToSW(); };
   window.syncAlertSound = function(el) { soundEnabled=el.checked; };
-  window.syncEndAlert = function(el) { endAlertEnabled=el.checked; };
+  window.syncEndAlert = function(el) { endAlertEnabled=el.checked; syncConfigToSW(); };
+  function syncConfigToSW(){
+    if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;
+    navigator.serviceWorker.controller.postMessage({
+      type:'UPDATE_CONFIG',
+      config:{
+        alertMinutes,
+        endAlertEnabled,
+        noMolestar,
+        noMolestarStart,
+        noMolestarEnd
+      }
+    });
+  }
+
   window.syncNoMolestar = function(el) {
     noMolestar=el.checked;
     document.getElementById('as-nomolestar-horario').style.display=el.checked?'':'none';
