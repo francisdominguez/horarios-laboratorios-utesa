@@ -393,6 +393,27 @@
     <span class="stat-sep">·</span>
     <div class="stat"><span class="stat-val" id="statToday">0</span><span class="stat-lbl" id="statTodayLbl">hoy</span></div>
   </div>
+  <div id="occupancy-bar" style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;padding:.85rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;animation:fadeUp .6s .28s ease both">
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <span style="width:10px;height:10px;border-radius:50%;background:#00e5a0;display:inline-block;box-shadow:0 0 6px #00e5a0"></span>
+      <span style="font-size:.78rem;color:var(--muted)">En curso:</span>
+      <span id="occ-active" style="font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:#00e5a0">0</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <span style="width:10px;height:10px;border-radius:50%;background:#ff6b35;display:inline-block;animation:pulse-badge 2s infinite"></span>
+      <span style="font-size:.78rem;color:var(--muted)">Por empezar:</span>
+      <span id="occ-imm" style="font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:#ff6b35">0</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <span style="width:10px;height:10px;border-radius:50%;background:var(--border);display:inline-block"></span>
+      <span style="font-size:.78rem;color:var(--muted)">Disponibles:</span>
+      <span id="occ-free" style="font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--text)">0</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem;margin-left:auto">
+      <span style="font-size:.72rem;color:var(--muted)">Labs totales:</span>
+      <span id="occ-total" style="font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;color:var(--muted)">0</span>
+    </div>
+  </div>
   <div class="table-wrapper">
     <table>
       <thead>
@@ -890,7 +911,13 @@ const classes=raw.map(c=>({
 
 document.addEventListener('DOMContentLoaded',function(){
   let filterDia='',filterLab='',filterMateria='',filterHora='',filterEdificio='',alertEnabled=true,alertMinutes=15;
-  let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true, endAlertEnabled=true;
+  let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true, endAlertEnabled=true, noMolestar=false, noMolestarStart=22, noMolestarEnd=7;
+  let favorites=new Set(JSON.parse(localStorage.getItem('utesa-favs')||'[]')), favOnly=false;
+  function saveFavs(){localStorage.setItem('utesa-favs',JSON.stringify([...favorites]));}
+  function toggleFav(aula){
+    if(favorites.has(aula)){favorites.delete(aula);}else{favorites.add(aula);}
+    saveFavs();render();
+  }
   const DIAS={0:'Domingo',1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado'};
   const DIA_ORDER=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
   const DIA_CSS={Lunes:'dL',Martes:'dM','Miércoles':'dX',Jueves:'dJ',Viernes:'dV','Sábado':'dS'};
@@ -917,6 +944,28 @@ document.addEventListener('DOMContentLoaded',function(){
     return`${h}h ${m}min`;
   }
 
+  function updateOccupancy(){
+    const today=todayName();
+    // Count unique labs occupied right now
+    const activeLabs=new Set(), immLabs=new Set();
+    classes.forEach(c=>{
+      if(c.dia!==today)return;
+      const s=getStatus(c);
+      if(s==='active')activeLabs.add(c.aula);
+      if(s==='imminent')immLabs.add(c.aula);
+    });
+    const totalLabs=Object.keys(LABS).length;
+    const free=totalLabs-activeLabs.size;
+    const el_a=document.getElementById('occ-active');
+    const el_i=document.getElementById('occ-imm');
+    const el_f=document.getElementById('occ-free');
+    const el_t=document.getElementById('occ-total');
+    if(el_a)el_a.textContent=activeLabs.size;
+    if(el_i)el_i.textContent=immLabs.size;
+    if(el_f)el_f.textContent=free;
+    if(el_t)el_t.textContent=totalLabs;
+  }
+
   function render(){
     const tbody=document.getElementById('tableBody'),empty=document.getElementById('emptyState');
     if(!tbody||!empty)return;
@@ -926,10 +975,14 @@ document.addEventListener('DOMContentLoaded',function(){
       if(filterEdificio&&!c.aula.startsWith(filterEdificio))return false;
       if(filterLab&&c.aula!==filterLab)return false;
       if(filterMateria&&!(c.mat+c.grp).toLowerCase().includes(filterMateria.toLowerCase()))return false;
+      if(favOnly&&!favorites.has(c.aula))return false;
       if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
       return true;
     });
     filtered.sort((a,b)=>{
+      // Favorites always first
+      const favA=favorites.has(a.aula)?0:1, favB=favorites.has(b.aula)?0:1;
+      if(favA!==favB)return favA-favB;
       const rank=s=>({active:0,imminent:1,upcoming:2,later:3}[s]??4);
       const pA=a.dia===todayName()&&getStatus(a)==='past',pB=b.dia===todayName()&&getStatus(b)==='past';
       if(pA&&!pB)return 1;if(!pA&&pB)return-1;
@@ -959,6 +1012,7 @@ document.addEventListener('DOMContentLoaded',function(){
     }
     // Hoy dinámico según filtro
     document.getElementById('statToday').textContent=filtered.filter(c=>c.dia===todayName()).length;
+    updateOccupancy();
     if(!filtered.length){empty.classList.add('show');return;}
     empty.classList.remove('show');
     filtered.forEach((c,i)=>{
@@ -978,7 +1032,7 @@ document.addEventListener('DOMContentLoaded',function(){
                         '<span class="b-nottoday">⏸ No es hoy</span>';
       const creditos=c.durMin/45;
       const lab=LABS[c.aula],labName=lab?lab.name:'',imgFile=lab?lab.img:'';
-      tr.innerHTML=`<td><span class="td-aula">${c.aula}</span><br><span class="td-lab">${labName}</span></td><td class="td-mat">${c.mat}</td><td class="td-grp">${c.grp}</td><td><span class="dia-tag ${DIA_CSS[c.dia]||'dL'}">${c.dia}</span></td><td class="td-hora">${c.inicio}</td><td class="td-hora">${c.fin}</td><td class="td-dur">${c.durMin} min</td><td class="td-cred">${creditos}</td><td>${badge}</td><td><button class="btn-img" onclick="openModal('${c.aula}','${labName}','${imgFile}')">🗓️ <span>Ver</span></button></td>`;
+      tr.innerHTML=`<td><div style="display:flex;align-items:center;gap:.4rem"><button onclick="toggleFav('${c.aula}')" style="background:none;border:none;cursor:pointer;font-size:.95rem;padding:0;line-height:1;flex-shrink:0">${favorites.has(c.aula)?'⭐':'☆'}</button><div><span class="td-aula">${c.aula}</span><br><span class="td-lab">${labName}</span></div></div></td><td class="td-mat">${c.mat}</td><td class="td-grp">${c.grp}</td><td><span class="dia-tag ${DIA_CSS[c.dia]||'dL'}">${c.dia}</span></td><td class="td-hora">${c.inicio}</td><td class="td-hora">${c.fin}</td><td class="td-dur">${c.durMin} min</td><td class="td-cred">${creditos}</td><td>${badge}</td><td><button class="btn-img" onclick="openModal('${c.aula}','${labName}','${imgFile}')">🗓️ <span>Ver</span></button></td>`;
       tbody.appendChild(tr);
     });
   }
@@ -1075,7 +1129,7 @@ document.addEventListener('DOMContentLoaded',function(){
     setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),400);},9000);
     if('Notification'in window&&Notification.permission==='granted'){
       const body=pending.map(({c,diff})=>`${c.mat} grp.${c.grp} — ${LABS[c.aula].name}\n${c.inicio}→${c.fin} · Empieza en ${diff} min`).join('\n\n');
-      new Notification(`⏰ ${label}`,{body});
+      new Notification(`⏰ ${label}`,{body, requireInteraction:true, icon:'icon-192.png'});
     }
   }
 
@@ -1112,12 +1166,20 @@ document.addEventListener('DOMContentLoaded',function(){
     el.addEventListener('click',()=>{clearTimeout(tid);el.classList.add('fade-out');setTimeout(()=>el.remove(),400);});
     if('Notification'in window&&Notification.permission==='granted'){
       const body=ended.map(({c})=>`${c.mat} grp.${c.grp} — ${LABS[c.aula].name}\n${c.inicio} → ${c.fin}`).join('\n\n');
-      new Notification(`✅ ${label}`,{body});
+      new Notification(`✅ ${label}`,{body, icon:'icon-192.png'});
     }
   }
 
   function checkAlerts(){
     if(!alertEnabled)return;
+    // No molestar
+    if(noMolestar){
+      const h=new Date().getHours();
+      const silenced=(noMolestarStart<noMolestarEnd)
+        ?(h>=noMolestarStart&&h<noMolestarEnd)
+        :(h>=noMolestarStart||h<noMolestarEnd);
+      if(silenced)return;
+    }
     const today=todayName(),m=nowM();
     const pending=[];
     const ended=[];
@@ -1284,6 +1346,7 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('fs-lab').value = filterLab;
     document.getElementById('fs-hora').value = filterHora;
     document.getElementById('fs-materia').value = filterMateria;
+    document.getElementById('fs-favonly').checked = favOnly;
     document.getElementById('bnav-filter').classList.add('active');
     document.getElementById('filter-sheet').classList.add('open');
   };
@@ -1322,6 +1385,8 @@ document.addEventListener('DOMContentLoaded',function(){
   window.resetMobileFilters = function() {
     ['fs-edificio','fs-dia','fs-lab','fs-hora','fs-materia'].forEach(id => document.getElementById(id).value='');
     document.getElementById('bnav-filter-count').style.display='none';
+    favOnly=false;
+    if(document.getElementById('fs-favonly'))document.getElementById('fs-favonly').checked=false;
   };
 
   window.openAlertSheet = function() {
@@ -1330,6 +1395,10 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('as-enabled').checked = alertEnabled;
     document.getElementById('as-sound').checked = soundEnabled;
     document.getElementById('as-end-enabled').checked = endAlertEnabled;
+    document.getElementById('as-nomolestar').checked = noMolestar;
+    document.getElementById('as-nomolestar-horario').style.display = noMolestar ? '' : 'none';
+    document.getElementById('as-nm-start').value = noMolestarStart;
+    document.getElementById('as-nm-end').value = noMolestarEnd;
     document.getElementById('as-minutes').value = alertMinutes;
     // Show pending if any
     const today=todayName(),m=nowM();
@@ -1348,6 +1417,18 @@ document.addEventListener('DOMContentLoaded',function(){
   window.syncAlertMinutes = function(el) { alertMinutes=parseInt(el.value)||15; document.getElementById('alertMinutes').value=el.value; };
   window.syncAlertSound = function(el) { soundEnabled=el.checked; };
   window.syncEndAlert = function(el) { endAlertEnabled=el.checked; };
+  window.syncNoMolestar = function(el) {
+    noMolestar=el.checked;
+    document.getElementById('as-nomolestar-horario').style.display=el.checked?'':'none';
+  };
+  window.toggleFavOnly = function(el) {
+    favOnly=el.checked;
+    render();
+  };
+  window.syncNoMolestarHours = function() {
+    noMolestarStart=parseInt(document.getElementById('as-nm-start').value)||22;
+    noMolestarEnd=parseInt(document.getElementById('as-nm-end').value)||7;
+  };
   window.toggleThemePicker = function() {
     const p=document.getElementById('theme-picker');
     if(p.style.display==='none'||!p.style.display){
@@ -1528,6 +1609,13 @@ document.addEventListener('DOMContentLoaded',function(){
         <input class="fs-input" id="fs-materia" placeholder="INF113...">
       </div>
     </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-top:1px solid var(--border);margin-bottom:.4rem">
+      <div>
+        <div style="font-size:.85rem;color:var(--text)">⭐ Solo favoritos</div>
+        <div style="font-size:.72rem;color:var(--muted)">Ver solo labs marcados</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="fs-favonly" onchange="toggleFavOnly(this)"><span class="toggle-slider"></span></label>
+    </div>
     <div class="fs-actions">
       <button class="fs-btn fs-btn-reset" onclick="resetMobileFilters()">✕ Limpiar</button>
       <button class="fs-btn fs-btn-apply" onclick="applyMobileFilters()">Aplicar filtros</button>
@@ -1568,6 +1656,24 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="as-row-sub">Avisar cuando termine una clase</div>
       </div>
       <label class="toggle"><input type="checkbox" id="as-end-enabled" checked onchange="syncEndAlert(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">🌙 No molestar</div>
+        <div class="as-row-sub">Silenciar fuera del horario de clases</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="as-nomolestar" onchange="syncNoMolestar(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="as-row" id="as-nomolestar-horario" style="display:none">
+      <div style="width:100%">
+        <div class="as-row-label" style="margin-bottom:.5rem">Horario de silencio</div>
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <input type="number" class="as-input" id="as-nm-end" value="7" min="0" max="23" onchange="syncNoMolestarHours()" style="width:52px">
+          <span style="font-size:.78rem;color:var(--muted)">AM hasta</span>
+          <input type="number" class="as-input" id="as-nm-start" value="22" min="0" max="23" onchange="syncNoMolestarHours()" style="width:52px">
+          <span style="font-size:.78rem;color:var(--muted)">PM</span>
+        </div>
+      </div>
     </div>
     <div class="as-row" id="as-pending-row" style="display:none">
       <div>
