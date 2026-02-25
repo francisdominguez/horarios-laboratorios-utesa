@@ -890,7 +890,7 @@ const classes=raw.map(c=>({
 
 document.addEventListener('DOMContentLoaded',function(){
   let filterDia='',filterLab='',filterMateria='',filterHora='',filterEdificio='',alertEnabled=true,alertMinutes=15;
-  let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true;
+  let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true, endAlertEnabled=true;
   const DIAS={0:'Domingo',1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado'};
   const DIA_ORDER=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
   const DIA_CSS={Lunes:'dL',Martes:'dM','Miércoles':'dX',Jueves:'dJ',Viernes:'dV','Sábado':'dS'};
@@ -1133,7 +1133,7 @@ document.addEventListener('DOMContentLoaded',function(){
         pending.push({c,diff});
       }
       // Ended alert: within 2 min after class ended
-      if(diffEnd<=0&&diffEnd>=-2&&!notifiedEnd.has(keyEnd)){
+      if(endAlertEnabled&&diffEnd<=0&&diffEnd>=-2&&!notifiedEnd.has(keyEnd)){
         notifiedEnd.add(keyEnd);
         ended.push({c});
       }
@@ -1329,6 +1329,7 @@ document.addEventListener('DOMContentLoaded',function(){
     // Sync
     document.getElementById('as-enabled').checked = alertEnabled;
     document.getElementById('as-sound').checked = soundEnabled;
+    document.getElementById('as-end-enabled').checked = endAlertEnabled;
     document.getElementById('as-minutes').value = alertMinutes;
     // Show pending if any
     const today=todayName(),m=nowM();
@@ -1346,6 +1347,7 @@ document.addEventListener('DOMContentLoaded',function(){
   window.syncAlertEnabled = function(el) { alertEnabled=el.checked; document.getElementById('alertEnabled').checked=el.checked; };
   window.syncAlertMinutes = function(el) { alertMinutes=parseInt(el.value)||15; document.getElementById('alertMinutes').value=el.value; };
   window.syncAlertSound = function(el) { soundEnabled=el.checked; };
+  window.syncEndAlert = function(el) { endAlertEnabled=el.checked; };
   window.toggleThemePicker = function() {
     const p=document.getElementById('theme-picker');
     if(p.style.display==='none'||!p.style.display){
@@ -1402,7 +1404,7 @@ document.addEventListener('DOMContentLoaded',function(){
     <span class="bnav-icon">📅</span>Hoy
   </button>
   <button class="bnav-btn" id="bnav-filter" onclick="openFilterSheet()">
-    <span class="bnav-icon">🔍</span>Filtros
+    <span class="bnav-icon">🔍</span>Filtrar por
     <span id="bnav-filter-count" style="display:none;font-size:.55rem;background:var(--accent);color:#000;border-radius:10px;padding:.05rem .35rem;margin-top:.1rem"></span>
   </button>
   <button class="bnav-btn" id="bnav-all" onclick="mobileNavTab('all')">
@@ -1559,6 +1561,13 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="as-row-sub">Tono al alertar clase</div>
       </div>
       <label class="toggle"><input type="checkbox" id="as-sound" checked onchange="syncAlertSound(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">Alerta clase finalizada</div>
+        <div class="as-row-sub">Avisar cuando termine una clase</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="as-end-enabled" checked onchange="syncEndAlert(this)"><span class="toggle-slider"></span></label>
     </div>
     <div class="as-row" id="as-pending-row" style="display:none">
       <div>
