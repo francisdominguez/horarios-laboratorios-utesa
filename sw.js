@@ -1,4 +1,4 @@
-const CACHE = 'utesa-labs-v2';
+const CACHE = 'utesa-labs-v4';
 const ASSETS = [
   '/horarios-laboratorios-utesa/',
   '/horarios-laboratorios-utesa/index.html',
@@ -12,6 +12,27 @@ const ASSETS = [
   '/horarios-laboratorios-utesa/img4.jpeg',
   '/horarios-laboratorios-utesa/img5.jpeg',
   '/horarios-laboratorios-utesa/img6.jpeg',
+  '/horarios-laboratorios-utesa/img7.jpeg',
+  '/horarios-laboratorios-utesa/img8.jpeg',
+  '/horarios-laboratorios-utesa/img9.jpeg',
+  '/horarios-laboratorios-utesa/img10.jpeg',
+  '/horarios-laboratorios-utesa/img11.jpeg',
+  '/horarios-laboratorios-utesa/img12.jpeg',
+  '/horarios-laboratorios-utesa/img13.jpeg',
+  '/horarios-laboratorios-utesa/img14.jpeg',
+  '/horarios-laboratorios-utesa/img15.jpeg',
+  '/horarios-laboratorios-utesa/img16.jpeg',
+  '/horarios-laboratorios-utesa/img17.jpeg',
+  '/horarios-laboratorios-utesa/img18.jpeg',
+  '/horarios-laboratorios-utesa/img19.jpeg',
+  '/horarios-laboratorios-utesa/img20.jpeg',
+  '/horarios-laboratorios-utesa/img21.jpeg',
+  '/horarios-laboratorios-utesa/img22.jpeg',
+  '/horarios-laboratorios-utesa/img23.jpeg',
+  '/horarios-laboratorios-utesa/img24.jpeg',
+  '/horarios-laboratorios-utesa/img25.jpeg',
+  '/horarios-laboratorios-utesa/img26.jpeg',
+  '/horarios-laboratorios-utesa/img27.jpeg',
 ];
 
 self.addEventListener('install', e => {

@@ -199,6 +199,14 @@
   </div>
   <div class="filters">
     <div class="fg">
+      <label>Edificio</label>
+      <select id="filterEdificio">
+        <option value="">Todos los edificios</option>
+        <option value="B">🏢 Edificio B</option>
+        <option value="C">🏛️ Edificio C</option>
+      </select>
+    </div>
+    <div class="fg">
       <label>Día</label>
       <select id="filterDia">
         <option value="">Todos los días</option>
@@ -211,6 +219,7 @@
       <label>Laboratorio</label>
       <select id="filterLab">
         <option value="">Todos los labs</option>
+        <optgroup label="🏢 Edificio B">
         <option value="B120">B120 — Geol. y Topografía</option>
         <option value="B121">B121 — Materiales</option>
         <option value="B123">B123 — Hidráulica</option>
@@ -218,6 +227,30 @@
         <option value="B217">B217 — Comunicación</option>
         <option value="B211">B211 — Comunicación 02</option>
         <option value="B219">B219 — Programación</option>
+        </optgroup>
+        <optgroup label="🏛️ Edificio C">
+        <option value="C001">C001 — Máquinas y Herram.</option>
+        <option value="C1002">C1002 — Taller de Bancos</option>
+        <option value="C101">C101 — Lab. Industrial</option>
+        <option value="C102">C102 — Automatización</option>
+        <option value="C103">C103 — Lab. Industrial 02</option>
+        <option value="C104">C104 — Lab. CAD CAM</option>
+        <option value="C105">C105 — Ing. Térmica</option>
+        <option value="C106">C106 — Lab. Neumática</option>
+        <option value="C107">C107 — Inst. Eléctricas</option>
+        <option value="C201">C201 — Lab. Informática</option>
+        <option value="C202">C202 — Lab. Informática 02</option>
+        <option value="C203">C203 — Lab. Informática 03</option>
+        <option value="C204">C204 — Lab. Informática 04</option>
+        <option value="C205">C205 — Lab. AutoCAD</option>
+        <option value="C206">C206 — Lab. Informática 06</option>
+        <option value="C207">C207 — Lab. Informática 07</option>
+        <option value="C208">C208 — Lab. Mecatrónica</option>
+        <option value="C413">C413 — Lab. Comunicación</option>
+        <option value="C414A">C414A — Lab. Electrónica</option>
+        <option value="C414B">C414B — Lab. Electrónica 02</option>
+        <option value="C415">C415 — Lab. Electricidad</option>
+        </optgroup>
       </select>
     </div>
     <div class="fg">
@@ -304,10 +337,34 @@ const SLOTS=[
 ];
 const SLOT_END_M=1320, SLOT_END_LBL='10:00 PM';
 const LABS={
-  B120:{name:'Geol. y Topografía',img:'img0.jpeg'},B121:{name:'Materiales',img:'img1.jpeg'},
-  B123:{name:'Hidráulica',img:'img2.jpeg'},B213:{name:'Lab. TIC',img:'img3.jpeg'},
-  B217:{name:'Comunicación',img:'img4.jpeg'},B211:{name:'Comunicación 02',img:'img5.jpeg'},
-  B219:{name:'Programación',img:'img6.jpeg'},
+  B120:{name:'Geol. y Topografía',  img:'img0.jpeg'},
+  B121:{name:'Materiales',           img:'img1.jpeg'},
+  B123:{name:'Hidráulica',           img:'img2.jpeg'},
+  B213:{name:'Lab. TIC',             img:'img3.jpeg'},
+  B217:{name:'Comunicación',         img:'img4.jpeg'},
+  B211:{name:'Comunicación 02',      img:'img5.jpeg'},
+  B219:{name:'Programación',         img:'img6.jpeg'},
+  C001:{name:'Máquinas y Herram.',   img:'img7.jpeg'},
+  C1002:{name:'Taller de Bancos',    img:'img8.jpeg'},
+  C101:{name:'Lab. Industrial',      img:'img9.jpeg'},
+  C102:{name:'Automatización',       img:'img10.jpeg'},
+  C103:{name:'Lab. Industrial 02',   img:'img11.jpeg'},
+  C104:{name:'Lab. CAD CAM',         img:'img12.jpeg'},
+  C105:{name:'Ing. Térmica',         img:'img13.jpeg'},
+  C106:{name:'Lab. Neumática',       img:'img14.jpeg'},
+  C107:{name:'Inst. Eléctricas',     img:'img15.jpeg'},
+  C201:{name:'Lab. Informática',     img:'img16.jpeg'},
+  C202:{name:'Lab. Informática 02',  img:'img17.jpeg'},
+  C203:{name:'Lab. Informática 03',  img:'img18.jpeg'},
+  C204:{name:'Lab. Informática 04',  img:'img19.jpeg'},
+  C205:{name:'Lab. AutoCAD',         img:'img20.jpeg'},
+  C206:{name:'Lab. Informática 06',  img:'img21.jpeg'},
+  C207:{name:'Lab. Informática 07',  img:'img22.jpeg'},
+  C208:{name:'Lab. Mecatrónica',     img:'img23.jpeg'},
+  C413:{name:'Lab. Comunicación',    img:'img24.jpeg'},
+  C414A:{name:'Lab. Electrónica',    img:'img25.jpeg'},
+  C414B:{name:'Lab. Electrónica 02', img:'img27.jpeg'},
+  C415:{name:'Lab. Electricidad',    img:'img26.jpeg'},
 };
 const HORA_RANGES={manana:{from:420,to:690},mediodia:{from:690,to:870},tarde:{from:870,to:1080},noche:{from:1080,to:1320}};
 
@@ -401,6 +458,318 @@ const raw=[
   {aula:'B219',mat:'INF503',grp:'001',dia:'Viernes',   si:14,ei:16},
   {aula:'B219',mat:'INF820',grp:'002',dia:'Viernes',   si:16,ei:19},
   {aula:'B219',mat:'INF025',grp:'002',dia:'Sábado',    si:1, ei:6},
+  // C001 — Máquinas y Herramientas
+  {aula:'C001',mat:'IMC215',grp:'001',dia:'Lunes',     si:14,ei:16},
+  {aula:'C001',mat:'IMC105',grp:'002',dia:'Lunes',     si:17,ei:19},
+  {aula:'C001',mat:'IID631',grp:'002',dia:'Lunes',     si:19,ei:21},
+  {aula:'C001',mat:'IMC305',grp:'003',dia:'Martes',    si:17,ei:19},
+  {aula:'C001',mat:'IID631',grp:'002',dia:'Miércoles', si:19,ei:21},
+  {aula:'C001',mat:'IMC321',grp:'001',dia:'Jueves',    si:17,ei:19},
+  {aula:'C001',mat:'IMC321',grp:'003',dia:'Jueves',    si:19,ei:21},
+  // C1002 — Taller de Bancos
+  {aula:'C1002',mat:'IMC105',grp:'011',dia:'Jueves',   si:14,ei:16},
+  {aula:'C1002',mat:'IMC426',grp:'001',dia:'Lunes',    si:17,ei:19},
+  {aula:'C1002',mat:'IID631',grp:'001',dia:'Martes',   si:17,ei:19},
+  {aula:'C1002',mat:'IMC321',grp:'002',dia:'Lunes',    si:19,ei:21},
+  {aula:'C1002',mat:'IMC321',grp:'004',dia:'Miércoles',si:19,ei:21},
+  {aula:'C1002',mat:'IID631',grp:'001',dia:'Viernes',  si:19,ei:21},
+  // C101 — Lab. Industrial
+  {aula:'C101',mat:'ARQ540',grp:'001',dia:'Lunes',     si:3, ei:5},
+  {aula:'C101',mat:'IID915',grp:'002',dia:'Lunes',     si:14,ei:16},
+  {aula:'C101',mat:'IID870',grp:'002',dia:'Lunes',     si:19,ei:21},
+  {aula:'C101',mat:'IID522',grp:'002',dia:'Martes',    si:9, ei:11},
+  {aula:'C101',mat:'ARQ605',grp:'001',dia:'Martes',    si:9, ei:11},
+  {aula:'C101',mat:'IET921',grp:'001',dia:'Martes',    si:17,ei:21},
+  {aula:'C101',mat:'IID522',grp:'002',dia:'Miércoles', si:14,ei:16},
+  {aula:'C101',mat:'IID915',grp:'002',dia:'Miércoles', si:17,ei:19},
+  {aula:'C101',mat:'IID870',grp:'002',dia:'Miércoles', si:19,ei:21},
+  {aula:'C101',mat:'IEL425',grp:'001',dia:'Jueves',    si:14,ei:16},
+  {aula:'C101',mat:'IID500',grp:'001',dia:'Jueves',    si:17,ei:19},
+  {aula:'C101',mat:'IID481',grp:'003',dia:'Jueves',    si:19,ei:21},
+  {aula:'C101',mat:'ARQ605',grp:'001',dia:'Viernes',   si:9, ei:11},
+  {aula:'C101',mat:'IEL905',grp:'003',dia:'Viernes',   si:14,ei:16},
+  {aula:'C101',mat:'IID950',grp:'003',dia:'Viernes',   si:17,ei:21},
+  {aula:'C101',mat:'IID522',grp:'001',dia:'Sábado',    si:2, ei:8},
+  {aula:'C101',mat:'IID950',grp:'001',dia:'Sábado',    si:13,ei:17},
+  // C102 — Automatización
+  {aula:'C102',mat:'IID420',grp:'001',dia:'Lunes',     si:7, ei:10},
+  {aula:'C102',mat:'IID615',grp:'002',dia:'Lunes',     si:14,ei:16},
+  {aula:'C102',mat:'IID420',grp:'002',dia:'Lunes',     si:17,ei:21},
+  {aula:'C102',mat:'IID420',grp:'007',dia:'Martes',    si:14,ei:17},
+  {aula:'C102',mat:'IMC925',grp:'003',dia:'Martes',    si:17,ei:19},
+  {aula:'C102',mat:'IMC915',grp:'001',dia:'Miércoles', si:16,ei:18},
+  {aula:'C102',mat:'IID420',grp:'008',dia:'Miércoles', si:19,ei:21},
+  {aula:'C102',mat:'IID980',grp:'001',dia:'Jueves',    si:14,ei:17},
+  {aula:'C102',mat:'IID420',grp:'004',dia:'Jueves',    si:17,ei:21},
+  {aula:'C102',mat:'IEL405',grp:'008',dia:'Viernes',   si:14,ei:16},
+  {aula:'C102',mat:'IID420',grp:'003',dia:'Viernes',   si:17,ei:21},
+  // C103 — Lab. Industrial 02
+  {aula:'C103',mat:'ICV215',grp:'006',dia:'Miércoles', si:9, ei:12},
+  {aula:'C103',mat:'IID480',grp:'001',dia:'Lunes',     si:16,ei:18},
+  {aula:'C103',mat:'IID481',grp:'001',dia:'Lunes',     si:19,ei:21},
+  {aula:'C103',mat:'INF705',grp:'002',dia:'Martes',    si:17,ei:19},
+  {aula:'C103',mat:'IID480',grp:'003',dia:'Martes',    si:19,ei:21},
+  {aula:'C103',mat:'IID481',grp:'001',dia:'Miércoles', si:19,ei:21},
+  {aula:'C103',mat:'IET725',grp:'003',dia:'Miércoles', si:16,ei:18},
+  {aula:'C103',mat:'IID481',grp:'003',dia:'Jueves',    si:17,ei:19},
+  {aula:'C103',mat:'IID481',grp:'003',dia:'Jueves',    si:19,ei:21},
+  {aula:'C103',mat:'IID481',grp:'005',dia:'Viernes',   si:9, ei:12},
+  {aula:'C103',mat:'ICV215',grp:'001',dia:'Viernes',   si:17,ei:21},
+  // C104 — Lab. CAD CAM
+  {aula:'C104',mat:'IET825',grp:'001',dia:'Lunes',     si:14,ei:16},
+  {aula:'C104',mat:'INF706',grp:'004',dia:'Martes',    si:14,ei:16},
+  {aula:'C104',mat:'IMC500',grp:'001',dia:'Martes',    si:17,ei:21},
+  {aula:'C104',mat:'IMC102',grp:'001',dia:'Miércoles', si:17,ei:19},
+  {aula:'C104',mat:'IMC070',grp:'001',dia:'Jueves',    si:14,ei:16},
+  {aula:'C104',mat:'IMC102',grp:'001',dia:'Viernes',   si:17,ei:21},
+  {aula:'C104',mat:'IMC530',grp:'001',dia:'Sábado',    si:12,ei:15},
+  // C105 — Ing. Térmica
+  {aula:'C105',mat:'IMC960',grp:'001',dia:'Lunes',     si:14,ei:18},
+  {aula:'C105',mat:'IMC965',grp:'001',dia:'Lunes',     si:19,ei:21},
+  {aula:'C105',mat:'IMC075',grp:'001',dia:'Martes',    si:17,ei:19},
+  {aula:'C105',mat:'IMC070',grp:'001',dia:'Martes',    si:14,ei:16},
+  {aula:'C105',mat:'IEL140',grp:'001',dia:'Miércoles', si:14,ei:16},
+  {aula:'C105',mat:'IMC805',grp:'002',dia:'Miércoles', si:17,ei:19},
+  {aula:'C105',mat:'IEL405',grp:'001',dia:'Miércoles', si:19,ei:21},
+  {aula:'C105',mat:'IEL520',grp:'001',dia:'Viernes',   si:17,ei:19},
+  {aula:'C105',mat:'IMC805',grp:'001',dia:'Sábado',    si:9, ei:11},
+  // C106 — Lab. Neumática
+  {aula:'C106',mat:'IMC675',grp:'001',dia:'Lunes',     si:16,ei:18},
+  {aula:'C106',mat:'IMC635',grp:'003',dia:'Martes',    si:17,ei:19},
+  {aula:'C106',mat:'IMC110',grp:'002',dia:'Martes',    si:19,ei:21},
+  {aula:'C106',mat:'IMC920',grp:'001',dia:'Miércoles', si:16,ei:19},
+  {aula:'C106',mat:'INF706',grp:'004',dia:'Jueves',    si:14,ei:16},
+  {aula:'C106',mat:'IID241',grp:'002',dia:'Jueves',    si:17,ei:19},
+  {aula:'C106',mat:'IID241',grp:'004',dia:'Jueves',    si:19,ei:21},
+  {aula:'C106',mat:'IMC815',grp:'001',dia:'Viernes',   si:14,ei:16},
+  {aula:'C106',mat:'IEL915',grp:'003',dia:'Sábado',    si:12,ei:14},
+  // C107 — Inst. Eléctricas
+  {aula:'C107',mat:'IEL315',grp:'004',dia:'Lunes',     si:14,ei:16},
+  {aula:'C107',mat:'IEL405',grp:'006',dia:'Martes',    si:19,ei:21},
+  {aula:'C107',mat:'IET930',grp:'001',dia:'Martes',    si:14,ei:19},
+  {aula:'C107',mat:'IEL640',grp:'001',dia:'Miércoles', si:7, ei:11},
+  {aula:'C107',mat:'IEL505',grp:'001',dia:'Miércoles', si:14,ei:16},
+  {aula:'C107',mat:'IEL500',grp:'001',dia:'Miércoles', si:17,ei:21},
+  {aula:'C107',mat:'IEL405',grp:'002',dia:'Jueves',    si:14,ei:16},
+  {aula:'C107',mat:'IEL640',grp:'001',dia:'Jueves',    si:17,ei:21},
+  {aula:'C107',mat:'IEL640',grp:'001',dia:'Viernes',   si:7, ei:11},
+  {aula:'C107',mat:'IEL620',grp:'001',dia:'Viernes',   si:19,ei:21},
+  // C201 — Lab. Informática
+  {aula:'C201',mat:'INF113',grp:'023',dia:'Martes',    si:2, ei:6},
+  {aula:'C201',mat:'INF113',grp:'023',dia:'Miércoles', si:2, ei:6},
+  {aula:'C201',mat:'INF103',grp:'056',dia:'Lunes',     si:3, ei:6},
+  {aula:'C201',mat:'INF113',grp:'017',dia:'Lunes',     si:11,ei:13},
+  {aula:'C201',mat:'INF103',grp:'031',dia:'Martes',    si:3, ei:6},
+  {aula:'C201',mat:'INF113',grp:'017',dia:'Martes',    si:11,ei:13},
+  {aula:'C201',mat:'INF113',grp:'024',dia:'Miércoles', si:6, ei:10},
+  {aula:'C201',mat:'INF103',grp:'025',dia:'Jueves',    si:13,ei:16},
+  {aula:'C201',mat:'INF103',grp:'093',dia:'Jueves',    si:2, ei:5},
+  {aula:'C201',mat:'INF103',grp:'057',dia:'Lunes',     si:11,ei:14},
+  {aula:'C201',mat:'INF113',grp:'031',dia:'Martes',    si:11,ei:13},
+  {aula:'C201',mat:'INF113',grp:'040',dia:'Lunes',     si:9, ei:11},
+  {aula:'C201',mat:'INF113',grp:'006',dia:'Martes',    si:9, ei:11},
+  {aula:'C201',mat:'INF113',grp:'006',dia:'Miércoles', si:9, ei:11},
+  {aula:'C201',mat:'INF113',grp:'013',dia:'Jueves',    si:9, ei:12},
+  {aula:'C201',mat:'INF103',grp:'013',dia:'Viernes',   si:9, ei:11},
+  {aula:'C201',mat:'INF204',grp:'003',dia:'Lunes',     si:14,ei:16},
+  {aula:'C201',mat:'INF204',grp:'003',dia:'Martes',    si:14,ei:16},
+  {aula:'C201',mat:'INF117',grp:'007',dia:'Miércoles', si:14,ei:18},
+  {aula:'C201',mat:'INF113',grp:'028',dia:'Viernes',   si:14,ei:18},
+  {aula:'C201',mat:'CCO222',grp:'004',dia:'Lunes',     si:17,ei:21},
+  {aula:'C201',mat:'INF103',grp:'009',dia:'Martes',    si:17,ei:21},
+  {aula:'C201',mat:'INF345',grp:'001',dia:'Jueves',    si:19,ei:21},
+  {aula:'C201',mat:'INF113',grp:'032',dia:'Viernes',   si:19,ei:21},
+  {aula:'C201',mat:'INF445',grp:'001',dia:'Sábado',    si:2, ei:6},
+  {aula:'C201',mat:'INF331',grp:'003',dia:'Sábado',    si:13,ei:16},
+  {aula:'C201',mat:'MED203',grp:'021',dia:'Miércoles', si:19,ei:21},
+  // C202 — Lab. Informática 02
+  {aula:'C202',mat:'INF113',grp:'009',dia:'Lunes',     si:2, ei:6},
+  {aula:'C202',mat:'INF103',grp:'098',dia:'Lunes',     si:16,ei:19},
+  {aula:'C202',mat:'INF173',grp:'006',dia:'Lunes',     si:19,ei:21},
+  {aula:'C202',mat:'INF113',grp:'011',dia:'Martes',    si:2, ei:6},
+  {aula:'C202',mat:'INF103',grp:'017',dia:'Martes',    si:10,ei:13},
+  {aula:'C202',mat:'INF103',grp:'035',dia:'Martes',    si:11,ei:14},
+  {aula:'C202',mat:'INF103',grp:'016',dia:'Martes',    si:9, ei:12},
+  {aula:'C202',mat:'INF103',grp:'001',dia:'Martes',    si:16,ei:19},
+  {aula:'C202',mat:'INF406',grp:'001',dia:'Martes',    si:19,ei:21},
+  {aula:'C202',mat:'INF103',grp:'007',dia:'Miércoles', si:2, ei:6},
+  {aula:'C202',mat:'INF103',grp:'060',dia:'Miércoles', si:10,ei:13},
+  {aula:'C202',mat:'INF103',grp:'021',dia:'Miércoles', si:7, ei:9},
+  {aula:'C202',mat:'INF353',grp:'011',dia:'Miércoles', si:14,ei:15},
+  {aula:'C202',mat:'INF103',grp:'010',dia:'Miércoles', si:17,ei:21},
+  {aula:'C202',mat:'INF103',grp:'019',dia:'Jueves',    si:9, ei:12},
+  {aula:'C202',mat:'INF165',grp:'006',dia:'Jueves',    si:9, ei:11},
+  {aula:'C202',mat:'CON500',grp:'002',dia:'Viernes',   si:16,ei:18},
+  {aula:'C202',mat:'INF482',grp:'001',dia:'Viernes',   si:17,ei:19},
+  {aula:'C202',mat:'INF113',grp:'026',dia:'Viernes',   si:2, ei:6},
+  {aula:'C202',mat:'INF113',grp:'027',dia:'Viernes',   si:10,ei:14},
+  {aula:'C202',mat:'INF113',grp:'025',dia:'Viernes',   si:9, ei:12},
+  {aula:'C202',mat:'INF113',grp:'033',dia:'Viernes',   si:19,ei:21},
+  {aula:'C202',mat:'INF225',grp:'002',dia:'Sábado',    si:11,ei:17},
+  {aula:'C202',mat:'MED203',grp:'014',dia:'Jueves',    si:17,ei:21},
+  {aula:'C202',mat:'INF103',grp:'098',dia:'Lunes',     si:17,ei:19},
+  {aula:'C202',mat:'INF103',grp:'001',dia:'Martes',    si:17,ei:19},
+  // C203 — Lab. Informática 03
+  {aula:'C203',mat:'MED203',grp:'001',dia:'Lunes',     si:3, ei:7},
+  {aula:'C203',mat:'MED203',grp:'002',dia:'Lunes',     si:10,ei:13},
+  {aula:'C203',mat:'INF117',grp:'003',dia:'Lunes',     si:9, ei:12},
+  {aula:'C203',mat:'INF103',grp:'006',dia:'Lunes',     si:17,ei:19},
+  {aula:'C203',mat:'INF353',grp:'002',dia:'Lunes',     si:19,ei:21},
+  {aula:'C203',mat:'MED203',grp:'001',dia:'Martes',    si:3, ei:7},
+  {aula:'C203',mat:'MED203',grp:'002',dia:'Martes',    si:10,ei:13},
+  {aula:'C203',mat:'MED203',grp:'003',dia:'Martes',    si:12,ei:15},
+  {aula:'C203',mat:'INF103',grp:'023',dia:'Martes',    si:7, ei:10},
+  {aula:'C203',mat:'CON500',grp:'001',dia:'Martes',    si:19,ei:21},
+  {aula:'C203',mat:'INF113',grp:'038',dia:'Miércoles', si:10,ei:14},
+  {aula:'C203',mat:'INF117',grp:'003',dia:'Miércoles', si:9, ei:12},
+  {aula:'C203',mat:'INF173',grp:'002',dia:'Miércoles', si:16,ei:18},
+  {aula:'C203',mat:'INF113',grp:'019',dia:'Miércoles', si:9, ei:11},
+  {aula:'C203',mat:'INF113',grp:'047',dia:'Viernes',   si:2, ei:6},
+  {aula:'C203',mat:'INF113',grp:'048',dia:'Viernes',   si:10,ei:14},
+  {aula:'C203',mat:'INF113',grp:'007',dia:'Jueves',    si:10,ei:14},
+  {aula:'C203',mat:'INF113',grp:'019',dia:'Jueves',    si:9, ei:12},
+  {aula:'C203',mat:'INF113',grp:'046',dia:'Jueves',    si:14,ei:18},
+  {aula:'C203',mat:'INF353',grp:'011',dia:'Jueves',    si:9, ei:11},
+  {aula:'C203',mat:'INF214',grp:'001',dia:'Jueves',    si:19,ei:21},
+  {aula:'C203',mat:'INF113',grp:'029',dia:'Viernes',   si:14,ei:16},
+  {aula:'C203',mat:'INF706',grp:'001',dia:'Viernes',   si:17,ei:19},
+  {aula:'C203',mat:'CON500',grp:'001',dia:'Miércoles', si:19,ei:21},
+  {aula:'C203',mat:'INF706',grp:'006',dia:'Sábado',    si:9, ei:13},
+  {aula:'C203',mat:'INF408',grp:'007',dia:'Sábado',    si:13,ei:17},
+  // C204 — Lab. Informática 04
+  {aula:'C204',mat:'INF113',grp:'049',dia:'Lunes',     si:2, ei:5},
+  {aula:'C204',mat:'INF113',grp:'035',dia:'Lunes',     si:10,ei:14},
+  {aula:'C204',mat:'INF113',grp:'041',dia:'Lunes',     si:9, ei:13},
+  {aula:'C204',mat:'INF204',grp:'004',dia:'Lunes',     si:17,ei:19},
+  {aula:'C204',mat:'INF165',grp:'007',dia:'Lunes',     si:19,ei:21},
+  {aula:'C204',mat:'INF103',grp:'022',dia:'Martes',    si:2, ei:5},
+  {aula:'C204',mat:'INF103',grp:'003',dia:'Martes',    si:10,ei:13},
+  {aula:'C204',mat:'INF113',grp:'016',dia:'Martes',    si:9, ei:11},
+  {aula:'C204',mat:'INF387',grp:'003',dia:'Martes',    si:14,ei:16},
+  {aula:'C204',mat:'INF113',grp:'032',dia:'Martes',    si:17,ei:19},
+  {aula:'C204',mat:'INF103',grp:'032',dia:'Martes',    si:19,ei:21},
+  {aula:'C204',mat:'INF113',grp:'036',dia:'Miércoles', si:2, ei:6},
+  {aula:'C204',mat:'INF113',grp:'016',dia:'Miércoles', si:9, ei:11},
+  {aula:'C204',mat:'INF113',grp:'044',dia:'Miércoles', si:12,ei:15},
+  {aula:'C204',mat:'INF113',grp:'016',dia:'Miércoles', si:9, ei:11},
+  {aula:'C204',mat:'MER402',grp:'003',dia:'Miércoles', si:19,ei:21},
+  {aula:'C204',mat:'INF113',grp:'042',dia:'Jueves',    si:9, ei:12},
+  {aula:'C204',mat:'INF103',grp:'019',dia:'Jueves',    si:9, ei:11},
+  {aula:'C204',mat:'INF406',grp:'001',dia:'Jueves',    si:14,ei:16},
+  {aula:'C204',mat:'INF103',grp:'062',dia:'Jueves',    si:17,ei:21},
+  {aula:'C204',mat:'INF353',grp:'002',dia:'Jueves',    si:19,ei:21},
+  {aula:'C204',mat:'INF113',grp:'015',dia:'Viernes',   si:11,ei:15},
+  {aula:'C204',mat:'INF103',grp:'034',dia:'Viernes',   si:14,ei:16},
+  {aula:'C204',mat:'MER402',grp:'003',dia:'Viernes',   si:19,ei:21},
+  {aula:'C204',mat:'INF408',grp:'002',dia:'Sábado',    si:9, ei:13},
+  {aula:'C204',mat:'INF445',grp:'003',dia:'Sábado',    si:13,ei:17},
+  {aula:'C204',mat:'MED203',grp:'009',dia:'Jueves',    si:2, ei:4},
+  // C205 — Lab. AutoCAD
+  {aula:'C205',mat:'ARQ545',grp:'001',dia:'Lunes',     si:11,ei:14},
+  {aula:'C205',mat:'INF218',grp:'001',dia:'Lunes',     si:14,ei:16},
+  {aula:'C205',mat:'ARQ640',grp:'003',dia:'Lunes',     si:17,ei:19},
+  {aula:'C205',mat:'ICV915',grp:'003',dia:'Miércoles', si:11,ei:15},
+  {aula:'C205',mat:'ICV915',grp:'002',dia:'Miércoles', si:14,ei:17},
+  {aula:'C205',mat:'ICV945',grp:'002',dia:'Miércoles', si:17,ei:19},
+  {aula:'C205',mat:'ICV450',grp:'001',dia:'Miércoles', si:17,ei:21},
+  {aula:'C205',mat:'ICV945',grp:'001',dia:'Jueves',    si:9, ei:12},
+  {aula:'C205',mat:'INF113',grp:'043',dia:'Jueves',    si:14,ei:16},
+  {aula:'C205',mat:'INF331',grp:'004',dia:'Jueves',    si:19,ei:21},
+  {aula:'C205',mat:'ICV945',grp:'002',dia:'Viernes',   si:13,ei:16},
+  {aula:'C205',mat:'ICV915',grp:'003',dia:'Sábado',    si:2, ei:5},
+  {aula:'C205',mat:'ICV915',grp:'002',dia:'Sábado',    si:9, ei:12},
+  {aula:'C205',mat:'ARQ545',grp:'001',dia:'Martes',    si:11,ei:14},
+  {aula:'C205',mat:'ICV945',grp:'001',dia:'Martes',    si:17,ei:21},
+  // C206 — Lab. Informática 06
+  {aula:'C206',mat:'INF113',grp:'003',dia:'Lunes',     si:1, ei:5},
+  {aula:'C206',mat:'INF117',grp:'002',dia:'Lunes',     si:5, ei:9},
+  {aula:'C206',mat:'INF113',grp:'045',dia:'Lunes',     si:9, ei:13},
+  {aula:'C206',mat:'INF117',grp:'005',dia:'Lunes',     si:17,ei:19},
+  {aula:'C206',mat:'INF117',grp:'002',dia:'Martes',    si:1, ei:5},
+  {aula:'C206',mat:'INF113',grp:'051',dia:'Martes',    si:5, ei:9},
+  {aula:'C206',mat:'INF113',grp:'012',dia:'Martes',    si:9, ei:13},
+  {aula:'C206',mat:'INF113',grp:'051',dia:'Miércoles', si:5, ei:9},
+  {aula:'C206',mat:'INF113',grp:'008',dia:'Miércoles', si:9, ei:13},
+  {aula:'C206',mat:'INF113',grp:'020',dia:'Miércoles', si:9, ei:11},
+  {aula:'C206',mat:'INF113',grp:'001',dia:'Jueves',    si:1, ei:5},
+  {aula:'C206',mat:'INF113',grp:'002',dia:'Jueves',    si:5, ei:9},
+  {aula:'C206',mat:'INF113',grp:'018',dia:'Viernes',   si:1, ei:5},
+  {aula:'C206',mat:'INF113',grp:'018',dia:'Viernes',   si:9, ei:13},
+  {aula:'C206',mat:'INF024',grp:'001',dia:'Sábado',    si:1, ei:5},
+  {aula:'C206',mat:'INF840',grp:'002',dia:'Sábado',    si:5, ei:9},
+  {aula:'C206',mat:'INF113',grp:'030',dia:'Lunes',     si:19,ei:21},
+  {aula:'C206',mat:'INF113',grp:'030',dia:'Martes',    si:17,ei:19},
+  {aula:'C206',mat:'INF113',grp:'030',dia:'Viernes',   si:17,ei:19},
+  {aula:'C206',mat:'MED203',grp:'021',dia:'Miércoles', si:19,ei:21},
+  // C207 — Lab. Informática 07
+  {aula:'C207',mat:'INF117',grp:'005',dia:'Lunes',     si:1, ei:5},
+  {aula:'C207',mat:'INF113',grp:'050',dia:'Lunes',     si:9, ei:13},
+  {aula:'C207',mat:'INF173',grp:'001',dia:'Lunes',     si:16,ei:18},
+  {aula:'C207',mat:'INF482',grp:'002',dia:'Lunes',     si:19,ei:21},
+  {aula:'C207',mat:'INF113',grp:'012',dia:'Martes',    si:9, ei:13},
+  {aula:'C207',mat:'MED203',grp:'014',dia:'Martes',    si:16,ei:18},
+  {aula:'C207',mat:'INF535',grp:'001',dia:'Martes',    si:17,ei:19},
+  {aula:'C207',mat:'INF482',grp:'002',dia:'Martes',    si:19,ei:21},
+  {aula:'C207',mat:'INF113',grp:'033',dia:'Miércoles', si:9, ei:13},
+  {aula:'C207',mat:'INF103',grp:'005',dia:'Miércoles', si:9, ei:11},
+  {aula:'C207',mat:'INF168',grp:'001',dia:'Miércoles', si:17,ei:21},
+  {aula:'C207',mat:'INF113',grp:'039',dia:'Jueves',    si:9, ei:13},
+  {aula:'C207',mat:'INF103',grp:'078',dia:'Jueves',    si:13,ei:17},
+  {aula:'C207',mat:'INF165',grp:'005',dia:'Jueves',    si:17,ei:19},
+  {aula:'C207',mat:'INF168',grp:'002',dia:'Jueves',    si:17,ei:21},
+  {aula:'C207',mat:'INF117',grp:'001',dia:'Viernes',   si:1, ei:3},
+  {aula:'C207',mat:'INF387',grp:'002',dia:'Viernes',   si:17,ei:19},
+  {aula:'C207',mat:'INF103',grp:'030',dia:'Miércoles', si:9, ei:11},
+  {aula:'C207',mat:'INF113',grp:'022',dia:'Sábado',    si:1, ei:5},
+  {aula:'C207',mat:'INF167',grp:'003',dia:'Sábado',    si:13,ei:17},
+  {aula:'C207',mat:'INF535',grp:'001',dia:'Sábado',    si:13,ei:15},
+  // C208 — Lab. Mecatrónica
+  {aula:'C208',mat:'IEL415',grp:'001',dia:'Lunes',     si:5, ei:9},
+  {aula:'C208',mat:'IEL315',grp:'002',dia:'Lunes',     si:14,ei:16},
+  {aula:'C208',mat:'IEL955',grp:'002',dia:'Lunes',     si:14,ei:16},
+  {aula:'C208',mat:'IEL915',grp:'001',dia:'Martes',    si:14,ei:16},
+  {aula:'C208',mat:'IEL125',grp:'001',dia:'Miércoles', si:14,ei:16},
+  {aula:'C208',mat:'IEL905',grp:'001',dia:'Jueves',    si:14,ei:16},
+  {aula:'C208',mat:'IEL955',grp:'002',dia:'Viernes',   si:14,ei:16},
+  {aula:'C208',mat:'IEL955',grp:'004',dia:'Viernes',   si:17,ei:19},
+  {aula:'C208',mat:'IID750',grp:'001',dia:'Miércoles', si:17,ei:21},
+  {aula:'C208',mat:'IEL415',grp:'001',dia:'Sábado',    si:7, ei:11},
+  {aula:'C208',mat:'IEL625',grp:'002',dia:'Sábado',    si:7, ei:11},
+  {aula:'C208',mat:'IEL525',grp:'002',dia:'Sábado',    si:11,ei:13},
+  // C413 — Lab. Comunicación
+  {aula:'C413',mat:'IET675',grp:'001',dia:'Lunes',     si:14,ei:16},
+  {aula:'C413',mat:'IET415',grp:'002',dia:'Lunes',     si:19,ei:21},
+  {aula:'C413',mat:'IET325',grp:'002',dia:'Martes',    si:17,ei:19},
+  {aula:'C413',mat:'IET545',grp:'002',dia:'Miércoles', si:17,ei:19},
+  {aula:'C413',mat:'IET325',grp:'001',dia:'Miércoles', si:19,ei:21},
+  {aula:'C413',mat:'IET425',grp:'001',dia:'Jueves',    si:17,ei:19},
+  {aula:'C413',mat:'IET605',grp:'001',dia:'Jueves',    si:19,ei:21},
+  {aula:'C413',mat:'IET745',grp:'001',dia:'Viernes',   si:17,ei:19},
+  {aula:'C413',mat:'IET845',grp:'001',dia:'Sábado',    si:9, ei:13},
+  {aula:'C413',mat:'IEL305',grp:'004',dia:'Sábado',    si:12,ei:14},
+  // C414A — Lab. Electrónica
+  {aula:'C414A',mat:'IET315',grp:'001',dia:'Martes',   si:17,ei:19},
+  {aula:'C414A',mat:'IET965',grp:'002',dia:'Miércoles',si:15,ei:17},
+  {aula:'C414A',mat:'IET545',grp:'002',dia:'Miércoles',si:17,ei:19},
+  {aula:'C414A',mat:'IET715',grp:'003',dia:'Jueves',   si:17,ei:19},
+  {aula:'C414A',mat:'IET705',grp:'001',dia:'Sábado',   si:7, ei:11},
+  {aula:'C414A',mat:'IET815',grp:'001',dia:'Sábado',   si:10,ei:14},
+  {aula:'C414A',mat:'IET415',grp:'001',dia:'Sábado',   si:13,ei:15},
+  // C414B — Lab. Electrónica 02
+  {aula:'C414B',mat:'IET315',grp:'002',dia:'Viernes',  si:17,ei:19},
+  // C415 — Lab. Electricidad
+  {aula:'C415',mat:'IEL205',grp:'004',dia:'Lunes',     si:14,ei:16},
+  {aula:'C415',mat:'IEL105',grp:'010',dia:'Lunes',     si:14,ei:16},
+  {aula:'C415',mat:'IET115',grp:'001',dia:'Martes',    si:16,ei:18},
+  {aula:'C415',mat:'IEL205',grp:'004',dia:'Miércoles', si:9, ei:11},
+  {aula:'C415',mat:'IET405',grp:'001',dia:'Miércoles', si:9, ei:11},
+  {aula:'C415',mat:'IEL115',grp:'001',dia:'Miércoles', si:9, ei:13},
+  {aula:'C415',mat:'IEL205',grp:'004',dia:'Miércoles', si:14,ei:16},
+  {aula:'C415',mat:'IEL105',grp:'009',dia:'Jueves',    si:19,ei:21},
+  {aula:'C415',mat:'IEL105',grp:'001',dia:'Viernes',   si:14,ei:16},
+  {aula:'C415',mat:'IEL105',grp:'002',dia:'Viernes',   si:14,ei:16},
+  {aula:'C415',mat:'IEL105',grp:'003',dia:'Viernes',   si:14,ei:16},
+  {aula:'C415',mat:'IEL115',grp:'003',dia:'Sábado',    si:13,ei:15},
 ];
 
 const classes=raw.map(c=>{
@@ -409,7 +778,7 @@ const classes=raw.map(c=>{
 });
 
 document.addEventListener('DOMContentLoaded',function(){
-  let filterDia='',filterLab='',filterMateria='',filterHora='',alertEnabled=true,alertMinutes=15;
+  let filterDia='',filterLab='',filterMateria='',filterHora='',filterEdificio='',alertEnabled=true,alertMinutes=15;
   let notified=new Set();
   const DIAS={0:'Domingo',1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado'};
   const DIA_ORDER=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
@@ -443,6 +812,7 @@ document.addEventListener('DOMContentLoaded',function(){
     tbody.innerHTML='';
     let filtered=classes.filter(c=>{
       if(filterDia&&c.dia!==filterDia)return false;
+      if(filterEdificio&&!c.aula.startsWith(filterEdificio))return false;
       if(filterLab&&c.aula!==filterLab)return false;
       if(filterMateria&&!(c.mat+c.grp).toLowerCase().includes(filterMateria.toLowerCase()))return false;
       if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
@@ -460,12 +830,13 @@ document.addEventListener('DOMContentLoaded',function(){
     // Contador dinámico según filtro activo
     const wrap=document.getElementById('statFilteredWrap');
     const sep=document.getElementById('sepFiltered');
-    if(filterDia||filterLab||filterMateria||filterHora){
+    if(filterDia||filterLab||filterMateria||filterHora||filterEdificio){
       wrap.style.display='flex';
       sep.style.display='';
       document.getElementById('statFiltered').textContent=filtered.length;
       const nombres={manana:'Mañana',mediodia:'Mediodía',tarde:'Tarde',noche:'Noche'};
       let partes=[];
+    if(filterEdificio) partes.push(`Edif. ${filterEdificio}`);
       if(filterLab) partes.push(filterLab);
       if(filterDia) partes.push(filterDia);
       if(filterHora) partes.push(nombres[filterHora]||filterHora);
@@ -628,6 +999,7 @@ document.addEventListener('DOMContentLoaded',function(){
     if(e.key==='Escape'){closeModal();closeAlertModal();}
   });
 
+  document.getElementById('filterEdificio').addEventListener('change',e=>{filterEdificio=e.target.value;render();});
   document.getElementById('filterDia').addEventListener('change',e=>{filterDia=e.target.value;render();});
   document.getElementById('filterLab').addEventListener('change',e=>{filterLab=e.target.value;render();});
   document.getElementById('filterHora').addEventListener('change',e=>{filterHora=e.target.value;render();});
@@ -636,8 +1008,8 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('alertMinutes').addEventListener('change',e=>{alertMinutes=parseInt(e.target.value)||15;});
 
   window.resetFilters=function(){
-    filterDia='';filterLab='';filterMateria='';filterHora='';
-    ['filterDia','filterLab','filterHora','filterMateria'].forEach(id=>{document.getElementById(id).value='';});
+    filterDia='';filterLab='';filterMateria='';filterHora='';filterEdificio='';
+    ['filterEdificio','filterDia','filterLab','filterHora','filterMateria'].forEach(id=>{document.getElementById(id).value='';});
     render();
   };
 
