@@ -183,16 +183,24 @@
   .bnav-btn.active{color:var(--accent);background:rgba(0,229,160,.1)}
   .bnav-btn.active .bnav-icon{filter:drop-shadow(0 0 6px var(--accent))}
   .bnav-btn:active{transform:scale(.92)}
-  .bnav-theme{display:flex;flex-direction:column;align-items:center;gap:.18rem;min-width:52px}
-  .bnav-theme-dots{display:flex;gap:4px;align-items:center}
-  .bnav-dot{width:16px;height:16px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .2s;padding:0;flex-shrink:0}
-  .bnav-dot:active{transform:scale(.85)}
-  .bnav-dot.active{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
-  .bnav-dot[data-t="dark"]{background:radial-gradient(circle at 30% 30%,#2a2f3d,#0a0c10)}
-  .bnav-dot[data-t="light"]{background:radial-gradient(circle at 30% 30%,#ffffff,#d1d5db)}
-  .bnav-dot[data-t="sepia"]{background:radial-gradient(circle at 30% 30%,#fdf8f0,#c4a882)}
-  .bnav-dot[data-t="utesa"]{background:radial-gradient(circle at 30% 30%,#6db33f,#f5c200)}
-  .bnav-theme-lbl{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.02em;font-family:'DM Sans',sans-serif;font-weight:500}
+  /* Theme picker popover */
+  #theme-picker{position:fixed;inset:0;z-index:600}
+  .tp-overlay{position:absolute;inset:0}
+  .tp-box{position:absolute;bottom:68px;right:.75rem;background:#1a1f2e;border:1px solid var(--accent);border-radius:16px;padding:.75rem;min-width:160px;box-shadow:0 -4px 24px rgba(0,0,0,.7);animation:tpIn .2s cubic-bezier(.32,.72,0,1)}
+  .tp-title{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.6rem;padding:0 .25rem}
+  .tp-options{display:flex;flex-direction:column;gap:.25rem}
+  .tp-opt{display:flex;align-items:center;gap:.6rem;background:transparent;border:1px solid transparent;border-radius:10px;padding:.5rem .6rem;cursor:pointer;width:100%;transition:all .15s}
+  .tp-opt:hover{background:rgba(255,255,255,.06);border-color:var(--border)}
+  .tp-opt.active{background:rgba(0,229,160,.08);border-color:rgba(0,229,160,.3)}
+  .tp-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.15)}
+  .tp-dot[data-t="dark"]{background:radial-gradient(circle at 30% 30%,#2a2f3d,#0a0c10)}
+  .tp-dot[data-t="light"]{background:radial-gradient(circle at 30% 30%,#ffffff,#d1d5db)}
+  .tp-dot[data-t="sepia"]{background:radial-gradient(circle at 30% 30%,#fdf8f0,#c4a882)}
+  .tp-dot[data-t="utesa"]{background:radial-gradient(circle at 30% 30%,#6db33f,#f5c200)}
+  .tp-label{font-family:'DM Sans',sans-serif;font-size:.82rem;color:#e8eaf0;flex:1;text-align:left}
+  .tp-check{font-size:.75rem;color:var(--accent);opacity:0;transition:opacity .15s}
+  .tp-opt.active .tp-check{opacity:1}
+  @keyframes tpIn{from{transform:translateY(8px) scale(.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
 
   /* ══ FILTER SHEET (bottom drawer) ══ */
   #filter-sheet{display:none;position:fixed;inset:0;z-index:500}
@@ -981,7 +989,7 @@ document.addEventListener('DOMContentLoaded',function(){
     if(!THEMES.includes(t))t='dark';
     document.documentElement.setAttribute('data-theme',t==='dark'?'':t);
     document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
-    document.querySelectorAll('.bnav-dot').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
+    document.querySelectorAll('.tp-opt').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
     localStorage.setItem('utesa-theme',t);
   };
   // Cargar tema guardado
@@ -1288,6 +1296,19 @@ document.addEventListener('DOMContentLoaded',function(){
   window.syncAlertEnabled = function(el) { alertEnabled=el.checked; document.getElementById('alertEnabled').checked=el.checked; };
   window.syncAlertMinutes = function(el) { alertMinutes=parseInt(el.value)||15; document.getElementById('alertMinutes').value=el.value; };
   window.syncAlertSound = function(el) { soundEnabled=el.checked; };
+  window.toggleThemePicker = function() {
+    const p=document.getElementById('theme-picker');
+    if(p.style.display==='none'||!p.style.display){
+      p.style.display='block';
+      document.getElementById('bnav-theme-btn').classList.add('active');
+    } else {
+      closeThemePicker();
+    }
+  };
+  window.closeThemePicker = function() {
+    document.getElementById('theme-picker').style.display='none';
+    document.getElementById('bnav-theme-btn').classList.remove('active');
+  };
 
   // Patch render to also update mobile stats
   const _origRender = render;
@@ -1340,14 +1361,38 @@ document.addEventListener('DOMContentLoaded',function(){
   <button class="bnav-btn" id="bnav-alert" onclick="openAlertSheet()">
     <span class="bnav-icon">⏰</span>Alertas
   </button>
-  <div class="bnav-theme">
-    <div class="bnav-theme-dots">
-      <button class="bnav-dot active" data-t="dark" onclick="setTheme('dark')" title="Oscuro"></button>
-      <button class="bnav-dot" data-t="light" onclick="setTheme('light')" title="Claro"></button>
-      <button class="bnav-dot" data-t="sepia" onclick="setTheme('sepia')" title="Sepia"></button>
-      <button class="bnav-dot" data-t="utesa" onclick="setTheme('utesa')" title="UTESA"></button>
+  <button class="bnav-btn" id="bnav-theme-btn" onclick="toggleThemePicker()">
+    <span class="bnav-icon" id="bnav-theme-icon">🎨</span>Tema
+  </button>
+
+  <!-- Theme picker popover -->
+  <div id="theme-picker" style="display:none">
+    <div class="tp-overlay" onclick="closeThemePicker()"></div>
+    <div class="tp-box">
+      <div class="tp-title">Apariencia</div>
+      <div class="tp-options">
+        <button class="tp-opt active" data-t="dark" onclick="setTheme('dark');closeThemePicker()">
+          <span class="tp-dot" data-t="dark"></span>
+          <span class="tp-label">Oscuro</span>
+          <span class="tp-check">✓</span>
+        </button>
+        <button class="tp-opt" data-t="light" onclick="setTheme('light');closeThemePicker()">
+          <span class="tp-dot" data-t="light"></span>
+          <span class="tp-label">Claro</span>
+          <span class="tp-check">✓</span>
+        </button>
+        <button class="tp-opt" data-t="sepia" onclick="setTheme('sepia');closeThemePicker()">
+          <span class="tp-dot" data-t="sepia"></span>
+          <span class="tp-label">Sepia</span>
+          <span class="tp-check">✓</span>
+        </button>
+        <button class="tp-opt" data-t="utesa" onclick="setTheme('utesa');closeThemePicker()">
+          <span class="tp-dot" data-t="utesa"></span>
+          <span class="tp-label">UTESA</span>
+          <span class="tp-check">✓</span>
+        </button>
+      </div>
     </div>
-    <span class="bnav-theme-lbl">Tema</span>
   </div>
 </nav>
 
