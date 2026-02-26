@@ -1,5 +1,5 @@
 const webpush = require('web-push');
-const { SLOTS, raw } = require('./schedule-data.js');
+const { SLOTS, raw } = require(__dirname + '/schedule-data.js');
 
 // ── CONFIG ──
 const VAPID_PUBLIC  = process.env.VAPID_PUBLIC_KEY;
