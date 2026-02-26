@@ -301,6 +301,26 @@
   .ncw-timer.urgent{color:#ff6b35}
   .ncw-empty{font-size:.8rem;color:var(--muted);text-align:center;padding:.5rem;font-family:'Space Mono',monospace}
 
+  /* ── WEEK VIEW MODAL ── */
+  #week-modal{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem}
+  #week-modal.open{display:flex}
+  .wm-box{background:#1a1f2e;border:1px solid var(--border);border-radius:16px;width:100%;max-width:680px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
+  .wm-header{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid var(--border);flex-shrink:0}
+  .wm-title{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--accent);font-weight:700}
+  .wm-close{background:transparent;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:.2rem .5rem}
+  .wm-body{overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.5rem}
+  .wm-day{background:#252c3d;border-radius:10px;overflow:hidden}
+  .wm-day-header{padding:.5rem .85rem;font-family:'Space Mono',monospace;font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #3a4258;background:#1e2535}
+  .wm-day-header.today{color:var(--accent);background:rgba(0,229,160,.08)}
+  .wm-class{display:flex;align-items:center;gap:.75rem;padding:.6rem .85rem;border-bottom:1px solid #3a4258}
+  .wm-class:last-child{border-bottom:none}
+  .wm-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .wm-class-mat{font-family:'Space Mono',monospace;font-size:.78rem;font-weight:700;color:#e8eaf0;flex:1}
+  .wm-class-meta{font-size:.7rem;color:#a0a8bf;text-align:right}
+  .wm-empty{font-size:.75rem;color:#a0a8bf;padding:.6rem .85rem;font-style:italic}
+  .wm-copy-btn{display:flex;align-items:center;justify-content:center;gap:.4rem;margin:.75rem 1rem .25rem;padding:.55rem;background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.25);color:var(--accent);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s}
+  .wm-copy-btn:hover{background:rgba(0,229,160,.2)}
+
   /* ── COMPARE VIEW ── */
   #compare-sheet{display:none;position:fixed;inset:0;z-index:500}
   #compare-sheet.open{display:block}
@@ -1170,7 +1190,9 @@ document.addEventListener('DOMContentLoaded',function(){
     empty.classList.remove('show');
     filtered.forEach((c,i)=>{
       const s=getStatus(c),tr=document.createElement('tr');
-      if(s==='active')tr.className='row-active';
+      const bldg=c.aula.startsWith('B')?'bldg-b':'bldg-c';
+      tr.className=bldg;
+      if(s==='active')tr.className+=' row-active';
       if(s==='imminent')tr.className='row-imm';
       if(s==='upcoming')tr.className='row-upcoming';
       if(s==='later')tr.className='row-later';
@@ -1184,7 +1206,10 @@ document.addEventListener('DOMContentLoaded',function(){
                         '<span class="b-nottoday">⏸ No es hoy</span>';
       const creditos=c.durMin/45;
       const lab=LABS[c.aula],labName=lab?lab.name:'',imgFile=lab?lab.img:'';
-      tr.innerHTML=`<td><div style="display:flex;align-items:center;gap:.4rem"><button onclick="toggleFav('${c.aula}')" style="background:none;border:none;cursor:pointer;font-size:.95rem;padding:0;line-height:1;flex-shrink:0">${favorites.has(c.aula)?'⭐':'☆'}</button><div><span class="td-aula">${c.aula}</span><br><span class="td-lab">${labName}</span></div></div></td><td class="td-mat">${c.mat}</td><td class="td-grp">${c.grp}</td><td><span class="dia-tag ${DIA_CSS[c.dia]||'dL'}">${c.dia}</span></td><td class="td-hora">${c.inicio}</td><td class="td-hora">${c.fin}</td><td class="td-dur">${c.durMin} min</td><td class="td-cred">${creditos}</td><td>${badge}</td><td><button class="btn-img" onclick="openModal('${c.aula}','${labName}','${imgFile}')">🗓️ <span>Ver</span></button></td>`;
+      const prog=s==='active'?`<div class="progress-wrap"><div class="progress-bar" id="prog-${c.aula}-${c.mat}${c.grp}" style="width:${Math.round((nowM()-c.inicioM)/((c.finM-c.inicioM))*100)}%"></div></div>`:'';
+      const bldgBadgeClass = c.aula.startsWith('B') ? 'bldg-badge-b' : 'bldg-badge-c';
+      const bldgLetter = c.aula.startsWith('B') ? 'B' : 'C';
+      tr.innerHTML=`<td><div style="display:flex;align-items:center;gap:.4rem"><button onclick="toggleFav('${c.aula}')" style="background:none;border:none;cursor:pointer;font-size:.95rem;padding:0;line-height:1;flex-shrink:0">${favorites.has(c.aula)?'⭐':'☆'}</button><div><span class="td-aula">${c.aula}</span><span class="bldg-badge ${bldgBadgeClass}">${bldgLetter}</span><br><span class="td-lab">${labName}</span></div></div></td><td class="td-mat">${c.mat}</td><td class="td-grp">${c.grp}</td><td><span class="dia-tag ${DIA_CSS[c.dia]||'dL'}">${c.dia}</span></td><td class="td-hora">${c.inicio}</td><td class="td-hora">${c.fin}</td><td class="td-dur">${c.durMin} min</td><td class="td-cred">${creditos}</td><td>${badge}${prog}</td><td><button class="btn-img" onclick="openModal('${c.aula}','${labName}','${imgFile}')">🗓️ <span>Ver</span></button> <button class="btn-img" style="margin-top:.2rem;background:rgba(0,229,160,.08);border-color:rgba(0,229,160,.2);color:var(--accent)" onclick="openWeekModal('${c.aula}')">📅 <span>Semana</span></button></td>`;
       tbody.appendChild(tr);
     });
   }
@@ -1502,7 +1527,6 @@ document.addEventListener('DOMContentLoaded',function(){
   // ══ COMPARTIR WHATSAPP ══
   window.shareWhatsApp = function(){
     const today=todayName();
-    // Build text from current filtered view
     let filtered=classes.filter(c=>{
       if(filterDia&&c.dia!==filterDia)return false;
       if(filterEdificio&&!c.aula.startsWith(filterEdificio))return false;
@@ -1512,40 +1536,29 @@ document.addEventListener('DOMContentLoaded',function(){
       if(favOnly&&!favorites.has(c.aula))return false;
       return true;
     });
-    if(!filtered.length){alert('No hay clases con los filtros actuales para compartir.');return;}
-
-    // Group by day then sort by time
+    if(!filtered.length){alert("No hay clases con los filtros actuales para compartir.");return;}
     const byDia={};
-    filtered.forEach(c=>{
-      if(!byDia[c.dia])byDia[c.dia]=[];
-      byDia[c.dia].push(c);
-    });
-    const DIAS_ORDER=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-    let text='🎓 *UTESA — Horarios de Laboratorios*
-';
-    text+='_'+new Date().toLocaleDateString('es-DO',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'_
-';
-    text+='━━━━━━━━━━━━━━━━━━━━
-';
+    filtered.forEach(c=>{if(!byDia[c.dia])byDia[c.dia]=[];byDia[c.dia].push(c);});
+    const DIAS_ORDER=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+    const SEP="--------------------";
+    const lines=[];
+    lines.push("🎓 *UTESA — Horarios de Laboratorios*");
+    lines.push("_"+new Date().toLocaleDateString("es-DO",{weekday:"long",year:"numeric",month:"long",day:"numeric"})+"_");
+    lines.push(SEP);
     DIAS_ORDER.forEach(dia=>{
       if(!byDia[dia])return;
-      text+=`
-📅 *${dia}*
-`;
+      lines.push("");
+      lines.push("📅 *"+dia+"*");
       byDia[dia].sort((a,b)=>a.inicioM-b.inicioM).forEach(c=>{
-        const lab=LABS[c.aula];
         const cred=c.durMin/45;
-        text+=`  📍 ${c.aula} — ${c.mat} grp.${c.grp}
-`;
-        text+=`  ⏰ ${c.inicio} → ${c.fin} (${cred} crédito${cred>1?'s':''})
-`;
+        lines.push("  📍 "+c.aula+" — "+c.mat+" grp."+c.grp);
+        lines.push("  ⏰ "+c.inicio+" → "+c.fin+" ("+cred+" crédito"+(cred>1?"s":"")+")");
       });
     });
-    text+='━━━━━━━━━━━━━━━━━━━━
-';
-    text+='📲 App: https://francisdominguez.github.io/horarios-laboratorios-utesa/';
-    const url='https://wa.me/?text='+encodeURIComponent(text);
-    window.open(url,'_blank');
+    lines.push(SEP);
+    lines.push("📲 App: https://francisdominguez.github.io/horarios-laboratorios-utesa/");
+    const url="https://wa.me/?text="+encodeURIComponent(lines.join("\n"));
+    window.open(url,"_blank");
   };
 
   // ══ VIEW SWITCH ══
@@ -1783,6 +1796,79 @@ document.addEventListener('DOMContentLoaded',function(){
       closeThemePicker();
     }
   };
+  // ══ SEMANA DEL LAB ══
+  let currentWeekLab = null;
+
+  window.openWeekModal = function(aula) {
+    currentWeekLab = aula;
+    const lab = LABS[aula];
+    document.getElementById('wm-title').textContent = `${aula} — ${lab?lab.name:''}`;
+    const DIAS_ORDER = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const today = todayName();
+    const labClasses = classes.filter(c=>c.aula===aula);
+    const body = document.getElementById('wm-body');
+    body.innerHTML = DIAS_ORDER.map(dia=>{
+      const diaClasses = labClasses.filter(c=>c.dia===dia).sort((a,b)=>a.inicioM-b.inicioM);
+      const isToday = dia===today;
+      const dotColor = aula.startsWith('B')?'#5b8cff':'#ff6b35';
+      const todayClass=isToday?" today":"";
+      const todayIcon=isToday?"📅 ":"";
+      const todaySuffix=isToday?" — Hoy":"";
+      return `<div class="wm-day">
+        <div class="wm-day-header${todayClass}">${todayIcon} ${dia}${todaySuffix}</div>
+        ${diaClasses.length ? diaClasses.map(c=>{
+          const s = getStatus(c);
+          const statusDot = s==='active'?'#00e5a0':s==='imminent'?'#ff6b35':s==='upcoming'?'#5b8cff':dotColor;
+          const cred = c.durMin/45;
+          return `<div class="wm-class">
+            <div class="wm-dot" style="background:${statusDot}"></div>
+            <div>
+              <div class="wm-class-mat">${c.mat} <span style="font-weight:400;font-size:.7rem;color:#a0a8bf">grp.${c.grp}</span></div>
+              <div style="font-size:.65rem;color:#a0a8bf">${c.inicio} → ${c.fin} · ${cred} crédito${cred>1?'s':''}</div>
+            </div>
+            <div class="wm-class-meta">${s==='active'?'🟢 En curso':s==='imminent'?`⚡ ${timeUntil(c)}`:s==='upcoming'?timeUntil(c):s==='past'?'✓':''}</div>
+          </div>`;
+        }).join('') : '<div class="wm-empty">Sin clases</div>'}
+      </div>`;
+    }).join('');
+    document.getElementById('week-modal').classList.add('open');
+  };
+
+  window.closeWeekModal = function() {
+    document.getElementById('week-modal').classList.remove('open');
+  };
+  document.getElementById('week-modal').addEventListener('click', function(e){
+    if(e.target===this) closeWeekModal();
+  });
+
+  window.copyLabSchedule = function() {
+    if(!currentWeekLab) return;
+    const lab = LABS[currentWeekLab];
+    const DIAS_ORDER = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const labClasses = classes.filter(c=>c.aula===currentWeekLab);
+    let text = `📍 ${currentWeekLab} — ${lab?lab.name:''}
+`;
+    text += `━━━━━━━━━━━━━━━━
+`;
+    DIAS_ORDER.forEach(dia=>{
+      const diaClasses = labClasses.filter(c=>c.dia===dia).sort((a,b)=>a.inicioM-b.inicioM);
+      if(!diaClasses.length) return;
+      text += `
+📅 ${dia}
+`;
+      diaClasses.forEach(c=>{
+        const cred = c.durMin/45;
+        text += `  • ${c.mat} grp.${c.grp} · ${c.inicio}–${c.fin} (${cred} cr.)
+`;
+      });
+    });
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn = document.querySelector('.wm-copy-btn');
+      btn.textContent = '✅ Copiado al portapapeles';
+      setTimeout(()=>{ btn.innerHTML = '📋 Copiar horario al portapapeles'; }, 2000);
+    });
+  };
+
   // ══ COMPARE CUATRIMESTRES ══
   function getSnapshots(){
     return JSON.parse(localStorage.getItem('utesa-snapshots')||'[]');
@@ -2080,6 +2166,18 @@ document.addEventListener('DOMContentLoaded',function(){
       <button class="fs-btn fs-btn-reset" onclick="resetMobileFilters()">✕ Limpiar</button>
       <button class="fs-btn fs-btn-apply" onclick="applyMobileFilters()">Aplicar filtros</button>
     </div>
+  </div>
+</div>
+
+<!-- ══ WEEK VIEW MODAL ══ -->
+<div id="week-modal">
+  <div class="wm-box">
+    <div class="wm-header">
+      <div class="wm-title" id="wm-title">Semana del lab</div>
+      <button class="wm-close" onclick="closeWeekModal()">✕</button>
+    </div>
+    <button class="wm-copy-btn" onclick="copyLabSchedule()">📋 Copiar horario al portapapeles</button>
+    <div class="wm-body" id="wm-body"></div>
   </div>
 </div>
 
