@@ -1619,9 +1619,9 @@ document.addEventListener('DOMContentLoaded',function(){
     render();
   };
 
- if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
-  // ── VAPID PUBLIC KEY ──
-  const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t02iV08QRErA0f5_sCmTAmVi2zlGhD4HrI';
+  if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+  // ── VAPID PUBLIC KEY — reemplaza con tu clave pública ──
+  const VAPID_PUBLIC_KEY = 'PEGA_AQUI_TU_CLAVE_PUBLICA';
 
   function urlBase64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -1999,6 +1999,24 @@ document.addEventListener('DOMContentLoaded',function(){
   window.syncAlertSound = function(el) { soundEnabled=el.checked; };
   window.syncEndAlert = function(el) { endAlertEnabled=el.checked; syncConfigToSW(); };
   window.syncRepeatAlert = function(el) { repeatAlert=el.checked; };
+  window.showPushJson = function(){
+    const box = document.getElementById('push-json-box');
+    const txt = document.getElementById('push-json-text');
+    const sub = localStorage.getItem('utesa-push-sub');
+    if(!sub){ txt.value = 'No hay suscripción aún. Asegúrate de haber aceptado los permisos de notificación.'; }
+    else { txt.value = '[' + sub + ']'; }
+    box.style.display = box.style.display==='none' ? 'block' : 'none';
+  };
+
+  window.copyPushJson = function(){
+    const txt = document.getElementById('push-json-text');
+    txt.select();
+    document.execCommand('copy');
+    const btn = document.getElementById('copy-json-btn');
+    btn.textContent = '✅ Copiado';
+    setTimeout(()=>btn.textContent='Copiar', 2000);
+  };
+
   function syncConfigToSW(){
     if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;
     navigator.serviceWorker.controller.postMessage({
@@ -2529,6 +2547,18 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="as-row-sub" id="push-status-text">Verificando...</div>
       </div>
       <span id="push-status-icon" style="font-size:.85rem">⏳</span>
+    </div>
+    <div class="as-row" style="flex-direction:column;align-items:flex-start;gap:.5rem">
+      <button onclick="showPushJson()" style="background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--accent);padding:.4rem .8rem;border-radius:8px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif">
+        📋 Ver mi suscripción JSON
+      </button>
+      <div id="push-json-box" style="display:none;background:#0a0c10;border:1px solid #3a4258;border-radius:8px;padding:.6rem;width:100%;box-sizing:border-box">
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.4rem;font-family:'Space Mono',monospace">COPIA ESTE JSON → GitHub Secret PUSH_SUBSCRIPTIONS</div>
+        <textarea id="push-json-text" readonly style="width:100%;background:transparent;border:none;color:#a0a8bf;font-size:.62rem;font-family:'Space Mono',monospace;resize:none;outline:none;height:80px;box-sizing:border-box"></textarea>
+        <button onclick="copyPushJson()" style="margin-top:.3rem;background:var(--accent);color:#000;border:none;padding:.35rem .7rem;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif" id="copy-json-btn">
+          Copiar
+        </button>
+      </div>
     </div>
     <div class="as-row">
       <div>
