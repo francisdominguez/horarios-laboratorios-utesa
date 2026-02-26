@@ -2,9 +2,9 @@ name: Push Notifications
 
 on:
   schedule:
-    # Corre cada minuto de Lunes a Sábado, 7am-10pm hora RD (UTC-4 = 11am-2am UTC)
-    - cron: '* 11-23 * * 1-6'
-    - cron: '* 0-2 * * 2-7'
+    # Cada 5 minutos, Lunes a Sábado, 7am-10pm hora RD (UTC-4 = 11am-2am UTC)
+    - cron: '*/5 11-23 * * 1-6'
+    - cron: '*/5 0-2 * * 2-7'
   workflow_dispatch: # también se puede correr manualmente
 
 jobs:
