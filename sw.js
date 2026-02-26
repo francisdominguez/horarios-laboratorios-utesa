@@ -1,4 +1,4 @@
-const CACHE = 'utesa-labs-v17';
+const CACHE = 'utesa-labs-v13';
 const ASSETS = [
   '/horarios-laboratorios-utesa/',
   '/horarios-laboratorios-utesa/index.html',
@@ -514,6 +514,24 @@ function checkAndNotify(){
 // ── Skip waiting on demand from app ──
 self.addEventListener('message', e=>{
   if(e.data&&e.data.type==='SKIP_WAITING') self.skipWaiting();
+});
+
+// ── Recibir push del servidor (GitHub Actions) ──
+self.addEventListener('push', e=>{
+  if(!e.data) return;
+  let data;
+  try { data = e.data.json(); } catch(err) { return; }
+  e.waitUntil(
+    self.registration.showNotification(data.title||'UTESA Labs', {
+      body:             data.body||'',
+      icon:             data.icon||'/horarios-laboratorios-utesa/icon-192.png',
+      badge:            data.badge||'/horarios-laboratorios-utesa/icon-192.png',
+      tag:              data.tag||'utesa-push',
+      vibrate:          data.vibrate||[200,100,200],
+      requireInteraction: data.requireInteraction||false,
+      data:             { url: data.url||'/horarios-laboratorios-utesa/' }
+    })
+  );
 });
 
 // ── Al tocar la notificación abre la app ──

@@ -1619,10 +1619,47 @@ document.addEventListener('DOMContentLoaded',function(){
     render();
   };
 
-  if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+ if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+  // ── VAPID PUBLIC KEY ──
+  const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t02iV08QRErA0f5_sCmTAmVi2zlGhD4HrI';
+
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+  }
+
+  async function subscribeToPush(reg) {
+    if(VAPID_PUBLIC_KEY === 'PEGA_AQUI_TU_CLAVE_PUBLICA') return;
+    try {
+      const existing = await reg.pushManager.getSubscription();
+      if(existing){ savePushSubscription(existing); return; }
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+      savePushSubscription(sub);
+      console.log('✅ Push subscription activa');
+    } catch(e) {
+      console.log('Push no disponible:', e.message);
+    }
+  }
+
+  function savePushSubscription(sub) {
+    // Guarda la suscripción localmente
+    localStorage.setItem('utesa-push-sub', JSON.stringify(sub));
+    // Muestra instrucciones para agregar al GitHub Secret
+    console.log('📋 Suscripción lista. Copia este JSON al Secret PUSH_SUBSCRIPTIONS de GitHub:');
+    console.log(JSON.stringify([sub], null, 2));
+  }
+
   if('serviceWorker'in navigator){
     navigator.serviceWorker.register('sw.js').then(reg=>{
-      navigator.serviceWorker.ready.then(()=>syncConfigToSW());
+      navigator.serviceWorker.ready.then(()=>{
+        syncConfigToSW();
+        subscribeToPush(reg);
+      });
       // Detect new SW waiting = new version available
       reg.addEventListener('updatefound',()=>{
         const newSW=reg.installing;
@@ -1915,6 +1952,27 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('bnav-alert').classList.add('active');
     // Sync
     document.getElementById('as-enabled').checked = alertEnabled;
+    // Check push status
+    if('serviceWorker' in navigator && 'PushManager' in window){
+      navigator.serviceWorker.ready.then(reg=>{
+        reg.pushManager.getSubscription().then(sub=>{
+          const txt=document.getElementById('push-status-text');
+          const ico=document.getElementById('push-status-icon');
+          if(txt&&ico){
+            if(sub&&VAPID_PUBLIC_KEY!=='PEGA_AQUI_TU_CLAVE_PUBLICA'){
+              txt.textContent='Activo — notifica con pantalla bloqueada';
+              ico.textContent='✅';
+            } else if(VAPID_PUBLIC_KEY==='PEGA_AQUI_TU_CLAVE_PUBLICA'){
+              txt.textContent='Pendiente configurar (ver manual)';
+              ico.textContent='⚙️';
+            } else {
+              txt.textContent='Inactivo — toca para activar';
+              ico.textContent='❌';
+            }
+          }
+        });
+      });
+    }
     document.getElementById('as-sound').checked = soundEnabled;
     document.getElementById('as-end-enabled').checked = endAlertEnabled;
     document.getElementById('as-repeat').checked = repeatAlert;
@@ -2464,6 +2522,13 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="as-row-sub">Tono al alertar clase</div>
       </div>
       <label class="toggle"><input type="checkbox" id="as-sound" checked onchange="syncAlertSound(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">📲 Push en background</div>
+        <div class="as-row-sub" id="push-status-text">Verificando...</div>
+      </div>
+      <span id="push-status-icon" style="font-size:.85rem">⏳</span>
     </div>
     <div class="as-row">
       <div>
