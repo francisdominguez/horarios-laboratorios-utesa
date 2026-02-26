@@ -233,6 +233,12 @@
   .gv-block.s-later .gv-block-mat{color:#ffc832}
   .gv-now-line{position:absolute;left:0;right:0;height:2px;background:var(--accent);z-index:8;pointer-events:none}
   .gv-now-line::before{content:'';position:absolute;left:-4px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+  /* ── SHARE ── */
+  .share-btn{display:flex;align-items:center;gap:.4rem;background:#25D366;color:#fff;border:none;border-radius:10px;padding:.5rem .85rem;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;margin-bottom:.75rem;width:100%}
+  .share-btn:hover{filter:brightness(1.1)}
+  .share-btn svg{width:18px;height:18px;fill:#fff;flex-shrink:0}
+  @media(min-width:769px){.share-btn{width:auto}}
+
   .view-toggle{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.2rem;gap:.2rem;margin-bottom:1rem}
   .vt-btn{flex:1;padding:.4rem;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.78rem;border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:.3rem}
   .vt-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3)}
@@ -268,6 +274,32 @@
   .as-row-sub{font-size:.72rem;color:var(--muted);margin-top:.15rem}
   .as-input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.4rem .6rem;border-radius:8px;font-family:'Space Mono',monospace;font-size:.85rem;width:60px;outline:none;text-align:center}
   @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+  /* ── UPDATE BANNER ── */
+  #update-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,#1a3a5c,#0d2137);border-bottom:2px solid var(--accent);padding:.7rem 1rem;display:none;align-items:center;gap:.75rem;animation:slideDown .3s ease}
+  #update-banner.show{display:flex}
+  .upd-text{flex:1;font-size:.82rem;color:#e8eaf0;font-family:'DM Sans',sans-serif}
+  .upd-text strong{color:var(--accent);font-family:'Space Mono',monospace}
+  .upd-btn{background:var(--accent);color:#000;border:none;padding:.45rem .9rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .15s}
+  .upd-btn:hover{filter:brightness(1.1)}
+  .upd-dismiss{background:transparent;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:.2rem;flex-shrink:0}
+  @keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+
+  /* ── WIDGET PRÓXIMA CLASE ── */
+  #next-class-widget{margin-bottom:1rem;animation:fadeUp .5s ease both}
+  .ncw-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:.85rem 1rem;display:flex;align-items:center;gap:.85rem;position:relative;overflow:hidden}
+  .ncw-box::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);border-radius:4px 0 0 4px}
+  .ncw-box.s-active::before{background:#00e5a0}
+  .ncw-box.s-imminent::before{background:#ff6b35;animation:pulse-badge 1.5s infinite}
+  .ncw-box.s-upcoming::before{background:#5b8cff}
+  .ncw-icon{font-size:1.6rem;flex-shrink:0}
+  .ncw-info{flex:1;min-width:0}
+  .ncw-label{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'Space Mono',monospace;margin-bottom:.2rem}
+  .ncw-mat{font-family:'Space Mono',monospace;font-size:.88rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ncw-sub{font-size:.72rem;color:var(--muted);margin-top:.15rem}
+  .ncw-timer{font-family:'Space Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--accent);flex-shrink:0;text-align:right;min-width:70px}
+  .ncw-timer.urgent{color:#ff6b35}
+  .ncw-empty{font-size:.8rem;color:var(--muted);text-align:center;padding:.5rem;font-family:'Space Mono',monospace}
 
   /* ── COMPARE VIEW ── */
   #compare-sheet{display:none;position:fixed;inset:0;z-index:500}
@@ -333,6 +365,11 @@
 </style>
 </head>
 <body>
+<div id="update-banner">
+  <span class="upd-text">🆕 <strong>Nueva versión disponible</strong> — hay cambios en los horarios</span>
+  <button class="upd-btn" onclick="applyUpdate()">Actualizar</button>
+  <button class="upd-dismiss" onclick="document.getElementById('update-banner').classList.remove('show')" title="Ignorar">✕</button>
+</div>
 <header>
   <div>
     <div class="logo">UTESA <span>// SANTIAGO</span></div>
@@ -465,6 +502,7 @@
     <span class="stat-sep">·</span>
     <div class="stat"><span class="stat-val" id="statToday">0</span><span class="stat-lbl" id="statTodayLbl">hoy</span></div>
   </div>
+  <div id="next-class-widget"></div>
   <div id="occupancy-bar" style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;padding:.85rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;animation:fadeUp .6s .28s ease both">
     <div style="display:flex;align-items:center;gap:.5rem">
       <span style="width:10px;height:10px;border-radius:50%;background:#00e5a0;display:inline-block;box-shadow:0 0 6px #00e5a0"></span>
@@ -486,6 +524,10 @@
       <span id="occ-total" style="font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;color:var(--muted)">0</span>
     </div>
   </div>
+  <button class="share-btn" onclick="shareWhatsApp()">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.554 4.122 1.528 5.862L0 24l6.306-1.508A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.887 9.887 0 01-5.044-1.379l-.361-.214-3.742.894.926-3.646-.235-.374A9.855 9.855 0 012.108 12C2.108 6.53 6.53 2.108 12 2.108c5.472 0 9.893 4.422 9.893 9.892 0 5.472-4.421 9.894-9.893 9.894z"/></svg>
+    Compartir horario por WhatsApp
+  </button>
   <div class="view-toggle" id="view-toggle">
     <button class="vt-btn active" id="vt-list" onclick="switchView('list')">📋 Lista</button>
     <button class="vt-btn" id="vt-grid" onclick="switchView('grid')">📊 Cuadrícula</button>
@@ -1023,6 +1065,38 @@ document.addEventListener('DOMContentLoaded',function(){
 
 
 
+  function updateNextWidget(){
+    const el=document.getElementById('next-class-widget');
+    if(!el)return;
+    const today=todayName(), m=nowM();
+    // Find active class first, then next upcoming
+    let active=null, next=null;
+    classes.forEach(c=>{
+      if(c.dia!==today)return;
+      if(m>=c.inicioM&&m<c.finM){if(!active)active=c;}
+      else if(c.inicioM>m){if(!next||c.inicioM<next.inicioM)next=c;}
+    });
+    const c=active||next;
+    if(!c){el.innerHTML='<div class="ncw-box"><span class="ncw-empty">No hay más clases hoy</span></div>';return;}
+    const s=getStatus(c);
+    const lab=LABS[c.aula];
+    const icon=s==='active'?'🟢':s==='imminent'?'⚡':'📍';
+    const label=s==='active'?'En curso ahora':'Próxima clase';
+    const timerTxt=s==='active'
+      ?`Termina en ${(()=>{const d=c.finM-m;const h=Math.floor(d/60),mn=d%60;return h?`${h}h ${mn}min`:mn+'min';})()}`
+      :timeUntil(c);
+    const urgent=s==='imminent'||s==='active';
+    el.innerHTML=`<div class="ncw-box s-${s}">
+      <span class="ncw-icon">${icon}</span>
+      <div class="ncw-info">
+        <div class="ncw-label">${label}</div>
+        <div class="ncw-mat">${c.mat} <span style="font-weight:400;font-size:.75rem">grp.${c.grp}</span></div>
+        <div class="ncw-sub">📍 ${c.aula} — ${lab?lab.name:''} · ${c.inicio}–${c.fin}</div>
+      </div>
+      <div class="ncw-timer${urgent?' urgent':''}">${timerTxt}</div>
+    </div>`;
+  }
+
   function updateOccupancy(){
     const today=todayName();
     // Count unique labs occupied right now
@@ -1388,10 +1462,31 @@ document.addEventListener('DOMContentLoaded',function(){
   if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
   if('serviceWorker'in navigator){
     navigator.serviceWorker.register('sw.js').then(reg=>{
-      // When SW is ready, send current config
       navigator.serviceWorker.ready.then(()=>syncConfigToSW());
+      // Detect new SW waiting = new version available
+      reg.addEventListener('updatefound',()=>{
+        const newSW=reg.installing;
+        newSW.addEventListener('statechange',()=>{
+          if(newSW.state==='installed'&&navigator.serviceWorker.controller){
+            // New version ready — show banner
+            document.getElementById('update-banner').classList.add('show');
+            window._pendingSW=newSW;
+          }
+        });
+      });
+    });
+    // Listen for SW telling us to reload after activation
+    navigator.serviceWorker.addEventListener('message',e=>{
+      if(e.data&&e.data.type==='RELOAD') window.location.reload();
     });
   }
+  window.applyUpdate=function(){
+    if(window._pendingSW){
+      window._pendingSW.postMessage({type:'SKIP_WAITING'});
+    } else {
+      window.location.reload();
+    }
+  };
   filterDia=todayName();
   document.getElementById('filterDia').value=todayName();
   const autoFranja=getCurrentFranja();
@@ -1401,8 +1496,57 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('fs-hora').value=autoFranja;
   }
   updateClock();render();
-  setInterval(()=>{updateClock();checkAlerts();},1000);
+  setInterval(()=>{updateClock();checkAlerts();updateNextWidget();},1000);
   setInterval(render,60000);
+
+  // ══ COMPARTIR WHATSAPP ══
+  window.shareWhatsApp = function(){
+    const today=todayName();
+    // Build text from current filtered view
+    let filtered=classes.filter(c=>{
+      if(filterDia&&c.dia!==filterDia)return false;
+      if(filterEdificio&&!c.aula.startsWith(filterEdificio))return false;
+      if(filterLab&&c.aula!==filterLab)return false;
+      if(filterMateria&&!(c.mat+c.grp).toLowerCase().includes(filterMateria.toLowerCase()))return false;
+      if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
+      if(favOnly&&!favorites.has(c.aula))return false;
+      return true;
+    });
+    if(!filtered.length){alert('No hay clases con los filtros actuales para compartir.');return;}
+
+    // Group by day then sort by time
+    const byDia={};
+    filtered.forEach(c=>{
+      if(!byDia[c.dia])byDia[c.dia]=[];
+      byDia[c.dia].push(c);
+    });
+    const DIAS_ORDER=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    let text='🎓 *UTESA — Horarios de Laboratorios*
+';
+    text+='_'+new Date().toLocaleDateString('es-DO',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'_
+';
+    text+='━━━━━━━━━━━━━━━━━━━━
+';
+    DIAS_ORDER.forEach(dia=>{
+      if(!byDia[dia])return;
+      text+=`
+📅 *${dia}*
+`;
+      byDia[dia].sort((a,b)=>a.inicioM-b.inicioM).forEach(c=>{
+        const lab=LABS[c.aula];
+        const cred=c.durMin/45;
+        text+=`  📍 ${c.aula} — ${c.mat} grp.${c.grp}
+`;
+        text+=`  ⏰ ${c.inicio} → ${c.fin} (${cred} crédito${cred>1?'s':''})
+`;
+      });
+    });
+    text+='━━━━━━━━━━━━━━━━━━━━
+';
+    text+='📲 App: https://francisdominguez.github.io/horarios-laboratorios-utesa/';
+    const url='https://wa.me/?text='+encodeURIComponent(text);
+    window.open(url,'_blank');
+  };
 
   // ══ VIEW SWITCH ══
   let currentView = 'list';
@@ -1773,6 +1917,7 @@ document.addEventListener('DOMContentLoaded',function(){
   window.render = function(){
     __origRender();
     updateMobileStats();
+    updateNextWidget();
     if(currentView==='grid') renderGrid();
   };
 

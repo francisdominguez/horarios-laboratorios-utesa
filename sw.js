@@ -1,4 +1,4 @@
-const CACHE = 'utesa-labs-v14';
+const CACHE = 'utesa-labs-v13';
 const ASSETS = [
   '/horarios-laboratorios-utesa/',
   '/horarios-laboratorios-utesa/index.html',
@@ -511,6 +511,11 @@ function checkAndNotify(){
   });
 }
 
+// ── Skip waiting on demand from app ──
+self.addEventListener('message', e=>{
+  if(e.data&&e.data.type==='SKIP_WAITING') self.skipWaiting();
+});
+
 // ── Al tocar la notificación abre la app ──
 self.addEventListener('notificationclick', e=>{
   e.notification.close();
@@ -542,6 +547,10 @@ self.addEventListener('activate', e=>{
       Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))
     ).then(()=>{
       self.clients.claim();
+      // Notify all clients that new version is active
+      self.clients.matchAll({type:'window'}).then(cls=>{
+        cls.forEach(c=>c.postMessage({type:'RELOAD'}));
+      });
       if(_checkInterval)clearInterval(_checkInterval);
       _checkInterval=setInterval(checkAndNotify, 60000);
     })
