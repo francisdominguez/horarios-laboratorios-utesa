@@ -220,6 +220,15 @@
   .gv-block.s-imminent{background:rgba(255,107,53,.15);border-color:#ff6b35;animation:pulse-badge 2s infinite}
   .gv-block.s-upcoming{background:rgba(91,140,255,.12);border-color:#5b8cff}
   .gv-block.s-later{background:rgba(255,200,50,.09);border-color:#ffc832}
+  .group-sep{background:var(--surface2)!important}
+  .group-sep td{padding:.4rem .75rem;font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);font-weight:700}
+  .group-sep.sep-b td{color:#5b8cff;border-left:3px solid #5b8cff}
+  .group-sep.sep-c td{color:#ff6b35;border-left:3px solid #ff6b35}
+  th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+  th.sortable:hover{background:var(--surface)!important;color:var(--text)}
+  th.sortable::after{content:' ⇅';opacity:.3;font-size:.6rem}
+  th.sort-asc::after{content:' ↑';opacity:1;color:var(--accent)}
+  th.sort-desc::after{content:' ↓';opacity:1;color:var(--accent)}
   .gv-block.s-past{background:rgba(107,114,128,.07);border-color:var(--border);opacity:.55}
   .gv-block.s-nottoday{background:rgba(107,114,128,.05);border-color:var(--border)}
   .gv-block-top{display:flex;align-items:center;justify-content:space-between;gap:.3rem}
@@ -234,10 +243,9 @@
   .gv-now-line{position:absolute;left:0;right:0;height:2px;background:var(--accent);z-index:8;pointer-events:none}
   .gv-now-line::before{content:'';position:absolute;left:-4px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
   /* ── SHARE ── */
-  .share-btn{display:flex;align-items:center;gap:.4rem;background:#25D366;color:#fff;border:none;border-radius:10px;padding:.5rem .85rem;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;margin-bottom:.75rem;width:100%}
+  .share-btn{display:inline-flex;align-items:center;gap:.35rem;background:#25D366;color:#fff;border:none;border-radius:8px;padding:.38rem .7rem;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .15s;margin-bottom:.6rem}
   .share-btn:hover{filter:brightness(1.1)}
-  .share-btn svg{width:18px;height:18px;fill:#fff;flex-shrink:0}
-  @media(min-width:769px){.share-btn{width:auto}}
+  .share-btn svg{width:15px;height:15px;fill:#fff;flex-shrink:0}
 
   .view-toggle{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.2rem;gap:.2rem;margin-bottom:1rem}
   .vt-btn{flex:1;padding:.4rem;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.78rem;border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:.3rem}
@@ -275,6 +283,33 @@
   .as-input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.4rem .6rem;border-radius:8px;font-family:'Space Mono',monospace;font-size:.85rem;width:60px;outline:none;text-align:center}
   @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
+  /* ── ONBOARDING ── */
+  #onboarding{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem}
+  #onboarding.show{display:flex}
+  .ob-box{background:#1a1f2e;border:1px solid var(--accent);border-radius:20px;width:100%;max-width:420px;overflow:hidden}
+  .ob-progress{display:flex;gap:.35rem;padding:.85rem 1.25rem .5rem;justify-content:center}
+  .ob-dot{width:28px;height:4px;border-radius:2px;background:#3a4258;transition:background .3s}
+  .ob-dot.active{background:var(--accent)}
+  .ob-slide{padding:1.5rem 1.5rem 1rem;text-align:center;display:none}
+  .ob-slide.active{display:block}
+  .ob-icon{font-size:3rem;margin-bottom:.75rem}
+  .ob-title{font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:var(--accent);margin-bottom:.5rem}
+  .ob-desc{font-size:.85rem;color:#a0a8bf;line-height:1.6;margin-bottom:1rem}
+  .ob-actions{display:flex;gap:.5rem;padding:.75rem 1.25rem 1.25rem}
+  .ob-skip{flex:1;background:transparent;border:1px solid #3a4258;color:#a0a8bf;padding:.6rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer}
+  .ob-next{flex:2;background:var(--accent);color:#000;border:none;padding:.6rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:filter .15s}
+  .ob-next:hover{filter:brightness(1.1)}
+
+  /* ── BÚSQUEDA GLOBAL ── */
+  #global-search-wrap{position:relative;margin-bottom:.75rem}
+  #global-search{width:100%;background:var(--surface);border:1.5px solid var(--border);color:var(--text);padding:.65rem 2.5rem .65rem .95rem;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;box-sizing:border-box;transition:border-color .2s}
+  #global-search:focus{border-color:var(--accent)}
+  #global-search::placeholder{color:var(--muted)}
+  #gs-clear{position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:.2rem;display:none}
+  #gs-clear.show{display:block}
+  #gs-count{font-size:.7rem;color:var(--muted);margin-top:.3rem;font-family:'Space Mono',monospace;display:none}
+  #gs-count.show{display:block}
+
   /* ── UPDATE BANNER ── */
   #update-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,#1a3a5c,#0d2137);border-bottom:2px solid var(--accent);padding:.7rem 1rem;display:none;align-items:center;gap:.75rem;animation:slideDown .3s ease}
   #update-banner.show{display:flex}
@@ -286,20 +321,7 @@
   @keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
 
   /* ── WIDGET PRÓXIMA CLASE ── */
-  #next-class-widget{margin-bottom:1rem;animation:fadeUp .5s ease both}
-  .ncw-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:.85rem 1rem;display:flex;align-items:center;gap:.85rem;position:relative;overflow:hidden}
-  .ncw-box::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);border-radius:4px 0 0 4px}
-  .ncw-box.s-active::before{background:#00e5a0}
-  .ncw-box.s-imminent::before{background:#ff6b35;animation:pulse-badge 1.5s infinite}
-  .ncw-box.s-upcoming::before{background:#5b8cff}
-  .ncw-icon{font-size:1.6rem;flex-shrink:0}
-  .ncw-info{flex:1;min-width:0}
-  .ncw-label{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'Space Mono',monospace;margin-bottom:.2rem}
-  .ncw-mat{font-family:'Space Mono',monospace;font-size:.88rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ncw-sub{font-size:.72rem;color:var(--muted);margin-top:.15rem}
-  .ncw-timer{font-family:'Space Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--accent);flex-shrink:0;text-align:right;min-width:70px}
-  .ncw-timer.urgent{color:#ff6b35}
-  .ncw-empty{font-size:.8rem;color:var(--muted);text-align:center;padding:.5rem;font-family:'Space Mono',monospace}
+
 
   /* ── WEEK VIEW MODAL ── */
   #week-modal{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem}
@@ -385,6 +407,41 @@
 </style>
 </head>
 <body>
+<div id="onboarding">
+  <div class="ob-box">
+    <div class="ob-progress">
+      <div class="ob-dot active" id="ob-dot-0"></div>
+      <div class="ob-dot" id="ob-dot-1"></div>
+      <div class="ob-dot" id="ob-dot-2"></div>
+      <div class="ob-dot" id="ob-dot-3"></div>
+    </div>
+    <div class="ob-slide active" id="ob-slide-0">
+      <div class="ob-icon">🎓</div>
+      <div class="ob-title">Bienvenido a UTESA Labs</div>
+      <div class="ob-desc">Consulta los horarios de los 28 laboratorios de los edificios B y C en tiempo real. Te mostramos en 3 pasos cómo sacarle el máximo provecho.</div>
+    </div>
+    <div class="ob-slide" id="ob-slide-1">
+      <div class="ob-icon">🔍</div>
+      <div class="ob-title">Filtra lo que necesitas</div>
+      <div class="ob-desc">Usa la búsqueda rápida para encontrar cualquier lab, materia o grupo al instante. O toca <strong>🔍 Filtrar por</strong> en la barra inferior para filtrar por edificio, día, horario y más.</div>
+    </div>
+    <div class="ob-slide" id="ob-slide-2">
+      <div class="ob-icon">⏰</div>
+      <div class="ob-title">Activa las alertas</div>
+      <div class="ob-desc">Toca <strong>⏰ Alertas</strong> en la barra inferior para recibir notificaciones antes de que empiece una clase — incluso con el teléfono bloqueado en Android.</div>
+    </div>
+    <div class="ob-slide" id="ob-slide-3">
+      <div class="ob-icon">⭐</div>
+      <div class="ob-title">Marca tus favoritos</div>
+      <div class="ob-desc">Toca la <strong>☆</strong> junto a cualquier laboratorio para marcarlo como favorito. Aparecerá siempre primero y podrás filtrar solo tus labs con un toque.</div>
+    </div>
+    <div class="ob-actions">
+      <button class="ob-skip" onclick="closeOnboarding()">Saltar</button>
+      <button class="ob-next" id="ob-next-btn" onclick="obNext()">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
 <div id="update-banner">
   <span class="upd-text">🆕 <strong>Nueva versión disponible</strong> — hay cambios en los horarios</span>
   <button class="upd-btn" onclick="applyUpdate()">Actualizar</button>
@@ -522,7 +579,6 @@
     <span class="stat-sep">·</span>
     <div class="stat"><span class="stat-val" id="statToday">0</span><span class="stat-lbl" id="statTodayLbl">hoy</span></div>
   </div>
-  <div id="next-class-widget"></div>
   <div id="occupancy-bar" style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;padding:.85rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;animation:fadeUp .6s .28s ease both">
     <div style="display:flex;align-items:center;gap:.5rem">
       <span style="width:10px;height:10px;border-radius:50%;background:#00e5a0;display:inline-block;box-shadow:0 0 6px #00e5a0"></span>
@@ -544,13 +600,19 @@
       <span id="occ-total" style="font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;color:var(--muted)">0</span>
     </div>
   </div>
-  <button class="share-btn" onclick="shareWhatsApp()">
+  <div id="global-search-wrap">
+    <input id="global-search" type="search" placeholder="🔍 Buscar aula, materia, grupo, día, hora..." oninput="onGlobalSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button id="gs-clear" onclick="clearGlobalSearch()" title="Limpiar">✕</button>
+  </div>
+  <div id="gs-count"></div>
+  <button class="share-btn" onclick="shareWhatsApp()" title="Compartir horario por WhatsApp">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.554 4.122 1.528 5.862L0 24l6.306-1.508A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.887 9.887 0 01-5.044-1.379l-.361-.214-3.742.894.926-3.646-.235-.374A9.855 9.855 0 012.108 12C2.108 6.53 6.53 2.108 12 2.108c5.472 0 9.893 4.422 9.893 9.892 0 5.472-4.421 9.894-9.893 9.894z"/></svg>
-    Compartir horario por WhatsApp
+    Compartir horario
   </button>
   <div class="view-toggle" id="view-toggle">
     <button class="vt-btn active" id="vt-list" onclick="switchView('list')">📋 Lista</button>
     <button class="vt-btn" id="vt-grid" onclick="switchView('grid')">📊 Cuadrícula</button>
+    <button class="vt-btn" id="vt-group" onclick="toggleGroupEdificio()">🏷️ Agrupar</button>
   </div>
   <div id="grid-view"></div>
   <div id="table-section" class="table-wrapper">
@@ -1049,8 +1111,10 @@ const classes=raw.map(c=>({
 }));
 
 document.addEventListener('DOMContentLoaded',function(){
-  let filterDia='',filterLab='',filterMateria='',filterHora='',filterEdificio='',filterEstado='',alertEnabled=true,alertMinutes=15;
-  let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true, endAlertEnabled=true, noMolestar=false, noMolestarStart=22, noMolestarEnd=7;
+  let sortCol='', sortDir=1, groupByEdificio=false;
+  let filterDia='',filterLab='',filterMateria='',filterHora='',filterEdificio='',filterEstado='',globalSearch='',alertEnabled=true,alertMinutes=15;
+  let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true, endAlertEnabled=true, noMolestar=false, noMolestarStart=22, noMolestarEnd=7, repeatAlert=false;
+  const notifiedRepeat={}; // key -> last repeat time
   let favorites=new Set(JSON.parse(localStorage.getItem('utesa-favs')||'[]')), favOnly=false;
   function saveFavs(){localStorage.setItem('utesa-favs',JSON.stringify([...favorites]));}
   function toggleFav(aula){
@@ -1084,38 +1148,6 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 
 
-
-  function updateNextWidget(){
-    const el=document.getElementById('next-class-widget');
-    if(!el)return;
-    const today=todayName(), m=nowM();
-    // Find active class first, then next upcoming
-    let active=null, next=null;
-    classes.forEach(c=>{
-      if(c.dia!==today)return;
-      if(m>=c.inicioM&&m<c.finM){if(!active)active=c;}
-      else if(c.inicioM>m){if(!next||c.inicioM<next.inicioM)next=c;}
-    });
-    const c=active||next;
-    if(!c){el.innerHTML='<div class="ncw-box"><span class="ncw-empty">No hay más clases hoy</span></div>';return;}
-    const s=getStatus(c);
-    const lab=LABS[c.aula];
-    const icon=s==='active'?'🟢':s==='imminent'?'⚡':'📍';
-    const label=s==='active'?'En curso ahora':'Próxima clase';
-    const timerTxt=s==='active'
-      ?`Termina en ${(()=>{const d=c.finM-m;const h=Math.floor(d/60),mn=d%60;return h?`${h}h ${mn}min`:mn+'min';})()}`
-      :timeUntil(c);
-    const urgent=s==='imminent'||s==='active';
-    el.innerHTML=`<div class="ncw-box s-${s}">
-      <span class="ncw-icon">${icon}</span>
-      <div class="ncw-info">
-        <div class="ncw-label">${label}</div>
-        <div class="ncw-mat">${c.mat} <span style="font-weight:400;font-size:.75rem">grp.${c.grp}</span></div>
-        <div class="ncw-sub">📍 ${c.aula} — ${lab?lab.name:''} · ${c.inicio}–${c.fin}</div>
-      </div>
-      <div class="ncw-timer${urgent?' urgent':''}">${timerTxt}</div>
-    </div>`;
-  }
 
   function updateOccupancy(){
     const today=todayName();
@@ -1156,6 +1188,13 @@ document.addEventListener('DOMContentLoaded',function(){
       // Favorites always first
       const favA=favorites.has(a.aula)?0:1, favB=favorites.has(b.aula)?0:1;
       if(favA!==favB)return favA-favB;
+      // Custom sort column
+      if(sortCol){
+        let vA=a[sortCol]??'', vB=b[sortCol]??'';
+        if(sortCol==='creditos'){vA=a.durMin/45;vB=b.durMin/45;}
+        if(typeof vA==='number') return (vA-vB)*sortDir;
+        return String(vA).localeCompare(String(vB))*sortDir;
+      }
       const rank=s=>({active:0,imminent:1,upcoming:2,later:3}[s]??4);
       const pA=a.dia===todayName()&&getStatus(a)==='past',pB=b.dia===todayName()&&getStatus(b)==='past';
       if(pA&&!pB)return 1;if(!pA&&pB)return-1;
@@ -1185,10 +1224,33 @@ document.addEventListener('DOMContentLoaded',function(){
     }
     // Hoy dinámico según filtro
     document.getElementById('statToday').textContent=filtered.filter(c=>c.dia===todayName()).length;
+    // Update search count
+    const gsCount=document.getElementById('gs-count');
+    if(globalSearch){
+      gsCount.textContent=`${filtered.length} resultado${filtered.length!==1?'s':''} para "${globalSearch}"`;
+      gsCount.classList.add('show');
+    } else {
+      gsCount.classList.remove('show');
+    }
     updateOccupancy();
     if(!filtered.length){empty.classList.add('show');return;}
     empty.classList.remove('show');
-    filtered.forEach((c,i)=>{
+    // Group by edificio if enabled
+    let renderList = filtered;
+    if(groupByEdificio && !sortCol){
+      const bList = filtered.filter(c=>c.aula.startsWith('B'));
+      const cList = filtered.filter(c=>c.aula.startsWith('C'));
+      renderList = [{__sep:'B',__label:'🔵 Edificio B'}, ...bList, {__sep:'C',__label:'🟠 Edificio C'}, ...cList];
+    }
+
+    renderList.forEach((c,i)=>{
+      if(c.__sep){
+        const sepRow=document.createElement('tr');
+        sepRow.className=`group-sep sep-${c.__sep.toLowerCase()}`;
+        sepRow.innerHTML=`<td colspan="10">${c.__label}</td>`;
+        tbody.appendChild(sepRow);
+        return;
+      }
       const s=getStatus(c),tr=document.createElement('tr');
       const bldg=c.aula.startsWith('B')?'bldg-b':'bldg-c';
       tr.className=bldg;
@@ -1349,6 +1411,9 @@ document.addEventListener('DOMContentLoaded',function(){
 
   function checkAlerts(){
     if(!alertEnabled)return;
+    // Skip if today has no classes at all
+    const todayHasClasses = classes.some(c=>c.dia===todayName());
+    if(!todayHasClasses)return;
     // No molestar
     if(noMolestar){
       const h=new Date().getHours();
@@ -1369,6 +1434,7 @@ document.addEventListener('DOMContentLoaded',function(){
       // Upcoming alert
       if(diff>0&&diff<=alertMinutes&&!notified.has(key)){
         notified.add(key);
+        if(repeatAlert) notifiedRepeat[key]=Date.now();
         pending.push({c,diff});
       }
       // Ended alert: within 2 min after class ended
@@ -1377,6 +1443,20 @@ document.addEventListener('DOMContentLoaded',function(){
         ended.push({c});
       }
     });
+    // Repeat alerts every 5 minutes if still pending
+    if(repeatAlert){
+      const repeatPending=[];
+      classes.forEach(c=>{
+        if(c.dia!==today)return;
+        const diff=c.inicioM-m;
+        const key=`${c.aula}-${c.mat}${c.grp}-${c.inicio}`;
+        if(diff>0&&diff<=alertMinutes&&notifiedRepeat[key]&&(Date.now()-notifiedRepeat[key])>=300000){
+          notifiedRepeat[key]=Date.now();
+          repeatPending.push({c,diff});
+        }
+      });
+      if(repeatPending.length>0)showToast(repeatPending);
+    }
     if(pending.length>0)showToast(pending);
     if(ended.length>0)showEndToast(ended);
     if(!classes.some(c=>{if(c.dia!==today)return false;const d=c.inicioM-m;return d>0&&d<=alertMinutes;}))
@@ -1521,7 +1601,7 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('fs-hora').value=autoFranja;
   }
   updateClock();render();
-  setInterval(()=>{updateClock();checkAlerts();updateNextWidget();},1000);
+  setInterval(()=>{updateClock();checkAlerts();},1000);
   setInterval(render,60000);
 
   // ══ COMPARTIR WHATSAPP ══
@@ -1561,6 +1641,44 @@ document.addEventListener('DOMContentLoaded',function(){
     window.open(url,"_blank");
   };
 
+  // ══ AGRUPAR POR EDIFICIO ══
+  window.toggleGroupEdificio = function() {
+    groupByEdificio = !groupByEdificio;
+    document.getElementById('vt-group').classList.toggle('active', groupByEdificio);
+    render();
+  };
+
+  // ══ ORDENAR COLUMNAS ══
+  window.sortBy = function(col) {
+    if(sortCol===col) sortDir*=-1;
+    else { sortCol=col; sortDir=1; }
+    // Update header classes
+    document.querySelectorAll('th.sortable').forEach(th=>{
+      th.classList.remove('sort-asc','sort-desc');
+    });
+    const colMap={'aula':0,'mat':1,'grp':2,'dia':3,'inicio':4,'fin':5,'durMin':6,'creditos':7};
+    const idx=colMap[col];
+    if(idx!==undefined){
+      const ths=document.querySelectorAll('th.sortable');
+      if(ths[idx]){ths[idx].classList.add(sortDir===1?'sort-asc':'sort-desc');}
+    }
+    render();
+  };
+
+  // ══ BÚSQUEDA GLOBAL ══
+  window.onGlobalSearch = function(val) {
+    globalSearch = val.trim();
+    document.getElementById('gs-clear').classList.toggle('show', !!globalSearch);
+    render();
+  };
+  window.clearGlobalSearch = function() {
+    globalSearch = '';
+    document.getElementById('global-search').value = '';
+    document.getElementById('gs-clear').classList.remove('show');
+    document.getElementById('gs-count').classList.remove('show');
+    render();
+  };
+
   // ══ VIEW SWITCH ══
   let currentView = 'list';
   window.switchView = function(v) {
@@ -1583,6 +1701,11 @@ document.addEventListener('DOMContentLoaded',function(){
       if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
       if(favOnly&&!favorites.has(c.aula))return false;
       if(filterEstado){const s=getStatus(c);if(s!==filterEstado)return false;}
+      if(globalSearch){
+        const q=globalSearch.toLowerCase();
+        const haystack=(c.aula+' '+c.mat+' '+c.grp+' '+c.dia+' '+c.inicio+' '+c.fin).toLowerCase();
+        if(!haystack.includes(q))return false;
+      }
       return true;
     });
 
@@ -1739,6 +1862,7 @@ document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('as-enabled').checked = alertEnabled;
     document.getElementById('as-sound').checked = soundEnabled;
     document.getElementById('as-end-enabled').checked = endAlertEnabled;
+    document.getElementById('as-repeat').checked = repeatAlert;
     document.getElementById('as-nomolestar').checked = noMolestar;
     document.getElementById('as-nomolestar-horario').style.display = noMolestar ? '' : 'none';
     document.getElementById('as-nm-start').value = noMolestarStart;
@@ -1761,6 +1885,7 @@ document.addEventListener('DOMContentLoaded',function(){
   window.syncAlertMinutes = function(el) { alertMinutes=parseInt(el.value)||15; document.getElementById('alertMinutes').value=el.value; syncConfigToSW(); };
   window.syncAlertSound = function(el) { soundEnabled=el.checked; };
   window.syncEndAlert = function(el) { endAlertEnabled=el.checked; syncConfigToSW(); };
+  window.syncRepeatAlert = function(el) { repeatAlert=el.checked; };
   function syncConfigToSW(){
     if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;
     navigator.serviceWorker.controller.postMessage({
@@ -1868,6 +1993,31 @@ document.addEventListener('DOMContentLoaded',function(){
       setTimeout(()=>{ btn.innerHTML = '📋 Copiar horario al portapapeles'; }, 2000);
     });
   };
+
+  // ══ ONBOARDING ══
+  let obStep = 0;
+  const OB_TOTAL = 4;
+
+  function showOnboarding(){
+    if(localStorage.getItem('utesa-onboarded')) return;
+    document.getElementById('onboarding').classList.add('show');
+  }
+
+  window.obNext = function(){
+    obStep++;
+    if(obStep >= OB_TOTAL){ closeOnboarding(); return; }
+    document.querySelectorAll('.ob-slide').forEach((s,i)=>s.classList.toggle('active',i===obStep));
+    document.querySelectorAll('.ob-dot').forEach((d,i)=>d.classList.toggle('active',i===obStep));
+    document.getElementById('ob-next-btn').textContent = obStep===OB_TOTAL-1 ? '¡Entendido! ✓' : 'Siguiente →';
+  };
+
+  window.closeOnboarding = function(){
+    document.getElementById('onboarding').classList.remove('show');
+    localStorage.setItem('utesa-onboarded','1');
+  };
+
+  // Show after 800ms on first visit
+  setTimeout(showOnboarding, 800);
 
   // ══ COMPARE CUATRIMESTRES ══
   function getSnapshots(){
@@ -2003,7 +2153,6 @@ document.addEventListener('DOMContentLoaded',function(){
   window.render = function(){
     __origRender();
     updateMobileStats();
-    updateNextWidget();
     if(currentView==='grid') renderGrid();
   };
 
@@ -2222,6 +2371,13 @@ document.addEventListener('DOMContentLoaded',function(){
         <div class="as-row-sub">Tono al alertar clase</div>
       </div>
       <label class="toggle"><input type="checkbox" id="as-sound" checked onchange="syncAlertSound(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">🔁 Repetir alerta</div>
+        <div class="as-row-sub">Volver a notificar cada 5 min si no tocas</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="as-repeat" onchange="syncRepeatAlert(this)"><span class="toggle-slider"></span></label>
     </div>
     <div class="as-row">
       <div>
