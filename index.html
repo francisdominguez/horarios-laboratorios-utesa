@@ -20,6 +20,20 @@
   [data-theme="sepia"]{--bg:#f5efe6;--surface:#fdf8f0;--surface2:#ede8df;--border:#d4c9b8;--accent:#a0722a;--accent2:#c0522a;--accent3:#7a6abf;--text:#3b2f1e;--muted:#8a7560;--header-bg:rgba(245,239,230,.95)}
   /* ── TEMA UTESA ── */
   [data-theme="utesa"]{--bg:#0a1a0a;--surface:#0f2410;--surface2:#162d17;--border:#1e3d20;--accent:#6db33f;--accent2:#f5c200;--accent3:#4caf50;--text:#e8f5e9;--muted:#81a682;--header-bg:rgba(10,26,10,.93)}
+  [data-theme="ocean"]{--bg:#050d1a;--surface:#0a1628;--surface2:#0f1f38;--border:#1a2f50;--accent:#00b4d8;--accent2:#f77f00;--accent3:#7b2fff;--text:#e0f4ff;--muted:#5b8fa8;--header-bg:rgba(5,13,26,.93)}
+  [data-theme="purple"]{--bg:#0d0a1a;--surface:#130f24;--surface2:#1a1530;--border:#2a2040;--accent:#a855f7;--accent2:#f472b6;--accent3:#60a5fa;--text:#f3e8ff;--muted:#7c6a9a;--header-bg:rgba(13,10,26,.93)}
+  [data-theme="red"]{--bg:#120a0a;--surface:#1e0f0f;--surface2:#261414;--border:#3d1c1c;--accent:#ef4444;--accent2:#f59e0b;--accent3:#fb923c;--text:#fff1f1;--muted:#9a6b6b;--header-bg:rgba(18,10,10,.93)}
+  /* Font size */
+  html[data-font="sm"]{font-size:13px}
+  html[data-font="md"]{font-size:15px}
+  html[data-font="lg"]{font-size:17px}
+  /* Custom background */
+  body.bg-gradient-ocean{background:linear-gradient(135deg,#050d1a 0%,#0a1628 50%,#050d1a 100%)!important;background-attachment:fixed!important}
+  body.bg-gradient-purple{background:linear-gradient(135deg,#0d0a1a 0%,#1a0d2e 50%,#0d0a1a 100%)!important;background-attachment:fixed!important}
+  body.bg-gradient-sunset{background:linear-gradient(135deg,#1a0a05 0%,#2a0f0f 40%,#1a0a1a 100%)!important;background-attachment:fixed!important}
+  body.bg-gradient-forest{background:linear-gradient(135deg,#0a1a0a 0%,#0f2410 50%,#0a1a0a 100%)!important;background-attachment:fixed!important}
+  body.bg-gradient-midnight{background:linear-gradient(135deg,#000005 0%,#050520 50%,#050510 100%)!important;background-attachment:fixed!important}
+  body.bg-gradient-none{}
 
   .theme-switcher{display:flex;align-items:center;gap:.3rem;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:.25rem .35rem}
   .theme-btn{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0}
@@ -186,7 +200,7 @@
   /* Theme picker popover */
   #theme-picker{position:fixed;inset:0;z-index:600}
   .tp-overlay{position:absolute;inset:0}
-  .tp-box{position:absolute;bottom:68px;right:.75rem;background:#1a1f2e;border:1px solid var(--accent);border-radius:16px;padding:.75rem;min-width:160px;box-shadow:0 -4px 24px rgba(0,0,0,.7);animation:tpIn .2s cubic-bezier(.32,.72,0,1)}
+  .tp-box{position:absolute;bottom:68px;right:.75rem;background:#1a1f2e;border:1px solid var(--accent);border-radius:16px;padding:.75rem;min-width:210px;max-height:80vh;overflow-y:auto;box-shadow:0 -4px 24px rgba(0,0,0,.7);animation:tpIn .2s cubic-bezier(.32,.72,0,1)}
   .tp-title{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.6rem;padding:0 .25rem}
   .tp-options{display:flex;flex-direction:column;gap:.25rem}
   .tp-opt{display:flex;align-items:center;gap:.6rem;background:transparent;border:1px solid transparent;border-radius:10px;padding:.5rem .6rem;cursor:pointer;width:100%;transition:all .15s}
@@ -197,6 +211,21 @@
   .tp-dot[data-t="light"]{background:radial-gradient(circle at 30% 30%,#ffffff,#d1d5db)}
   .tp-dot[data-t="sepia"]{background:radial-gradient(circle at 30% 30%,#fdf8f0,#c4a882)}
   .tp-dot[data-t="utesa"]{background:radial-gradient(circle at 30% 30%,#6db33f,#f5c200)}
+  .tp-dot[data-t="ocean"]{background:radial-gradient(circle at 30% 30%,#00b4d8,#050d1a)}
+  .tp-dot[data-t="purple"]{background:radial-gradient(circle at 30% 30%,#a855f7,#0d0a1a)}
+  .tp-dot[data-t="red"]{background:radial-gradient(circle at 30% 30%,#ef4444,#120a0a)}
+  /* Font size picker */
+  .tp-section{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:.6rem 0 .3rem;padding:0 .25rem}
+  .tp-font-row{display:flex;gap:.3rem;margin-bottom:.5rem}
+  .tp-font-btn{flex:1;background:transparent;border:1px solid #3a4258;color:#a0a8bf;padding:.35rem;border-radius:7px;font-family:'DM Sans',sans-serif;cursor:pointer;font-size:.78rem;transition:all .15s;text-align:center}
+  .tp-font-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(0,229,160,.08)}
+  .tp-bg-row{display:flex;flex-direction:column;gap:.2rem;margin-bottom:.3rem}
+  .tp-bg-opt{display:flex;align-items:center;gap:.5rem;background:transparent;border:1px solid transparent;border-radius:8px;padding:.35rem .5rem;cursor:pointer;transition:all .15s;width:100%}
+  .tp-bg-opt:hover{background:rgba(255,255,255,.05)}
+  .tp-bg-opt.active{border-color:var(--accent);background:rgba(0,229,160,.06)}
+  .tp-bg-swatch{width:18px;height:18px;border-radius:4px;flex-shrink:0}
+  .tp-bg-label{font-size:.78rem;color:#e8eaf0;font-family:'DM Sans',sans-serif}
+  .tp-bg-opt.active .tp-bg-label{color:var(--accent)}
   .tp-label{font-family:'DM Sans',sans-serif;font-size:.82rem;color:#e8eaf0;flex:1;text-align:left}
   .tp-check{font-size:.75rem;color:var(--accent);opacity:0;transition:opacity .15s}
   .tp-opt.active .tp-check{opacity:1}
@@ -1277,7 +1306,33 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 
   // ── TEMAS ──
-  const THEMES=['dark','light','sepia','utesa'];
+  const THEMES=['dark','light','sepia','utesa','ocean','purple','red'];
+  let currentBg = localStorage.getItem('utesa-bg')||'none';
+  let currentFont = localStorage.getItem('utesa-font')||'md';
+
+  window.setFontSize = function(size) {
+    currentFont = size;
+    document.documentElement.setAttribute('data-font', size);
+    localStorage.setItem('utesa-font', size);
+    document.querySelectorAll('.tp-font-btn').forEach(b=>b.classList.toggle('active', b.id===`tp-font-${size}`));
+  };
+
+  window.setBg = function(bg) {
+    currentBg = bg;
+    localStorage.setItem('utesa-bg', bg);
+    document.body.className = document.body.className.replace(/bg-gradient-\w+/g,'').trim();
+    if(bg!=='none') document.body.classList.add(`bg-gradient-${bg}`);
+    document.querySelectorAll('.tp-bg-opt').forEach(b=>b.classList.toggle('active', b.id===`tp-bg-${bg}`));
+  };
+
+  // Restore font and bg on load
+  (function(){
+    const f=localStorage.getItem('utesa-font')||'md';
+    const b=localStorage.getItem('utesa-bg')||'none';
+    if(f!=='md') document.documentElement.setAttribute('data-font',f);
+    if(b!=='none') document.body.classList.add(`bg-gradient-${b}`);
+  })();
+
   window.setTheme=function(t){
     if(!THEMES.includes(t))t='dark';
     document.documentElement.setAttribute('data-theme',t==='dark'?'':t);
@@ -1917,6 +1972,10 @@ document.addEventListener('DOMContentLoaded',function(){
     if(p.style.display==='none'||!p.style.display){
       p.style.display='block';
       document.getElementById('bnav-theme-btn').classList.add('active');
+      // Sync font buttons
+      document.querySelectorAll('.tp-font-btn').forEach(b=>b.classList.toggle('active',b.id===`tp-font-${currentFont}`));
+      // Sync bg buttons
+      document.querySelectorAll('.tp-bg-opt').forEach(b=>b.classList.toggle('active',b.id===`tp-bg-${currentBg}`));
     } else {
       closeThemePicker();
     }
@@ -2188,25 +2247,59 @@ document.addEventListener('DOMContentLoaded',function(){
     <div class="tp-box">
       <div class="tp-title">Apariencia</div>
       <div class="tp-options">
-        <button class="tp-opt active" data-t="dark" onclick="setTheme('dark');closeThemePicker()">
-          <span class="tp-dot" data-t="dark"></span>
-          <span class="tp-label">Oscuro</span>
-          <span class="tp-check">✓</span>
+        <button class="tp-opt active" data-t="dark" onclick="setTheme('dark')">
+          <span class="tp-dot" data-t="dark"></span><span class="tp-label">Oscuro</span><span class="tp-check">✓</span>
         </button>
-        <button class="tp-opt" data-t="light" onclick="setTheme('light');closeThemePicker()">
-          <span class="tp-dot" data-t="light"></span>
-          <span class="tp-label">Claro</span>
-          <span class="tp-check">✓</span>
+        <button class="tp-opt" data-t="light" onclick="setTheme('light')">
+          <span class="tp-dot" data-t="light"></span><span class="tp-label">Claro</span><span class="tp-check">✓</span>
         </button>
-        <button class="tp-opt" data-t="sepia" onclick="setTheme('sepia');closeThemePicker()">
-          <span class="tp-dot" data-t="sepia"></span>
-          <span class="tp-label">Sepia</span>
-          <span class="tp-check">✓</span>
+        <button class="tp-opt" data-t="sepia" onclick="setTheme('sepia')">
+          <span class="tp-dot" data-t="sepia"></span><span class="tp-label">Sepia</span><span class="tp-check">✓</span>
         </button>
-        <button class="tp-opt" data-t="utesa" onclick="setTheme('utesa');closeThemePicker()">
-          <span class="tp-dot" data-t="utesa"></span>
-          <span class="tp-label">UTESA</span>
-          <span class="tp-check">✓</span>
+        <button class="tp-opt" data-t="utesa" onclick="setTheme('utesa')">
+          <span class="tp-dot" data-t="utesa"></span><span class="tp-label">UTESA</span><span class="tp-check">✓</span>
+        </button>
+        <button class="tp-opt" data-t="ocean" onclick="setTheme('ocean')">
+          <span class="tp-dot" data-t="ocean"></span><span class="tp-label">Océano</span><span class="tp-check">✓</span>
+        </button>
+        <button class="tp-opt" data-t="purple" onclick="setTheme('purple')">
+          <span class="tp-dot" data-t="purple"></span><span class="tp-label">Púrpura</span><span class="tp-check">✓</span>
+        </button>
+        <button class="tp-opt" data-t="red" onclick="setTheme('red')">
+          <span class="tp-dot" data-t="red"></span><span class="tp-label">Rojo</span><span class="tp-check">✓</span>
+        </button>
+      </div>
+      <div class="tp-section">Tamaño de texto</div>
+      <div class="tp-font-row">
+        <button class="tp-font-btn" id="tp-font-sm" onclick="setFontSize('sm')">A pequeño</button>
+        <button class="tp-font-btn active" id="tp-font-md" onclick="setFontSize('md')">A normal</button>
+        <button class="tp-font-btn" id="tp-font-lg" onclick="setFontSize('lg')">A grande</button>
+      </div>
+      <div class="tp-section">Fondo</div>
+      <div class="tp-bg-row">
+        <button class="tp-bg-opt active" id="tp-bg-none" onclick="setBg('none')">
+          <span class="tp-bg-swatch" style="background:#0a0c10;border:1px solid #333"></span>
+          <span class="tp-bg-label">Por defecto</span>
+        </button>
+        <button class="tp-bg-opt" id="tp-bg-ocean" onclick="setBg('ocean')">
+          <span class="tp-bg-swatch" style="background:linear-gradient(135deg,#050d1a,#0a1628)"></span>
+          <span class="tp-bg-label">Océano profundo</span>
+        </button>
+        <button class="tp-bg-opt" id="tp-bg-purple" onclick="setBg('purple')">
+          <span class="tp-bg-swatch" style="background:linear-gradient(135deg,#0d0a1a,#1a0d2e)"></span>
+          <span class="tp-bg-label">Noche púrpura</span>
+        </button>
+        <button class="tp-bg-opt" id="tp-bg-sunset" onclick="setBg('sunset')">
+          <span class="tp-bg-swatch" style="background:linear-gradient(135deg,#1a0a05,#2a0f0f)"></span>
+          <span class="tp-bg-label">Atardecer</span>
+        </button>
+        <button class="tp-bg-opt" id="tp-bg-forest" onclick="setBg('forest')">
+          <span class="tp-bg-swatch" style="background:linear-gradient(135deg,#0a1a0a,#0f2410)"></span>
+          <span class="tp-bg-label">Bosque</span>
+        </button>
+        <button class="tp-bg-opt" id="tp-bg-midnight" onclick="setBg('midnight')">
+          <span class="tp-bg-swatch" style="background:linear-gradient(135deg,#000005,#050520)"></span>
+          <span class="tp-bg-label">Medianoche</span>
         </button>
       </div>
     </div>
