@@ -1,63 +1,31 @@
-// .github/scripts/send-notifications.js
+name: Push Notifications
 
-const path = require('path');
-const webpush = require('web-push');
+on:
+  schedule:
+    # Corre cada minuto de Lunes a Sábado, 7am-10pm hora RD (UTC-4 = 11am-2am UTC)
+    - cron: '* 11-23 * * 1-6'
+    - cron: '* 0-2 * * 2-7'
+  workflow_dispatch: # también se puede correr manualmente
 
-// Importa schedule-data.js usando __dirname para evitar problemas de ruta
-const scheduleData = require(path.join(__dirname, 'schedule-data.js'));
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-// Configuración de VAPID desde variables de entorno
-const vapidKeys = {
-  publicKey: process.env.VAPID_PUBLIC_KEY,
-  privateKey: process.env.VAPID_PRIVATE_KEY,
-};
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-webpush.setVapidDetails(
-  `mailto:${process.env.VAPID_EMAIL}`,
-  vapidKeys.publicKey,
-  vapidKeys.privateKey
-);
+      - name: Install dependencies
+        run: npm install web-push
 
-// Parsear las suscripciones desde el secret
-let subscriptions = [];
-try {
-  subscriptions = JSON.parse(process.env.SUBSCRIPTIONS || '[]');
-} catch (err) {
-  console.error('Error parseando SUBSCRIPTIONS:', err);
-  subscriptions = [];
-}
-
-// Función para enviar notificaciones
-async function sendNotifications() {
-  const now = new Date();
-  const day = now.getDay(); // 0 = domingo, 6 = sábado
-  const hour = now.getHours();
-
-  // Ignorar domingos y fuera de horario (ejemplo: 7am–10pm)
-  if (day === 0 || hour < 7 || hour > 22) {
-    console.log('Fuera de horario o domingo, no se envían notificaciones.');
-    return;
-  }
-
-  // Obtener mensajes desde schedule-data.js
-  const messages = scheduleData.getMessagesForTime(now);
-
-  if (!messages || messages.length === 0) {
-    console.log('No hay mensajes para enviar en este momento.');
-    return;
-  }
-
-  for (const subscription of subscriptions) {
-    for (const message of messages) {
-      try {
-        await webpush.sendNotification(subscription, JSON.stringify({ message }));
-        console.log('Notificación enviada:', message);
-      } catch (error) {
-        console.error('Error enviando notificación:', error);
-      }
-    }
-  }
-}
-
-// Ejecutar
-sendNotifications();
+      - name: Send notifications
+        env:
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_EMAIL: ${{ secrets.VAPID_EMAIL }}
+          SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
+        run: node .github/scripts/send-notifications.js
