@@ -1,5 +1,10 @@
+// .github/scripts/send-notifications.js
+
 const webpush = require('web-push');
-const { SLOTS, raw } = require('./schedule-data.js');
+const path = require('path');
+
+// Importa schedule-data.js usando __dirname para evitar problemas de ruta
+const { SLOTS, raw } = require(path.join(__dirname, 'schedule-data.js'));
 
 // ── CONFIG ──
 const VAPID_PUBLIC  = process.env.VAPID_PUBLIC_KEY;
