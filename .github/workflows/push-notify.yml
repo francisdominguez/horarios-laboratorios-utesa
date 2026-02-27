@@ -1,0 +1,30 @@
+name: Push Notifications
+
+on:
+  schedule:
+    # Cada 5 minutos, todos los días (el script ignora domingo y fuera de horario)
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # también se puede correr manualmente
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install web-push
+
+      - name: Send notifications
+        env:
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_EMAIL: ${{ secrets.VAPID_EMAIL }}
+          SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
+        run: node .github/scripts/send-notifications.js
