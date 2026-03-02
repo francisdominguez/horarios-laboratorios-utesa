@@ -1619,9 +1619,9 @@ document.addEventListener('DOMContentLoaded',function(){
     render();
   };
 
-  if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
-  // ── VAPID PUBLIC KEY — reemplaza con tu clave pública ──
-  const VAPID_PUBLIC_KEY = 'PEGA_AQUI_TU_CLAVE_PUBLICA';
+ if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+// ── VAPID PUBLIC KEY ──
+const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t02iV08QRErA0f5_sCmTAmVi2zlGhD4HrI';
 
   function urlBase64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
