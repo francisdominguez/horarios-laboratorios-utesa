@@ -1816,14 +1816,16 @@ const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t
     const maxSlot = Math.max(...filtered.map(c=>c.ei));
 
     // Build slot rows from minSlot to maxSlot
-    const slots = SLOTS.slice(minSlot, maxSlot+1);
+    const slots = SLOTS.slice(minSlot, maxSlot); // ei = primer slot libre, no incluir
 
-    // Build lookup: aula -> slot -> class
+    // Build lookup: aula -> slot -> array de clases
+    // Usamos array por slot para evitar sobreescritura cuando dos clases comparten el mismo si
     const lookup = {};
     filtered.forEach(c=>{
       if(!lookup[c.aula]) lookup[c.aula]={};
       for(let s=c.si; s<c.ei; s++){
-        lookup[c.aula][s]={c, isFirst:s===c.si, span:c.ei-c.si};
+        if(!lookup[c.aula][s]) lookup[c.aula][s]=[];
+        lookup[c.aula][s].push({c, isFirst:s===c.si, span:c.ei-c.si});
       }
     });
 
@@ -1848,25 +1850,32 @@ const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t
 
       labs.forEach(aula=>{
         if(rendered[aula][slotIdx]) return; // skip, covered by rowspan
-        const entry = lookup[aula]?.[slotIdx];
-        if(entry && entry.isFirst){
-          const {c, span} = entry;
-          const s = getStatus(c);
-          const isFav = favorites.has(c.aula);
-          // Mark future slots as rendered
-          for(let x=1;x<span;x++) rendered[aula][slotIdx+x]=true;
-          html2 += `<td class="gv-cell${isNowRow?' now-row':''}" rowspan="${span}">
-            <div class="gv-block s-${s||'nottoday'}" onclick="openModal('${c.aula}','${LABS[c.aula]?LABS[c.aula].name:''}','${LABS[c.aula]?LABS[c.aula].img:''}')">
-              <div class="gv-block-top">
-                <span class="gv-block-mat">${c.mat}</span>
-                ${isFav?'<span class="gv-block-fav">⭐</span>':''}
+        const entries = lookup[aula]?.[slotIdx]; // array o undefined
+        // Solo procesar entradas que son isFirst (inicio real de la clase)
+        const firstEntries = entries ? entries.filter(e=>e.isFirst) : [];
+        if(firstEntries.length > 0){
+          // Dibujar cada clase que empieza en este slot (normalmente 1, pero puede haber más)
+          firstEntries.forEach(({c, span})=>{
+            const s = getStatus(c);
+            const isFav = favorites.has(c.aula);
+            // Marcar slots futuros como rendered para esta aula
+            for(let x=1;x<span;x++) rendered[aula][slotIdx+x]=true;
+            html2 += `<td class="gv-cell${isNowRow?' now-row':''}" rowspan="${span}">
+              <div class="gv-block s-${s||'nottoday'}" onclick="openModal('${c.aula}','${LABS[c.aula]?LABS[c.aula].name:''}','${LABS[c.aula]?LABS[c.aula].img:''}')">
+                <div class="gv-block-top">
+                  <span class="gv-block-mat">${c.mat}</span>
+                  ${isFav?'<span class="gv-block-fav">⭐</span>':''}
+                </div>
+                <div class="gv-block-grp">grp. ${c.grp}</div>
+                <div class="gv-block-time">${c.inicio}–${c.fin}${(s==="upcoming"||s==="imminent")?" · "+timeUntil(c):""}</div>
               </div>
-              <div class="gv-block-grp">grp. ${c.grp}</div>
-              <div class="gv-block-time">${c.inicio}–${c.fin}${(s==="upcoming"||s==="imminent")?" · "+timeUntil(c):""}</div>
-            </div>
-          </td>`;
-        } else if(!entry) {
-          html2 += `<td class="gv-cell${isNowRow?' now-row':''}"></td>`;
+            </td>`;
+          });
+        } else if(!entries || firstEntries.length === 0) {
+          // No hay clase iniciando aquí y no está cubierto por rowspan
+          if(!rendered[aula][slotIdx]){
+            html2 += `<td class="gv-cell${isNowRow?' now-row':''}"></td>`;
+          }
         }
       });
       html2 += `</tr>`;
