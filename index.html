@@ -1818,91 +1818,63 @@ const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t
     // Build slot rows from minSlot to maxSlot
     const slots = SLOTS.slice(minSlot, maxSlot+1);
 
-   // Build lookup: aula -> slot -> array of classes
-const lookup = {};
-filtered.forEach(c=>{
-  if(!lookup[c.aula]) lookup[c.aula]={};
-  for(let s=c.si; s<c.ei; s++){
-    if(!lookup[c.aula][s]) lookup[c.aula][s]=[];
-    lookup[c.aula][s].push({
-      c,
-      isFirst: s===c.si,
-      span: c.ei-c.si
+    // Build lookup: aula -> slot -> class
+    const lookup = {};
+    filtered.forEach(c=>{
+      if(!lookup[c.aula]) lookup[c.aula]={};
+      for(let s=c.si; s<c.ei; s++){
+        lookup[c.aula][s]={c, isFirst:s===c.si, span:c.ei-c.si};
+      }
     });
-  }
-});
-   const nowSlotM = nowM();
 
-let html2 = `<div class="gv-wrap"><table class="gv-table"><thead><tr>`;
-html2 += `<th class="gv-th" style="position:sticky;left:0;z-index:11">Hora</th>`;
+    const nowSlotM = nowM();
+    let html2 = `<div class="gv-wrap"><table class="gv-table"><thead><tr>`;
+    html2 += `<th class="gv-th" style="position:sticky;left:0;z-index:11">Hora</th>`;
+    labs.forEach(aula=>{
+      const lab=LABS[aula];
+      const isFav=favorites.has(aula);
+      html2 += `<th class="gv-th">${isFav?'⭐ ':''}${aula}<br><span style="font-weight:400;font-size:.58rem;color:var(--muted)">${lab?lab.name:''}</span></th>`;
+    });
+    html2 += `</tr></thead><tbody>`;
 
-labs.forEach(aula=>{
-  const lab = LABS[aula];
-  const isFav = favorites.has(aula);
-  html2 += `<th class="gv-th">
-              ${isFav?'⭐ ':''}${aula}
-              <br>
-              <span style="font-weight:400;font-size:.58rem;color:var(--muted)">
-                ${lab?lab.name:''}
-              </span>
-            </th>`;
-});
+    const rendered = {}; // track rowspan cells already rendered
+    labs.forEach(a=>{ rendered[a]={}; });
 
-html2 += `</tr></thead><tbody>`;
+    slots.forEach((slot, si)=>{
+      const slotIdx = minSlot + si;
+      const isNowRow = nowSlotM >= slot.m && nowSlotM < slot.m+45;
+      html2 += `<tr>`;
+      html2 += `<td class="gv-time${isNowRow?' now-row':''}">${slot.l}</td>`;
 
-const rendered = {};
-labs.forEach(a=>{ rendered[a]={}; });
-
-slots.forEach((slot, si)=>{
-  const slotIdx = minSlot + si;
-  const isNowRow = nowSlotM >= slot.m && nowSlotM < slot.m+45;
-
-  html2 += `<tr>`;
-  html2 += `<td class="gv-time${isNowRow?' now-row':''}">${slot.l}</td>`;
-
-  labs.forEach(aula=>{
-    if(rendered[aula][slotIdx]) return;
-
-    const entries = lookup[aula]?.[slotIdx];
-
-    if(entries){
-      entries.forEach(entry=>{
-        if(entry.isFirst){
-
+      labs.forEach(aula=>{
+        if(rendered[aula][slotIdx]) return; // skip, covered by rowspan
+        const entry = lookup[aula]?.[slotIdx];
+        if(entry && entry.isFirst){
           const {c, span} = entry;
           const s = getStatus(c);
           const isFav = favorites.has(c.aula);
-
-          for(let x=1;x<span;x++){
-            rendered[aula][slotIdx+x] = true;
-          }
-
+          // Mark future slots as rendered
+          for(let x=1;x<span;x++) rendered[aula][slotIdx+x]=true;
           html2 += `<td class="gv-cell${isNowRow?' now-row':''}" rowspan="${span}">
-            <div class="gv-block s-${s||'nottoday'}"
-                 onclick="openModal('${c.aula}','${LABS[c.aula]?LABS[c.aula].name:''}','${LABS[c.aula]?LABS[c.aula].img:''}')">
+            <div class="gv-block s-${s||'nottoday'}" onclick="openModal('${c.aula}','${LABS[c.aula]?LABS[c.aula].name:''}','${LABS[c.aula]?LABS[c.aula].img:''}')">
               <div class="gv-block-top">
                 <span class="gv-block-mat">${c.mat}</span>
                 ${isFav?'<span class="gv-block-fav">⭐</span>':''}
               </div>
               <div class="gv-block-grp">grp. ${c.grp}</div>
-              <div class="gv-block-time">
-                ${c.inicio}–${c.fin}
-                ${(s==="upcoming"||s==="imminent")?" · "+timeUntil(c):""}
-              </div>
+              <div class="gv-block-time">${c.inicio}–${c.fin}${(s==="upcoming"||s==="imminent")?" · "+timeUntil(c):""}</div>
             </div>
           </td>`;
+        } else if(!entry) {
+          html2 += `<td class="gv-cell${isNowRow?' now-row':''}"></td>`;
         }
       });
-    } else {
-      html2 += `<td class="gv-cell${isNowRow?' now-row':''}"></td>`;
-    }
-  });
+      html2 += `</tr>`;
+    });
 
-  html2 += `</tr>`;
-});
-
-html2 += `</tbody></table></div>`;
-gv.innerHTML = html2;
+    html2 += `</tbody></table></div>`;
+    gv.innerHTML = html2;
+  }
 
   // ══ MOBILE NAV ══
   let mobileNavMode = 'today'; // 'today' or 'all'
