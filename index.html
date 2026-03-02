@@ -1782,105 +1782,223 @@ const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t
     if(v==='grid') renderGrid();
   };
 
-   function renderGrid() {
+  function renderGrid() {
     const gv = document.getElementById('grid-view');
-    let filtered = classes.filter(c=>{
-      if(filterDia&&c.dia!==filterDia)return false;
-      if(filterEdificio&&!c.aula.startsWith(filterEdificio))return false;
-      if(filterLab&&c.aula!==filterLab)return false;
-      if(filterMateria&&!(c.mat+c.grp).toLowerCase().includes(filterMateria.toLowerCase()))return false;
-      if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
-      if(favOnly&&!favorites.has(c.aula))return false;
-      if(filterEstado){const s=getStatus(c);if(s!==filterEstado)return false;}
-      if(globalSearch){
-        const q=globalSearch.toLowerCase();
-        const haystack=(c.aula+' '+c.mat+' '+c.grp+' '+c.dia+' '+c.inicio+' '+c.fin).toLowerCase();
-        if(!haystack.includes(q))return false;
-      }
-      return true;
+    
+    // ============================================
+    // APLICAR TODOS LOS FILTROS SIMULTÁNEAMENTE
+    // ============================================
+    let filtered = classes.filter(c => {
+        // -------------------------------------------------
+        // FILTRO 1: HOY (mobileNavMode)
+        // -------------------------------------------------
+        // Si estamos en modo 'today', solo mostrar clases de hoy
+        if (mobileNavMode === 'today' && c.dia !== todayName()) return false;
+        
+        // -------------------------------------------------
+        // FILTRO 2: DÍA (selector de día)
+        // -------------------------------------------------
+        if (filterDia && c.dia !== filterDia) return false;
+        
+        // -------------------------------------------------
+        // FILTRO 3: EDIFICIO
+        // -------------------------------------------------
+        if (filterEdificio && !c.aula.startsWith(filterEdificio)) return false;
+        
+        // -------------------------------------------------
+        // FILTRO 4: LABORATORIO ESPECÍFICO
+        // -------------------------------------------------
+        if (filterLab && c.aula !== filterLab) return false;
+        
+        // -------------------------------------------------
+        // FILTRO 5: MATERIA (código)
+        // -------------------------------------------------
+        if (filterMateria && !(c.mat + c.grp).toLowerCase().includes(filterMateria.toLowerCase())) return false;
+        
+        // -------------------------------------------------
+        // FILTRO 6: FAVORITOS
+        // -------------------------------------------------
+        if (favOnly && !favorites.has(c.aula)) return false;
+        
+        // -------------------------------------------------
+        // FILTRO 7: FRANJA HORARIA
+        // -------------------------------------------------
+        if (filterHora) {
+            const r = HORA_RANGES[filterHora];
+            if (c.finM <= r.from || c.inicioM >= r.to) return false;
+        }
+        
+        // -------------------------------------------------
+        // FILTRO 8: ESTADO (mejorado para otros días)
+        // -------------------------------------------------
+        if (filterEstado) {
+            // Para 'past' y 'upcoming', considerar otros días
+            const considerarOtrosDias = (filterEstado === 'past' || filterEstado === 'upcoming');
+            let s = '';
+            
+            if (c.dia === todayName()) {
+                // HOY: lógica normal con minutos de anticipación
+                const m = nowM();
+                if (m >= c.inicioM && m < c.finM) s = 'active';
+                else if (m >= c.finM) s = 'past';
+                else {
+                    const d = c.inicioM - m;
+                    if (d > 0 && d <= alertMinutes) s = 'imminent';
+                    else if (d > 0) s = 'upcoming';
+                }
+            } else if (considerarOtrosDias) {
+                // OTROS DÍAS: solo comparar con hora actual
+                const m = nowM();
+                if (m >= c.finM) s = 'past';
+                else if (m < c.inicioM) s = 'upcoming';
+                else if (m >= c.inicioM && m < c.finM) s = 'active';
+            }
+            
+            if (s !== filterEstado) return false;
+        }
+        
+        // -------------------------------------------------
+        // FILTRO 9: BÚSQUEDA GLOBAL
+        // -------------------------------------------------
+        if (globalSearch) {
+            const q = globalSearch.toLowerCase();
+            const haystack = (
+                c.aula + ' ' + 
+                c.mat + ' ' + 
+                c.grp + ' ' + 
+                c.dia + ' ' + 
+                c.inicio + ' ' + 
+                c.fin
+            ).toLowerCase();
+            if (!haystack.includes(q)) return false;
+        }
+        
+        // Si pasó todos los filtros, incluir esta clase
+        return true;
     });
 
-    if(!filtered.length){
-      gv.innerHTML='<div style="text-align:center;padding:3rem;color:var(--muted);font-size:.88rem">No hay clases con los filtros seleccionados</div>';
-      return;
+    // Si no hay resultados, mostrar mensaje
+    if (!filtered.length) {
+        gv.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--muted);font-size:.88rem">No hay clases con los filtros seleccionados</div>';
+        return;
     }
 
-    const labs = [...new Set(filtered.map(c=>c.aula))].sort((a,b)=>{
-      const fa=favorites.has(a)?0:1, fb=favorites.has(b)?0:1;
-      return fa-fb||a.localeCompare(b);
+    // ============================================
+    // ORDENAR LABORATORIOS (favoritos primero)
+    // ============================================
+    const labs = [...new Set(filtered.map(c => c.aula))].sort((a, b) => {
+        const fa = favorites.has(a) ? 0 : 1;
+        const fb = favorites.has(b) ? 0 : 1;
+        return fa - fb || a.localeCompare(b);
     });
 
-    const minSlot = Math.min(...filtered.map(c=>c.si));
-    const maxSlot = Math.max(...filtered.map(c=>c.ei));
-    const slots = SLOTS.slice(minSlot, maxSlot+1);
+    // ============================================
+    // CALCULAR RANGO DE SLOTS A MOSTRAR
+    // ============================================
+    const minSlot = Math.min(...filtered.map(c => c.si));
+    const maxSlot = Math.max(...filtered.map(c => c.ei));
+    const slots = SLOTS.slice(minSlot, maxSlot + 1);
 
+    // ============================================
+    // CREAR LOOKUP PARA ACCESO RÁPIDO
+    // ============================================
     const lookup = {};
-    filtered.forEach(c=>{
-      if(!lookup[c.aula]) lookup[c.aula]={};
-      for(let s=c.si; s<c.ei; s++){
-        lookup[c.aula][s]={c, isFirst:s===c.si, span:c.ei-c.si};
-      }
+    filtered.forEach(c => {
+        if (!lookup[c.aula]) lookup[c.aula] = {};
+        for (let s = c.si; s < c.ei; s++) {
+            lookup[c.aula][s] = {
+                c: c,
+                isFirst: s === c.si,
+                span: c.ei - c.si
+            };
+        }
     });
 
     const nowSlotM = nowM();
     let html2 = `<div class="gv-wrap"><table class="gv-table"><thead><tr>`;
     html2 += `<th class="gv-th" style="position:sticky;left:0;z-index:11">Hora</th>`;
     
-    labs.forEach(aula=>{
-      const lab=LABS[aula];
-      const isFav=favorites.has(aula);
-      html2 += `<th class="gv-th">${isFav?'⭐ ':''}${aula}<br><span style="font-weight:400;font-size:.58rem;color:var(--muted)">${lab?lab.name:''}</span></th>`;
+    // -------------------------------------------------
+    // ENCABEZADOS DE LABORATORIOS
+    // -------------------------------------------------
+    labs.forEach(aula => {
+        const lab = LABS[aula];
+        const isFav = favorites.has(aula);
+        html2 += `<th class="gv-th">${isFav ? '⭐ ' : ''}${aula}<br><span style="font-weight:400;font-size:.58rem;color:var(--muted)">${lab ? lab.name : ''}</span></th>`;
     });
     
     html2 += `</tr></thead><tbody>`;
 
+    // -------------------------------------------------
+    // CONTROL DE CELDAS RENDERIZADAS
+    // -------------------------------------------------
     const rendered = {};
-    labs.forEach(a=>{ rendered[a] = {}; });
+    labs.forEach(a => { rendered[a] = {}; });
 
-    slots.forEach((slot, i)=>{
-      const globalSlotIdx = minSlot + i;
-      const isNowRow = nowSlotM >= slot.m && nowSlotM < slot.m+45;
-      html2 += `<tr>`;
-      html2 += `<td class="gv-time${isNowRow?' now-row':''}">${slot.l}</td>`;
+    // -------------------------------------------------
+    // GENERAR FILAS (cada fila = un bloque de 45 min)
+    // -------------------------------------------------
+    slots.forEach((slot, i) => {
+        const globalSlotIdx = minSlot + i;
+        const isNowRow = nowSlotM >= slot.m && nowSlotM < slot.m + 45;
+        html2 += `<tr>`;
+        html2 += `<td class="gv-time${isNowRow ? ' now-row' : ''}">${slot.l}</td>`;
 
-      labs.forEach(aula=>{
-        if(rendered[aula][i]) return;
+        labs.forEach(aula => {
+            // Si esta celda ya fue renderizada por un rowspan, saltar
+            if (rendered[aula][i]) return;
 
-        const entry = lookup[aula]?.[globalSlotIdx];
+            // Buscar si hay una clase que empiece en este slot GLOBAL
+            const entry = lookup[aula]?.[globalSlotIdx];
 
-        if(entry && entry.isFirst){
-          const {c, span} = entry;
-          const s = getStatus(c);
-          const isFav = favorites.has(c.aula);
+            if (entry && entry.isFirst) {
+                const { c, span } = entry;
+                
+                // Calcular estado para mostrar en la celda
+                let s = '';
+                if (c.dia === todayName()) {
+                    const m = nowM();
+                    if (m >= c.inicioM && m < c.finM) s = 'active';
+                    else if (m >= c.finM) s = 'past';
+                    else {
+                        const d = c.inicioM - m;
+                        if (d > 0 && d <= alertMinutes) s = 'imminent';
+                        else if (d > 0) s = 'upcoming';
+                    }
+                }
+                
+                const isFav = favorites.has(c.aula);
 
-          for(let x=1; x<span; x++){
-            if(i + x < slots.length){
-              rendered[aula][i + x] = true;
+                // Marcar las filas LOCALES que esta celda ocupará (rowspan)
+                for (let x = 1; x < span; x++) {
+                    if (i + x < slots.length) {
+                        rendered[aula][i + x] = true;
+                    }
+                }
+
+                html2 += `<td class="gv-cell${isNowRow ? ' now-row' : ''}" rowspan="${span}">
+                    <div class="gv-block s-${s || 'nottoday'}" onclick="openModal('${c.aula}','${LABS[c.aula] ? LABS[c.aula].name : ''}','${LABS[c.aula] ? LABS[c.aula].img : ''}')">
+                        <div class="gv-block-top">
+                            <span class="gv-block-mat">${c.mat}</span>
+                            ${isFav ? '<span class="gv-block-fav">⭐</span>' : ''}
+                        </div>
+                        <div class="gv-block-grp">grp. ${c.grp}</div>
+                        <div class="gv-block-time">${c.inicio}–${c.fin}${(s === "upcoming" || s === "imminent") ? " · " + timeUntil(c) : ""}</div>
+                    </div>
+                </td>`;
+            } else if (!entry) {
+                // Celda vacía
+                html2 += `<td class="gv-cell${isNowRow ? ' now-row' : ''}"></td>`;
             }
-          }
-
-          html2 += `<td class="gv-cell${isNowRow?' now-row':''}" rowspan="${span}">
-            <div class="gv-block s-${s||'nottoday'}" onclick="openModal('${c.aula}','${LABS[c.aula]?LABS[c.aula].name:''}','${LABS[c.aula]?LABS[c.aula].img:''}')">
-              <div class="gv-block-top">
-                <span class="gv-block-mat">${c.mat}</span>
-                ${isFav?'<span class="gv-block-fav">⭐</span>':''}
-              </div>
-              <div class="gv-block-grp">grp. ${c.grp}</div>
-              <div class="gv-block-time">${c.inicio}–${c.fin}${(s==="upcoming"||s==="imminent")?" · "+timeUntil(c):""}</div>
-            </div>
-          </td>`;
-        } else if(!entry) {
-          html2 += `<td class="gv-cell${isNowRow?' now-row':''}"></td>`;
-        }
-      });
-      
-      html2 += `</tr>`;
+            // Si entry existe pero no es isFirst, ya fue cubierta por rowspan
+        });
+        
+        html2 += `</tr>`;
     });
 
     html2 += `</tbody></table></div>`;
     gv.innerHTML = html2;
-  }
-
+}
    
   // ══ MOBILE NAV ══
   let mobileNavMode = 'today'; // 'today' or 'all'
