@@ -271,8 +271,33 @@
   .gv-block.s-later .gv-block-mat{color:#ffc832}
   .gv-now-line{position:absolute;left:0;right:0;height:2px;background:var(--accent);z-index:8;pointer-events:none}
   .gv-now-line::before{content:'';position:absolute;left:-4px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
-  /* ── SHARE ── */
-  .share-btn{display:inline-flex;align-items:center;gap:.35rem;background:#25D366;color:#fff;border:none;border-radius:8px;padding:.38rem .7rem;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .15s;margin-bottom:.6rem}
+  /* ── SIDEBAR ── */
+  #sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:800;opacity:0;pointer-events:none;transition:opacity .25s}
+  #sidebar-overlay.open{opacity:1;pointer-events:all}
+  #sidebar{position:fixed;top:0;right:-320px;bottom:0;width:300px;max-width:90vw;background:var(--surface);border-left:1px solid var(--border);z-index:801;transition:right .28s cubic-bezier(.32,.72,0,1);display:flex;flex-direction:column;overflow:hidden}
+  #sidebar.open{right:0;box-shadow:-8px 0 32px rgba(0,0,0,.5)}
+  .sb-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem;border-bottom:1px solid var(--border);flex-shrink:0}
+  .sb-title{font-family:'Space Mono',monospace;font-size:.78rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.1em}
+  .sb-close{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;padding:.2rem;line-height:1;border-radius:6px;transition:color .15s}
+  .sb-close:hover{color:var(--text)}
+  .sb-body{flex:1;overflow-y:auto;padding:.8rem}
+  .sb-section{margin-bottom:1.2rem}
+  .sb-section-title{font-family:'Space Mono',monospace;font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.5rem;padding:0 .25rem}
+  .sb-btn{display:flex;align-items:center;gap:.6rem;width:100%;background:transparent;border:1px solid var(--border);color:var(--text);padding:.6rem .85rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.83rem;cursor:pointer;transition:all .15s;margin-bottom:.35rem;text-align:left}
+  .sb-btn:hover{background:var(--surface2);border-color:var(--accent);color:var(--accent)}
+  .sb-btn.active{background:rgba(0,229,160,.1);border-color:rgba(0,229,160,.4);color:var(--accent)}
+  .sb-btn-icon{font-size:1.05rem;flex-shrink:0;width:22px;text-align:center}
+  .sb-btn-label{flex:1}
+  .sb-btn-badge{font-size:.65rem;background:var(--accent);color:#000;border-radius:8px;padding:.1rem .4rem;font-weight:700;flex-shrink:0}
+  .sb-divider{height:1px;background:var(--border);margin:.6rem 0}
+  .sb-stats{background:var(--surface2);border-radius:10px;padding:.7rem .85rem;margin-bottom:.35rem}
+  .sb-stats-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem;font-size:.78rem}
+  .sb-stats-row:last-child{margin-bottom:0}
+  .sb-stats-label{color:var(--muted)}
+  .sb-stats-val{font-family:'Space Mono',monospace;font-weight:700;color:var(--accent)}
+  /* sidebar trigger button in header */
+  .sb-trigger{background:none;border:1px solid var(--border);color:var(--muted);width:36px;height:36px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .15s;flex-shrink:0}
+  .sb-trigger:hover{border-color:var(--accent);color:var(--accent)}
   .share-btn:hover{filter:brightness(1.1)}
   .share-btn svg{width:15px;height:15px;fill:#fff;flex-shrink:0}
 
@@ -491,6 +516,7 @@
       <button class="theme-btn" data-t="utesa" title="UTESA" onclick="setTheme('utesa')"></button>
     </div>
     <div class="alert-badge" id="alertBadge"><div class="alert-dot"></div><span id="alertBadgeText">Clase próxima</span></div>
+    <button class="sb-trigger" onclick="openSidebar()" title="Menú">☰</button>
   </div>
 </header>
 <main>
@@ -634,14 +660,11 @@
     <button id="gs-clear" onclick="clearGlobalSearch()" title="Limpiar">✕</button>
   </div>
   <div id="gs-count"></div>
-  <button class="share-btn" onclick="shareWhatsApp()" title="Compartir horario por WhatsApp">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.554 4.122 1.528 5.862L0 24l6.306-1.508A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.887 9.887 0 01-5.044-1.379l-.361-.214-3.742.894.926-3.646-.235-.374A9.855 9.855 0 012.108 12C2.108 6.53 6.53 2.108 12 2.108c5.472 0 9.893 4.422 9.893 9.892 0 5.472-4.421 9.894-9.893 9.894z"/></svg>
-    Compartir horario
-  </button>
   <div class="view-toggle" id="view-toggle">
     <button class="vt-btn active" id="vt-list" onclick="switchView('list')">📋 Lista</button>
     <button class="vt-btn" id="vt-grid" onclick="switchView('grid')">📊 Cuadrícula</button>
     <button class="vt-btn" id="vt-group" onclick="toggleGroupEdificio()">🏷️ Agrupar</button>
+    <button class="vt-btn" onclick="openSidebar()" style="flex:0;padding:.4rem .65rem" title="Más opciones">⋯</button>
   </div>
   <div id="grid-view"></div>
   <div id="table-section" class="table-wrapper">
@@ -817,7 +840,7 @@ const raw=[
   {aula:'B219',mat:'INF025',grp:'002',dia:'Sábado',    si:1, ei:6},
   // C001 — Máquinas y Herramientas
   {aula:'C001',mat:'IMC215',grp:'001',dia:'Lunes',     si:14,ei:16},
-  {aula:'C001',mat:'IMC105',grp:'002',dia:'Lunes',     si:17,ei:19},
+  {aula:'C001',mat:'IMC105',grp:'002',dia:'Lunes',     si:16,ei:19},
   {aula:'C001',mat:'IID631',grp:'002',dia:'Lunes',     si:18,ei:20},
   {aula:'C001',mat:'IMC305',grp:'003',dia:'Martes',    si:17,ei:19},
   {aula:'C001',mat:'IID631',grp:'002',dia:'Miércoles', si:18,ei:20},
@@ -838,20 +861,20 @@ const raw=[
   {aula:'C101',mat:'ARQ605',grp:'001',dia:'Martes',    si:9, ei:11},
   {aula:'C101',mat:'IET921',grp:'001',dia:'Martes',    si:17,ei:20},
   {aula:'C101',mat:'IID522',grp:'002',dia:'Miércoles', si:14,ei:16},
-  {aula:'C101',mat:'IID915',grp:'002',dia:'Miércoles', si:17,ei:19},
+  {aula:'C101',mat:'IID915',grp:'002',dia:'Miércoles', si:16,ei:19},
   {aula:'C101',mat:'IID870',grp:'002',dia:'Miércoles', si:18,ei:20},
   {aula:'C101',mat:'IEL425',grp:'001',dia:'Jueves',    si:14,ei:16},
-  {aula:'C101',mat:'IID500',grp:'001',dia:'Jueves',    si:17,ei:19},
+  {aula:'C101',mat:'IID500',grp:'001',dia:'Jueves',    si:16,ei:19},
   {aula:'C101',mat:'IID481',grp:'003',dia:'Jueves',    si:18,ei:20},
   {aula:'C101',mat:'ARQ605',grp:'001',dia:'Viernes',   si:9, ei:11},
   {aula:'C101',mat:'IEL905',grp:'003',dia:'Viernes',   si:14,ei:16},
-  {aula:'C101',mat:'IID950',grp:'003',dia:'Viernes',   si:17,ei:20},
+  {aula:'C101',mat:'IID950',grp:'003',dia:'Viernes',   si:16,ei:20},
   {aula:'C101',mat:'IID522',grp:'001',dia:'Sábado',    si:2, ei:8},
   {aula:'C101',mat:'IID950',grp:'001',dia:'Sábado',    si:13,ei:17},
   // C102 — Automatización
   {aula:'C102',mat:'IID420',grp:'001',dia:'Lunes',     si:7, ei:10},
   {aula:'C102',mat:'IID615',grp:'002',dia:'Lunes',     si:14,ei:16},
-  {aula:'C102',mat:'IID420',grp:'002',dia:'Lunes',     si:17,ei:20},
+  {aula:'C102',mat:'IID420',grp:'002',dia:'Lunes',     si:16,ei:20},
   {aula:'C102',mat:'IID420',grp:'007',dia:'Martes',    si:14,ei:17},
   {aula:'C102',mat:'IMC925',grp:'003',dia:'Martes',    si:17,ei:19},
   {aula:'C102',mat:'IMC915',grp:'001',dia:'Miércoles', si:16,ei:18},
@@ -859,7 +882,7 @@ const raw=[
   {aula:'C102',mat:'IID980',grp:'001',dia:'Jueves',    si:14,ei:17},
   {aula:'C102',mat:'IID420',grp:'004',dia:'Jueves',    si:17,ei:20},
   {aula:'C102',mat:'IEL405',grp:'008',dia:'Viernes',   si:14,ei:16},
-  {aula:'C102',mat:'IID420',grp:'003',dia:'Viernes',   si:17,ei:20},
+  {aula:'C102',mat:'IID420',grp:'003',dia:'Viernes',   si:16,ei:20},
   // C103 — Lab. Industrial 02
   {aula:'C103',mat:'ICV215',grp:'006',dia:'Miércoles', si:9, ei:12},
   {aula:'C103',mat:'IID480',grp:'001',dia:'Lunes',     si:16,ei:18},
@@ -875,7 +898,7 @@ const raw=[
   // C104 — Lab. CAD CAM
   {aula:'C104',mat:'IET825',grp:'001',dia:'Lunes',     si:14,ei:16},
   {aula:'C104',mat:'INF706',grp:'004',dia:'Martes',    si:14,ei:16},
-  {aula:'C104',mat:'IMC500',grp:'001',dia:'Martes',    si:17,ei:20},
+  {aula:'C104',mat:'IMC500',grp:'001',dia:'Martes',    si:16,ei:20},
   {aula:'C104',mat:'IMC102',grp:'001',dia:'Miércoles', si:17,ei:19},
   {aula:'C104',mat:'IMC070',grp:'001',dia:'Jueves',    si:14,ei:16},
   {aula:'C104',mat:'IMC102',grp:'001',dia:'Viernes',   si:17,ei:20},
@@ -883,10 +906,10 @@ const raw=[
   // C105 — Ing. Térmica
   {aula:'C105',mat:'IMC960',grp:'001',dia:'Lunes',     si:14,ei:18},
   {aula:'C105',mat:'IMC965',grp:'001',dia:'Lunes',     si:18,ei:20},
-  {aula:'C105',mat:'IMC075',grp:'001',dia:'Martes',    si:17,ei:19},
+  {aula:'C105',mat:'IMC075',grp:'001',dia:'Martes',    si:16,ei:19},
   {aula:'C105',mat:'IMC070',grp:'001',dia:'Martes',    si:14,ei:16},
   {aula:'C105',mat:'IEL140',grp:'001',dia:'Miércoles', si:14,ei:16},
-  {aula:'C105',mat:'IMC805',grp:'002',dia:'Miércoles', si:17,ei:19},
+  {aula:'C105',mat:'IMC805',grp:'002',dia:'Miércoles', si:16,ei:19},
   {aula:'C105',mat:'IEL405',grp:'001',dia:'Miércoles', si:18,ei:20},
   {aula:'C105',mat:'IEL520',grp:'001',dia:'Viernes',   si:17,ei:19},
   {aula:'C105',mat:'IMC805',grp:'001',dia:'Sábado',    si:9, ei:11},
@@ -896,7 +919,7 @@ const raw=[
   {aula:'C106',mat:'IMC110',grp:'002',dia:'Martes',    si:18,ei:20},
   {aula:'C106',mat:'IMC920',grp:'001',dia:'Miércoles', si:16,ei:19},
   {aula:'C106',mat:'INF706',grp:'004',dia:'Jueves',    si:14,ei:16},
-  {aula:'C106',mat:'IID241',grp:'002',dia:'Jueves',    si:17,ei:19},
+  {aula:'C106',mat:'IID241',grp:'002',dia:'Jueves',    si:16,ei:19},
   {aula:'C106',mat:'IID241',grp:'004',dia:'Jueves',    si:18,ei:20},
   {aula:'C106',mat:'IMC815',grp:'001',dia:'Viernes',   si:14,ei:16},
   {aula:'C106',mat:'IEL915',grp:'003',dia:'Sábado',    si:12,ei:14},
@@ -904,12 +927,12 @@ const raw=[
   {aula:'C107',mat:'IEL315',grp:'004',dia:'Lunes',     si:14,ei:16},
   {aula:'C107',mat:'IEL405',grp:'009',dia:'Martes',    si:13,ei:15},
   {aula:'C107',mat:'IET930',grp:'001',dia:'Martes',    si:14,ei:17},
-  {aula:'C107',mat:'IEL405',grp:'006',dia:'Martes',    si:18,ei:20},
+  {aula:'C107',mat:'IEL405',grp:'006',dia:'Martes',    si:17,ei:20},
   {aula:'C107',mat:'IEL640',grp:'001',dia:'Miércoles', si:7, ei:10},
   {aula:'C107',mat:'IEL505',grp:'001',dia:'Miércoles', si:14,ei:16},
-  {aula:'C107',mat:'IEL500',grp:'001',dia:'Miércoles', si:17,ei:20},
+  {aula:'C107',mat:'IEL500',grp:'001',dia:'Miércoles', si:16,ei:20},
   {aula:'C107',mat:'IEL405',grp:'002',dia:'Jueves',    si:14,ei:16},
-  {aula:'C107',mat:'IEL640',grp:'001',dia:'Jueves',    si:17,ei:20},
+  {aula:'C107',mat:'IEL640',grp:'001',dia:'Jueves',    si:16,ei:20},
   {aula:'C107',mat:'IEL640',grp:'001',dia:'Viernes',   si:7, ei:10},
   {aula:'C107',mat:'IEL620',grp:'001',dia:'Viernes',   si:18,ei:20},
   // C201 — Lab. Informática
@@ -929,12 +952,12 @@ const raw=[
   {aula:'C201',mat:'INF113',grp:'006',dia:'Miércoles', si:9, ei:11},
   {aula:'C201',mat:'INF113',grp:'013',dia:'Jueves',    si:9, ei:12},
   {aula:'C201',mat:'INF103',grp:'013',dia:'Viernes',   si:9, ei:11},
-  {aula:'C201',mat:'INF204',grp:'003',dia:'Lunes',     si:14,ei:16},
-  {aula:'C201',mat:'INF204',grp:'003',dia:'Martes',    si:14,ei:16},
+  {aula:'C201',mat:'INF204',grp:'003',dia:'Lunes',     si:13,ei:16},
+  {aula:'C201',mat:'INF204',grp:'003',dia:'Martes',    si:13,ei:16},
   {aula:'C201',mat:'INF117',grp:'007',dia:'Miércoles', si:14,ei:18},
   {aula:'C201',mat:'INF113',grp:'028',dia:'Viernes',   si:14,ei:18},
-  {aula:'C201',mat:'CCO222',grp:'004',dia:'Lunes',     si:17,ei:20},
-  {aula:'C201',mat:'INF103',grp:'009',dia:'Martes',    si:17,ei:20},
+  {aula:'C201',mat:'CCO222',grp:'004',dia:'Lunes',     si:16,ei:20},
+  {aula:'C201',mat:'INF103',grp:'009',dia:'Martes',    si:16,ei:20},
   {aula:'C201',mat:'INF345',grp:'001',dia:'Jueves',    si:18,ei:20},
   {aula:'C201',mat:'INF113',grp:'032',dia:'Viernes',   si:18,ei:20},
   {aula:'C201',mat:'INF445',grp:'001',dia:'Sábado',    si:2, ei:6},
@@ -953,7 +976,7 @@ const raw=[
   {aula:'C202',mat:'INF103',grp:'007',dia:'Miércoles', si:2, ei:6},
   {aula:'C202',mat:'INF103',grp:'060',dia:'Miércoles', si:10,ei:13},
   {aula:'C202',mat:'INF103',grp:'021',dia:'Miércoles', si:7, ei:9},
-  {aula:'C202',mat:'INF353',grp:'011',dia:'Miércoles', si:14,ei:15},
+  {aula:'C202',mat:'INF353',grp:'011',dia:'Miércoles', si:13,ei:15},
   {aula:'C202',mat:'INF103',grp:'010',dia:'Miércoles', si:17,ei:20},
   {aula:'C202',mat:'INF103',grp:'019',dia:'Jueves',    si:9, ei:12},
   {aula:'C202',mat:'INF165',grp:'006',dia:'Jueves',    si:9, ei:11},
@@ -990,7 +1013,7 @@ const raw=[
   {aula:'C203',mat:'INF353',grp:'011',dia:'Jueves',    si:9, ei:11},
   {aula:'C203',mat:'INF214',grp:'001',dia:'Jueves',    si:18,ei:20},
   {aula:'C203',mat:'INF113',grp:'029',dia:'Viernes',   si:14,ei:16},
-  {aula:'C203',mat:'INF706',grp:'001',dia:'Viernes',   si:17,ei:19},
+  {aula:'C203',mat:'INF706',grp:'001',dia:'Viernes',   si:16,ei:19},
   {aula:'C203',mat:'CON500',grp:'001',dia:'Miércoles', si:18,ei:20},
   {aula:'C203',mat:'INF706',grp:'006',dia:'Sábado',    si:9, ei:13},
   {aula:'C203',mat:'INF408',grp:'007',dia:'Sábado',    si:13,ei:17},
@@ -1003,8 +1026,8 @@ const raw=[
   {aula:'C204',mat:'INF103',grp:'022',dia:'Martes',    si:2, ei:5},
   {aula:'C204',mat:'INF103',grp:'003',dia:'Martes',    si:10,ei:13},
   {aula:'C204',mat:'INF113',grp:'016',dia:'Martes',    si:9, ei:11},
-  {aula:'C204',mat:'INF387',grp:'003',dia:'Martes',    si:14,ei:16},
-  {aula:'C204',mat:'INF113',grp:'032',dia:'Martes',    si:17,ei:19},
+  {aula:'C204',mat:'INF387',grp:'003',dia:'Martes',    si:13,ei:16},
+  {aula:'C204',mat:'INF113',grp:'032',dia:'Martes',    si:16,ei:19},
   {aula:'C204',mat:'INF103',grp:'032',dia:'Martes',    si:18,ei:20},
   {aula:'C204',mat:'INF113',grp:'036',dia:'Miércoles', si:2, ei:6},
   {aula:'C204',mat:'INF113',grp:'016',dia:'Miércoles', si:9, ei:11},
@@ -1014,7 +1037,7 @@ const raw=[
   {aula:'C204',mat:'INF113',grp:'042',dia:'Jueves',    si:9, ei:12},
   {aula:'C204',mat:'INF103',grp:'019',dia:'Jueves',    si:9, ei:11},
   {aula:'C204',mat:'INF406',grp:'001',dia:'Jueves',    si:14,ei:16},
-  {aula:'C204',mat:'INF103',grp:'062',dia:'Jueves',    si:17,ei:20},
+  {aula:'C204',mat:'INF103',grp:'062',dia:'Jueves',    si:16,ei:20},
   {aula:'C204',mat:'INF353',grp:'002',dia:'Jueves',    si:18,ei:20},
   {aula:'C204',mat:'INF113',grp:'015',dia:'Viernes',   si:11,ei:15},
   {aula:'C204',mat:'INF103',grp:'034',dia:'Viernes',   si:14,ei:16},
@@ -1025,7 +1048,7 @@ const raw=[
   // C205 — Lab. AutoCAD
   {aula:'C205',mat:'ARQ545',grp:'001',dia:'Lunes',     si:11,ei:14},
   {aula:'C205',mat:'INF218',grp:'001',dia:'Lunes',     si:14,ei:16},
-  {aula:'C205',mat:'ARQ640',grp:'003',dia:'Lunes',     si:17,ei:19},
+  {aula:'C205',mat:'ARQ640',grp:'003',dia:'Lunes',     si:16,ei:19},
   {aula:'C205',mat:'ICV915',grp:'003',dia:'Miércoles', si:11,ei:15},
   {aula:'C205',mat:'ICV915',grp:'002',dia:'Miércoles', si:14,ei:17},
   {aula:'C205',mat:'ICV945',grp:'002',dia:'Miércoles', si:17,ei:19},
@@ -1089,8 +1112,8 @@ const raw=[
   {aula:'C208',mat:'IEL125',grp:'001',dia:'Miércoles', si:14,ei:16},
   {aula:'C208',mat:'IEL905',grp:'001',dia:'Jueves',    si:14,ei:16},
   {aula:'C208',mat:'IEL955',grp:'002',dia:'Viernes',   si:14,ei:16},
-  {aula:'C208',mat:'IEL955',grp:'004',dia:'Viernes',   si:17,ei:19},
-  {aula:'C208',mat:'IID750',grp:'001',dia:'Miércoles', si:17,ei:20},
+  {aula:'C208',mat:'IEL955',grp:'004',dia:'Viernes',   si:16,ei:19},
+  {aula:'C208',mat:'IID750',grp:'001',dia:'Miércoles', si:16,ei:20},
   {aula:'C208',mat:'IEL415',grp:'001',dia:'Sábado',    si:7, ei:11},
   {aula:'C208',mat:'IEL625',grp:'002',dia:'Sábado',    si:7, ei:11},
   {aula:'C208',mat:'IEL525',grp:'002',dia:'Sábado',    si:11,ei:13},
@@ -1138,6 +1161,7 @@ const classes=raw.map(c=>({
   inicioM:SLOTS[c.si].m,
   finM:SLOTS[c.ei]?SLOTS[c.ei].m:SLOT_END_M,
 }));
+window._allClasses = classes;
 
 document.addEventListener('DOMContentLoaded',function(){
   let sortCol='', sortDir=1, groupByEdificio=false;
@@ -1146,10 +1170,11 @@ document.addEventListener('DOMContentLoaded',function(){
   const notifiedRepeat={}; // key -> last repeat time
   let favorites=new Set(JSON.parse(localStorage.getItem('utesa-favs')||'[]')), favOnly=false;
   function saveFavs(){localStorage.setItem('utesa-favs',JSON.stringify([...favorites]));}
-  function toggleFav(aula){
+  window.toggleFav = function(aula){
     if(favorites.has(aula)){favorites.delete(aula);}else{favorites.add(aula);}
     saveFavs();render();
   }
+  function toggleFav(aula){ window.toggleFav(aula); }
   const DIAS={0:'Domingo',1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado'};
   const DIA_ORDER=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
   const DIA_CSS={Lunes:'dL',Martes:'dM','Miércoles':'dX',Jueves:'dJ',Viernes:'dV','Sábado':'dS'};
@@ -1300,7 +1325,7 @@ document.addEventListener('DOMContentLoaded',function(){
       const prog=s==='active'?`<div class="progress-wrap"><div class="progress-bar" id="prog-${c.aula}-${c.mat}${c.grp}" style="width:${Math.round((nowM()-c.inicioM)/((c.finM-c.inicioM))*100)}%"></div></div>`:'';
       const bldgBadgeClass = c.aula.startsWith('B') ? 'bldg-badge-b' : 'bldg-badge-c';
       const bldgLetter = c.aula.startsWith('B') ? 'B' : 'C';
-      tr.innerHTML=`<td><div style="display:flex;align-items:center;gap:.4rem"><button onclick="toggleFav('${c.aula}')" style="background:none;border:none;cursor:pointer;font-size:.95rem;padding:0;line-height:1;flex-shrink:0">${favorites.has(c.aula)?'⭐':'☆'}</button><div><span class="td-aula">${c.aula}</span><span class="bldg-badge ${bldgBadgeClass}">${bldgLetter}</span><br><span class="td-lab">${labName}</span></div></div></td><td class="td-mat">${c.mat}</td><td class="td-grp">${c.grp}</td><td><span class="dia-tag ${DIA_CSS[c.dia]||'dL'}">${c.dia}</span></td><td class="td-hora">${c.inicio}</td><td class="td-hora">${c.fin}</td><td class="td-dur">${c.durMin} min</td><td class="td-cred">${creditos}</td><td>${badge}${prog}</td><td><button class="btn-img" onclick="openModal('${c.aula}','${labName}','${imgFile}')">🗓️ <span>Ver</span></button> <button class="btn-img" style="margin-top:.2rem;background:rgba(0,229,160,.08);border-color:rgba(0,229,160,.2);color:var(--accent)" onclick="openWeekModal('${c.aula}')">📅 <span>Semana</span></button></td>`;
+      tr.innerHTML=`<td><div style="display:flex;align-items:center;gap:.4rem"><button onclick="window.toggleFav('${c.aula}')" style="background:none;border:none;cursor:pointer;font-size:.95rem;padding:0;line-height:1;flex-shrink:0;transition:transform .15s" onmousedown="this.style.transform='scale(1.4)'" onmouseup="this.style.transform='scale(1)'">${favorites.has(c.aula)?'⭐':'☆'}</button><div><span class="td-aula">${c.aula}</span><span class="bldg-badge ${bldgBadgeClass}">${bldgLetter}</span><br><span class="td-lab">${labName}</span></div></div></td><td class="td-mat">${c.mat}</td><td class="td-grp">${c.grp}</td><td><span class="dia-tag ${DIA_CSS[c.dia]||'dL'}">${c.dia}</span></td><td class="td-hora">${c.inicio}</td><td class="td-hora">${c.fin}</td><td class="td-dur">${c.durMin} min</td><td class="td-cred">${creditos}</td><td>${badge}${prog}</td><td><button class="btn-img" onclick="openModal('${c.aula}','${labName}','${imgFile}')">🗓️ <span>Ver</span></button> <button class="btn-img" style="margin-top:.2rem;background:rgba(0,229,160,.08);border-color:rgba(0,229,160,.2);color:var(--accent)" onclick="openWeekModal('${c.aula}')">📅 <span>Semana</span></button></td>`;
       tbody.appendChild(tr);
     });
   }
@@ -1736,7 +1761,9 @@ const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t
   // ══ AGRUPAR POR EDIFICIO ══
   window.toggleGroupEdificio = function() {
     groupByEdificio = !groupByEdificio;
-    document.getElementById('vt-group').classList.toggle('active', groupByEdificio);
+    const btn = document.getElementById('vt-group');
+    btn.classList.toggle('active', groupByEdificio);
+    btn.textContent = groupByEdificio ? '🏷️ Desagrupar' : '🏷️ Agrupar';
     render();
   };
 
@@ -1782,224 +1809,100 @@ const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t
     if(v==='grid') renderGrid();
   };
 
-  function renderGrid() {
+  function renderGrid(){
     const gv = document.getElementById('grid-view');
-    
-    // ============================================
-    // APLICAR TODOS LOS FILTROS SIMULTÁNEAMENTE
-    // ============================================
-    let filtered = classes.filter(c => {
-        // -------------------------------------------------
-        // FILTRO 1: HOY (mobileNavMode)
-        // -------------------------------------------------
-        // Si estamos en modo 'today', solo mostrar clases de hoy
-        if (mobileNavMode === 'today' && c.dia !== todayName()) return false;
-        
-        // -------------------------------------------------
-        // FILTRO 2: DÍA (selector de día)
-        // -------------------------------------------------
-        if (filterDia && c.dia !== filterDia) return false;
-        
-        // -------------------------------------------------
-        // FILTRO 3: EDIFICIO
-        // -------------------------------------------------
-        if (filterEdificio && !c.aula.startsWith(filterEdificio)) return false;
-        
-        // -------------------------------------------------
-        // FILTRO 4: LABORATORIO ESPECÍFICO
-        // -------------------------------------------------
-        if (filterLab && c.aula !== filterLab) return false;
-        
-        // -------------------------------------------------
-        // FILTRO 5: MATERIA (código)
-        // -------------------------------------------------
-        if (filterMateria && !(c.mat + c.grp).toLowerCase().includes(filterMateria.toLowerCase())) return false;
-        
-        // -------------------------------------------------
-        // FILTRO 6: FAVORITOS
-        // -------------------------------------------------
-        if (favOnly && !favorites.has(c.aula)) return false;
-        
-        // -------------------------------------------------
-        // FILTRO 7: FRANJA HORARIA
-        // -------------------------------------------------
-        if (filterHora) {
-            const r = HORA_RANGES[filterHora];
-            if (c.finM <= r.from || c.inicioM >= r.to) return false;
-        }
-        
-        // -------------------------------------------------
-        // FILTRO 8: ESTADO (mejorado para otros días)
-        // -------------------------------------------------
-        if (filterEstado) {
-            // Para 'past' y 'upcoming', considerar otros días
-            const considerarOtrosDias = (filterEstado === 'past' || filterEstado === 'upcoming');
-            let s = '';
-            
-            if (c.dia === todayName()) {
-                // HOY: lógica normal con minutos de anticipación
-                const m = nowM();
-                if (m >= c.inicioM && m < c.finM) s = 'active';
-                else if (m >= c.finM) s = 'past';
-                else {
-                    const d = c.inicioM - m;
-                    if (d > 0 && d <= alertMinutes) s = 'imminent';
-                    else if (d > 0) s = 'upcoming';
-                }
-            } else if (considerarOtrosDias) {
-                // OTROS DÍAS: solo comparar con hora actual
-                const m = nowM();
-                if (m >= c.finM) s = 'past';
-                else if (m < c.inicioM) s = 'upcoming';
-                else if (m >= c.inicioM && m < c.finM) s = 'active';
-            }
-            
-            if (s !== filterEstado) return false;
-        }
-        
-        // -------------------------------------------------
-        // FILTRO 9: BÚSQUEDA GLOBAL
-        // -------------------------------------------------
-        if (globalSearch) {
-            const q = globalSearch.toLowerCase();
-            const haystack = (
-                c.aula + ' ' + 
-                c.mat + ' ' + 
-                c.grp + ' ' + 
-                c.dia + ' ' + 
-                c.inicio + ' ' + 
-                c.fin
-            ).toLowerCase();
-            if (!haystack.includes(q)) return false;
-        }
-        
-        // Si pasó todos los filtros, incluir esta clase
-        return true;
+    // Get filtered classes same as render()
+    let filtered = classes.filter(c=>{
+      if(filterDia&&c.dia!==filterDia)return false;
+      if(filterEdificio&&!c.aula.startsWith(filterEdificio))return false;
+      if(filterLab&&c.aula!==filterLab)return false;
+      if(filterMateria&&!(c.mat+c.grp).toLowerCase().includes(filterMateria.toLowerCase()))return false;
+      if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
+      if(favOnly&&!favorites.has(c.aula))return false;
+      if(filterEstado){const s=getStatus(c);if(s!==filterEstado)return false;}
+      if(globalSearch){
+        const q=globalSearch.toLowerCase();
+        const haystack=(c.aula+' '+c.mat+' '+c.grp+' '+c.dia+' '+c.inicio+' '+c.fin).toLowerCase();
+        if(!haystack.includes(q))return false;
+      }
+      return true;
     });
 
-    // Si no hay resultados, mostrar mensaje
-    if (!filtered.length) {
-        gv.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--muted);font-size:.88rem">No hay clases con los filtros seleccionados</div>';
-        return;
+    if(!filtered.length){
+      gv.innerHTML='<div style="text-align:center;padding:3rem;color:var(--muted);font-size:.88rem">No hay clases con los filtros seleccionados</div>';
+      return;
     }
 
-    // ============================================
-    // ORDENAR LABORATORIOS (favoritos primero)
-    // ============================================
-    const labs = [...new Set(filtered.map(c => c.aula))].sort((a, b) => {
-        const fa = favorites.has(a) ? 0 : 1;
-        const fb = favorites.has(b) ? 0 : 1;
-        return fa - fb || a.localeCompare(b);
+    // Get unique labs and time range
+    const labs = [...new Set(filtered.map(c=>c.aula))].sort((a,b)=>{
+      const fa=favorites.has(a)?0:1, fb=favorites.has(b)?0:1;
+      return fa-fb||a.localeCompare(b);
     });
 
-    // ============================================
-    // CALCULAR RANGO DE SLOTS A MOSTRAR
-    // ============================================
-    const minSlot = Math.min(...filtered.map(c => c.si));
-    const maxSlot = Math.max(...filtered.map(c => c.ei));
-    const slots = SLOTS.slice(minSlot, maxSlot + 1);
+    const minSlot = Math.min(...filtered.map(c=>c.si));
+    const maxSlot = Math.max(...filtered.map(c=>c.ei));
 
-    // ============================================
-    // CREAR LOOKUP PARA ACCESO RÁPIDO
-    // ============================================
+    // Build slot rows from minSlot to maxSlot
+    const slots = SLOTS.slice(minSlot, maxSlot+1);
+
+    // Build lookup: aula -> slot -> class
     const lookup = {};
-    filtered.forEach(c => {
-        if (!lookup[c.aula]) lookup[c.aula] = {};
-        for (let s = c.si; s < c.ei; s++) {
-            lookup[c.aula][s] = {
-                c: c,
-                isFirst: s === c.si,
-                span: c.ei - c.si
-            };
-        }
+    filtered.forEach(c=>{
+      if(!lookup[c.aula]) lookup[c.aula]={};
+      for(let s=c.si; s<c.ei; s++){
+        lookup[c.aula][s]={c, isFirst:s===c.si, span:c.ei-c.si};
+      }
     });
 
     const nowSlotM = nowM();
     let html2 = `<div class="gv-wrap"><table class="gv-table"><thead><tr>`;
     html2 += `<th class="gv-th" style="position:sticky;left:0;z-index:11">Hora</th>`;
-    
-    // -------------------------------------------------
-    // ENCABEZADOS DE LABORATORIOS
-    // -------------------------------------------------
-    labs.forEach(aula => {
-        const lab = LABS[aula];
-        const isFav = favorites.has(aula);
-        html2 += `<th class="gv-th">${isFav ? '⭐ ' : ''}${aula}<br><span style="font-weight:400;font-size:.58rem;color:var(--muted)">${lab ? lab.name : ''}</span></th>`;
+    labs.forEach(aula=>{
+      const lab=LABS[aula];
+      const isFav=favorites.has(aula);
+      html2 += `<th class="gv-th">${isFav?'⭐ ':''}${aula}<br><span style="font-weight:400;font-size:.58rem;color:var(--muted)">${lab?lab.name:''}</span></th>`;
     });
-    
     html2 += `</tr></thead><tbody>`;
 
-    // -------------------------------------------------
-    // CONTROL DE CELDAS RENDERIZADAS
-    // -------------------------------------------------
-    const rendered = {};
-    labs.forEach(a => { rendered[a] = {}; });
+    const rendered = {}; // track rowspan cells already rendered
+    labs.forEach(a=>{ rendered[a]={}; });
 
-    // -------------------------------------------------
-    // GENERAR FILAS (cada fila = un bloque de 45 min)
-    // -------------------------------------------------
-    slots.forEach((slot, i) => {
-        const globalSlotIdx = minSlot + i;
-        const isNowRow = nowSlotM >= slot.m && nowSlotM < slot.m + 45;
-        html2 += `<tr>`;
-        html2 += `<td class="gv-time${isNowRow ? ' now-row' : ''}">${slot.l}</td>`;
+    slots.forEach((slot, si)=>{
+      const slotIdx = minSlot + si;
+      const isNowRow = nowSlotM >= slot.m && nowSlotM < slot.m+45;
+      html2 += `<tr>`;
+      html2 += `<td class="gv-time${isNowRow?' now-row':''}">${slot.l}</td>`;
 
-        labs.forEach(aula => {
-            // Si esta celda ya fue renderizada por un rowspan, saltar
-            if (rendered[aula][i]) return;
-
-            // Buscar si hay una clase que empiece en este slot GLOBAL
-            const entry = lookup[aula]?.[globalSlotIdx];
-
-            if (entry && entry.isFirst) {
-                const { c, span } = entry;
-                
-                // Calcular estado para mostrar en la celda
-                let s = '';
-                if (c.dia === todayName()) {
-                    const m = nowM();
-                    if (m >= c.inicioM && m < c.finM) s = 'active';
-                    else if (m >= c.finM) s = 'past';
-                    else {
-                        const d = c.inicioM - m;
-                        if (d > 0 && d <= alertMinutes) s = 'imminent';
-                        else if (d > 0) s = 'upcoming';
-                    }
-                }
-                
-                const isFav = favorites.has(c.aula);
-
-                // Marcar las filas LOCALES que esta celda ocupará (rowspan)
-                for (let x = 1; x < span; x++) {
-                    if (i + x < slots.length) {
-                        rendered[aula][i + x] = true;
-                    }
-                }
-
-                html2 += `<td class="gv-cell${isNowRow ? ' now-row' : ''}" rowspan="${span}">
-                    <div class="gv-block s-${s || 'nottoday'}" onclick="openModal('${c.aula}','${LABS[c.aula] ? LABS[c.aula].name : ''}','${LABS[c.aula] ? LABS[c.aula].img : ''}')">
-                        <div class="gv-block-top">
-                            <span class="gv-block-mat">${c.mat}</span>
-                            ${isFav ? '<span class="gv-block-fav">⭐</span>' : ''}
-                        </div>
-                        <div class="gv-block-grp">grp. ${c.grp}</div>
-                        <div class="gv-block-time">${c.inicio}–${c.fin}${(s === "upcoming" || s === "imminent") ? " · " + timeUntil(c) : ""}</div>
-                    </div>
-                </td>`;
-            } else if (!entry) {
-                // Celda vacía
-                html2 += `<td class="gv-cell${isNowRow ? ' now-row' : ''}"></td>`;
-            }
-            // Si entry existe pero no es isFirst, ya fue cubierta por rowspan
-        });
-        
-        html2 += `</tr>`;
+      labs.forEach(aula=>{
+        if(rendered[aula][slotIdx]) return; // skip, covered by rowspan
+        const entry = lookup[aula]?.[slotIdx];
+        if(entry && entry.isFirst){
+          const {c, span} = entry;
+          const s = getStatus(c);
+          const isFav = favorites.has(c.aula);
+          // Mark future slots as rendered
+          for(let x=1;x<span;x++) rendered[aula][slotIdx+x]=true;
+          html2 += `<td class="gv-cell${isNowRow?' now-row':''}" rowspan="${span}">
+            <div class="gv-block s-${s||'nottoday'}" onclick="openModal('${c.aula}','${LABS[c.aula]?LABS[c.aula].name:''}','${LABS[c.aula]?LABS[c.aula].img:''}')">
+              <div class="gv-block-top">
+                <span class="gv-block-mat">${c.mat}</span>
+                ${isFav?'<span class="gv-block-fav">⭐</span>':''}
+              </div>
+              <div class="gv-block-grp">grp. ${c.grp}</div>
+              <div class="gv-block-time">${c.inicio}–${c.fin}${(s==="upcoming"||s==="imminent")?" · "+timeUntil(c):""}</div>
+            </div>
+          </td>`;
+        } else if(!entry) {
+          html2 += `<td class="gv-cell${isNowRow?' now-row':''}"></td>`;
+        }
+      });
+      html2 += `</tr>`;
     });
 
     html2 += `</tbody></table></div>`;
     gv.innerHTML = html2;
-}
-   
+  }
+
   // ══ MOBILE NAV ══
   let mobileNavMode = 'today'; // 'today' or 'all'
 
@@ -2725,5 +2628,171 @@ const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t
     </div>
   </div>
 </div>
+
+<!-- ══ SIDEBAR ══ -->
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="sidebar">
+  <div class="sb-header">
+    <span class="sb-title">⚙️ Menú</span>
+    <button class="sb-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <div class="sb-body">
+
+    <!-- Vista -->
+    <div class="sb-section">
+      <div class="sb-section-title">Vista</div>
+      <button class="sb-btn active" id="sb-vt-list" onclick="switchView('list');updateSbViewBtns()">
+        <span class="sb-btn-icon">📋</span><span class="sb-btn-label">Lista</span>
+      </button>
+      <button class="sb-btn" id="sb-vt-grid" onclick="switchView('grid');updateSbViewBtns()">
+        <span class="sb-btn-icon">📊</span><span class="sb-btn-label">Cuadrícula</span>
+      </button>
+      <button class="sb-btn" id="sb-vt-group" onclick="toggleGroupEdificio();updateSbGroupBtn()">
+        <span class="sb-btn-icon">🏷️</span><span class="sb-btn-label" id="sb-group-label">Agrupar por edificio</span>
+      </button>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <!-- Favoritos -->
+    <div class="sb-section">
+      <div class="sb-section-title">Favoritos</div>
+      <button class="sb-btn" id="sb-fav-toggle" onclick="toggleFavOnlySidebar()">
+        <span class="sb-btn-icon">⭐</span>
+        <span class="sb-btn-label" id="sb-fav-label">Solo favoritos</span>
+        <span class="sb-btn-badge" id="sb-fav-count" style="display:none">0</span>
+      </button>
+      <button class="sb-btn" onclick="clearAllFavs()">
+        <span class="sb-btn-icon">🗑️</span><span class="sb-btn-label">Limpiar favoritos</span>
+      </button>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <!-- Compartir -->
+    <div class="sb-section">
+      <div class="sb-section-title">Compartir</div>
+      <button class="sb-btn" onclick="shareWhatsApp();closeSidebar()">
+        <span class="sb-btn-icon">💬</span><span class="sb-btn-label">Compartir por WhatsApp</span>
+      </button>
+      <button class="sb-btn" onclick="copyShareLink()">
+        <span class="sb-btn-icon">🔗</span><span class="sb-btn-label">Copiar enlace</span>
+      </button>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <!-- Herramientas -->
+    <div class="sb-section">
+      <div class="sb-section-title">Herramientas</div>
+      <button class="sb-btn" onclick="openCompareSheet();closeSidebar()">
+        <span class="sb-btn-icon">📅</span><span class="sb-btn-label">Comparar cuatrimestres</span>
+      </button>
+      <button class="sb-btn" onclick="toggleThemePicker();closeSidebar()">
+        <span class="sb-btn-icon">🎨</span><span class="sb-btn-label">Cambiar tema</span>
+      </button>
+      <button class="sb-btn" onclick="exportCSV()">
+        <span class="sb-btn-icon">📥</span><span class="sb-btn-label">Exportar como CSV</span>
+      </button>
+      <button class="sb-btn" onclick="printSchedule()">
+        <span class="sb-btn-icon">🖨️</span><span class="sb-btn-label">Imprimir horario</span>
+      </button>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <!-- Stats -->
+    <div class="sb-section">
+      <div class="sb-section-title">Estadísticas</div>
+      <div class="sb-stats">
+        <div class="sb-stats-row"><span class="sb-stats-label">Total clases</span><span class="sb-stats-val" id="sb-stat-total">—</span></div>
+        <div class="sb-stats-row"><span class="sb-stats-label">Labs activos hoy</span><span class="sb-stats-val" id="sb-stat-today">—</span></div>
+        <div class="sb-stats-row"><span class="sb-stats-label">Favoritos guardados</span><span class="sb-stats-val" id="sb-stat-favs">—</span></div>
+        <div class="sb-stats-row"><span class="sb-stats-label">Laboratorios totales</span><span class="sb-stats-val">${Object.keys(LABS||{}).length||28}</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ══ SIDEBAR LOGIC ══
+window.openSidebar = function() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-overlay').classList.add('open');
+  // Sync stats
+  const total = document.getElementById('statTotal');
+  if(total) document.getElementById('sb-stat-total').textContent = total.textContent;
+  const today = document.getElementById('statToday');
+  if(today) document.getElementById('sb-stat-today').textContent = today.textContent;
+  document.getElementById('sb-stat-favs').textContent = (JSON.parse(localStorage.getItem('utesa-favs')||'[]')).length;
+  // Sync fav count badge
+  const favs = JSON.parse(localStorage.getItem('utesa-favs')||'[]');
+  const badge = document.getElementById('sb-fav-count');
+  badge.textContent = favs.length;
+  badge.style.display = favs.length ? 'inline' : 'none';
+  updateSbViewBtns();
+};
+
+window.closeSidebar = function() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+};
+
+window.updateSbViewBtns = function() {
+  const isGrid = document.getElementById('vt-grid').classList.contains('active');
+  document.getElementById('sb-vt-list').classList.toggle('active', !isGrid);
+  document.getElementById('sb-vt-grid').classList.toggle('active', isGrid);
+};
+
+window.updateSbGroupBtn = function() {
+  const active = document.getElementById('vt-group').classList.contains('active');
+  const btn = document.getElementById('sb-vt-group');
+  btn.classList.toggle('active', active);
+  document.getElementById('sb-group-label').textContent = active ? 'Desagrupar edificios' : 'Agrupar por edificio';
+};
+
+window.toggleFavOnlySidebar = function() {
+  const cb = document.getElementById('fs-favonly');
+  if(cb){ cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); }
+  const active = cb && cb.checked;
+  document.getElementById('sb-fav-toggle').classList.toggle('active', active);
+  document.getElementById('sb-fav-label').textContent = active ? 'Mostrando solo favoritos' : 'Solo favoritos';
+};
+
+window.clearAllFavs = function() {
+  if(!confirm('¿Limpiar todos los favoritos?')) return;
+  localStorage.setItem('utesa-favs','[]');
+  location.reload();
+};
+
+window.copyShareLink = function() {
+  navigator.clipboard.writeText(location.href).then(()=>{
+    const btn = [...document.querySelectorAll('.sb-btn')].find(b=>b.textContent.includes('Copiar enlace'));
+    if(btn){ const orig=btn.querySelector('.sb-btn-label').textContent; btn.querySelector('.sb-btn-label').textContent='✅ ¡Copiado!'; setTimeout(()=>btn.querySelector('.sb-btn-label').textContent=orig,2000); }
+  });
+};
+
+window.exportCSV = function() {
+  const rows = [['Laboratorio','Materia','Grupo','Día','Inicio','Fin','Duración (min)']];
+  (window._allClasses||[]).forEach(c=>{
+    rows.push([c.aula,c.mat,c.grp,c.dia,c.inicio,c.fin,c.durMin]);
+  });
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download = 'horarios-utesa.csv';
+  a.click();
+  closeSidebar();
+};
+
+window.printSchedule = function() {
+  closeSidebar();
+  setTimeout(()=>window.print(), 300);
+};
+
+// close sidebar with ESC
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeSidebar(); });
+</script>
 </body>
 </html>
