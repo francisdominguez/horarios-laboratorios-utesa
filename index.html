@@ -1151,14 +1151,27 @@ const raw=[
   {aula:'C415',mat:'IEL115',grp:'003',dia:'Sábado',si:10,ei:12},
 ];
 
-const classes=raw.map(c=>({
-  ...c,
-  durMin:(c.ei-c.si)*45,
-  inicio:SLOTS[c.si].l,
-  fin:SLOTS[c.ei]?SLOTS[c.ei].l:SLOT_END_LBL,
-  inicioM:SLOTS[c.si].m,
-  finM:SLOTS[c.ei]?SLOTS[c.ei].m:SLOT_END_M,
-}));
+const classes = raw.map(c => {
+
+  const inicioSlot = SLOTS[c.si];
+  const finSlot    = SLOTS[c.ei + 1];
+
+  if (!inicioSlot || !finSlot) {
+    console.error("Error en índices:", c);
+    return null;
+  }
+
+  return {
+    ...c,
+    inicio: inicioSlot.l,
+    fin:    finSlot.l,
+    inicioM: inicioSlot.m,
+    finM:    finSlot.m,
+    durMin: (c.ei - c.si + 1) * 45
+  };
+
+}).filter(Boolean);
+
 window._allClasses = classes;
 
 document.addEventListener('DOMContentLoaded',function(){
