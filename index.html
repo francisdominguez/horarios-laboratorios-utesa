@@ -1154,7 +1154,7 @@ const raw=[
 const classes = raw.map(c => {
 
   const inicioSlot = SLOTS[c.si];
-  const finSlot    = SLOTS[c.ei + 1] || SLOTS[c.ei];
+  const finSlot    = SLOTS[c.ei];
 
   if (!inicioSlot || !finSlot) {
     console.error("Error en índices:", c);
@@ -1167,11 +1167,10 @@ const classes = raw.map(c => {
     fin:    finSlot.l,
     inicioM: inicioSlot.m,
     finM:    finSlot.m,
-    durMin: (c.ei - c.si + 1) * 45
+    durMin: (c.ei - c.si) * 45
   };
 
 }).filter(Boolean);
-
 window._allClasses = classes;
 
 document.addEventListener('DOMContentLoaded',function(){
