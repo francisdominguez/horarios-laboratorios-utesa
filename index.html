@@ -1176,7 +1176,7 @@ window._allClasses = classes;
 document.addEventListener('DOMContentLoaded',function(){
   let sortCol='', sortDir=1, groupByEdificio=false;
   let filterDia='',filterLab='',filterMateria='',filterHora='',filterEdificio='',filterEstado='',globalSearch='',alertEnabled=true,alertMinutes=15;
-  let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true, endAlertEnabled=true, noMolestar=false, noMolestarStart=22, noMolestarEnd=7, repeatAlert=false;
+  let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true, endAlertEnabled=true, noMolestar=false, noMolestarStart=22, noMolestarEnd=7, repeatAlert=localStorage.getItem('utesa-repeat-alert')==='1';
   const notifiedRepeat={}; // key -> last repeat time
   let favorites=new Set(JSON.parse(localStorage.getItem('utesa-favs')||'[]')), favOnly=false;
   function saveFavs(){localStorage.setItem('utesa-favs',JSON.stringify([...favorites]));}
@@ -1666,7 +1666,7 @@ const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t
   }
 
   async function subscribeToPush(reg) {
-    if(VAPID_PUBLIC_KEY === BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t02iV08QRErA0f5_sCmTAmVi2zlGhD4HrI) return;
+    if(VAPID_PUBLIC_KEY === 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t02iV08QRErA0f5_sCmTAmVi2zlGhD4HrI') return;
     try {
       const existing = await reg.pushManager.getSubscription();
       if(existing){ savePushSubscription(existing); return; }
@@ -1996,10 +1996,10 @@ const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t
           const txt=document.getElementById('push-status-text');
           const ico=document.getElementById('push-status-icon');
           if(txt&&ico){
-            if(sub&&VAPID_PUBLIC_KEY!==BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t02iV08QRErA0f5_sCmTAmVi2zlGhD4HrI){
+            if(sub&&VAPID_PUBLIC_KEY!=='BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t02iV08QRErA0f5_sCmTAmVi2zlGhD4HrI'){
               txt.textContent='Activo — notifica con pantalla bloqueada';
               ico.textContent='✅';
-            } else if(VAPID_PUBLIC_KEY===BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t02iV08QRErA0f5_sCmTAmVi2zlGhD4HrI){
+            } else if(VAPID_PUBLIC_KEY==='BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t02iV08QRErA0f5_sCmTAmVi2zlGhD4HrI'){
               txt.textContent='Pendiente configurar (ver manual)';
               ico.textContent='⚙️';
             } else {
@@ -2035,7 +2035,7 @@ const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t
   window.syncAlertMinutes = function(el) { alertMinutes=parseInt(el.value)||15; document.getElementById('alertMinutes').value=el.value; syncConfigToSW(); };
   window.syncAlertSound = function(el) { soundEnabled=el.checked; };
   window.syncEndAlert = function(el) { endAlertEnabled=el.checked; syncConfigToSW(); };
-  window.syncRepeatAlert = function(el) { repeatAlert=el.checked; };
+  window.syncRepeatAlert = function(el) { repeatAlert=el.checked; localStorage.setItem('utesa-repeat-alert', el.checked?'1':'0'); };
   window.showPushJson = function(){
     const box = document.getElementById('push-json-box');
     const txt = document.getElementById('push-json-text');
