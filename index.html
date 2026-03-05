@@ -2009,10 +2009,10 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
           const txt=document.getElementById('push-status-text');
           const ico=document.getElementById('push-status-icon');
           if(txt&&ico){
-            if(sub&&VAPID_PUBLIC_KEY!=='BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t02iV08QRErA0f5_sCmTAmVi2zlGhD4HrI'){
+           if(sub&&VAPID_PUBLIC_KEY!=='PLACEHOLDER'){
               txt.textContent='Activo — notifica con pantalla bloqueada';
               ico.textContent='✅';
-            } else if(VAPID_PUBLIC_KEY==='BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t02iV08QRErA0f5_sCmTAmVi2zlGhD4HrI'){
+            } else if(VAPID_PUBLIC_KEY==='PLACEHOLDER'){
               txt.textContent='Pendiente configurar (ver manual)';
               ico.textContent='⚙️';
             } else {
