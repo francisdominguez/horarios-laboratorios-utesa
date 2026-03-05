@@ -1666,7 +1666,7 @@ const VAPID_PUBLIC_KEY = 'BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t
   }
 
   async function subscribeToPush(reg) {
-    if(VAPID_PUBLIC_KEY === 'PEGA_AQUI_TU_CLAVE_PUBLICA') return;
+    if(VAPID_PUBLIC_KEY === BKMAeA1QoNs3uwVzgZp_-SDQ5TfWOmA2tuKVaAjCDgm4QZ6HBvGk1t02iV08QRErA0f5_sCmTAmVi2zlGhD4HrI) return;
     try {
       const existing = await reg.pushManager.getSubscription();
       if(existing){ savePushSubscription(existing); return; }
