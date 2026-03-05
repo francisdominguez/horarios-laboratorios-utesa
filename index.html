@@ -1666,7 +1666,7 @@ const VAPID_PUBLIC_KEY = 'BEdlptHNtfUDBOCGgK3b-W3QSnzSWsQxxUyJig3-DJ1xbwfMdgD-uZ
   }
 
   async function subscribeToPush(reg) {
-    if(VAPID_PUBLIC_KEY === 'BEdlptHNtfUDBOCGgK3b-W3QSnzSWsQxxUyJig3-DJ1xbwfMdgD-uZJJAdObZCAmzvLeLz8Ha1d44KF_P79Aqsk') return;
+   if(VAPID_PUBLIC_KEY === 'PLACEHOLDER') return;
     try {
       const existing = await reg.pushManager.getSubscription();
       if(existing){ savePushSubscription(existing); return; }
