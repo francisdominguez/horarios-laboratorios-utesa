@@ -1167,7 +1167,7 @@ const raw=[
 const classes = raw.map(c => {
 
   const inicioSlot = SLOTS[c.si];
-  const finSlot    = SLOTS[c.ei];
+  const finSlot = SLOTS[c.ei] || {l:'10:00 PM', m:'22:00'};
 
   if (!inicioSlot || !finSlot) {
     console.error("Error en índices:", c);
