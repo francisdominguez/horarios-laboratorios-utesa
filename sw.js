@@ -481,59 +481,6 @@ const classes=raw.map(c=>{
   return{...c,durMin,inicio,fin,inicioM,finM};
 });
 
-const DIAS={0:'Domingo',1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado'};
-
-// ── CONFIG (sincronizada desde la app) ──
-let alertMinutes=15, endAlertEnabled=true, noMolestar=false, noMolestarStart=22, noMolestarEnd=7;
-const notified=new Set(), notifiedEnd=new Set();
-
-function nowM(){const n=new Date();return n.getHours()*60+n.getMinutes();}
-function todayName(){return DIAS[new Date().getDay()];}
-
-function isSilenced(){
-  if(!noMolestar)return false;
-  const h=new Date().getHours();
-  return(noMolestarStart<noMolestarEnd)
-    ?(h>=noMolestarStart&&h<noMolestarEnd)
-    :(h>=noMolestarStart||h<noMolestarEnd);
-}
-
-function checkAndNotify(){
-  if(isSilenced())return;
-  const today=todayName(), m=nowM();
-  classes.forEach(c=>{
-    if(c.dia!==today)return;
-    const diff=c.inicioM-m;
-    const diffEnd=c.finM-m;
-    const key=`${c.aula}-${c.mat}${c.grp}-${c.inicio}`;
-    const keyEnd=`END-${key}`;
-    // Alerta próxima
-    if(diff>0&&diff<=alertMinutes&&!notified.has(key)){
-      notified.add(key);
-      self.registration.showNotification(`⏰ Clase en ${diff} min`, {
-        body: `${c.aula} · ${c.mat} grp.${c.grp}\n${c.inicio} → ${c.fin}`,
-        icon: '/horarios-laboratorios-utesa/icon-192.png',
-        badge: '/horarios-laboratorios-utesa/icon-192.png',
-        tag: key,
-        requireInteraction: true,
-        vibrate: [100,50,100,50,300,100,300],
-        data: {url: '/horarios-laboratorios-utesa/'}
-      });
-    }
-    // Alerta fin de clase
-    if(endAlertEnabled&&diffEnd<=0&&diffEnd>=-2&&!notifiedEnd.has(keyEnd)){
-      notifiedEnd.add(keyEnd);
-      self.registration.showNotification(`✅ Clase finalizada`, {
-        body: `${c.aula} · ${c.mat} grp.${c.grp}\n${c.inicio} → ${c.fin}`,
-        icon: '/horarios-laboratorios-utesa/icon-192.png',
-        tag: keyEnd,
-        vibrate: [200,100,200],
-        data: {url: '/horarios-laboratorios-utesa/'}
-      });
-    }
-  });
-}
-
 // ── Skip waiting on demand from app ──
 self.addEventListener('message', e=>{
   if(e.data&&e.data.type==='SKIP_WAITING') self.skipWaiting();
@@ -551,7 +498,7 @@ self.addEventListener('push', e=>{
       badge:            data.badge||'/horarios-laboratorios-utesa/icon-192.png',
       tag:              data.tag||'utesa-push',
       vibrate:          data.vibrate||[200,100,200],
-      requireInteraction: data.requireInteraction||false,
+      requireInteraction: true,
       data:             { url: data.url||'/horarios-laboratorios-utesa/' }
     })
   );
@@ -568,20 +515,7 @@ self.addEventListener('notificationclick', e=>{
   );
 });
 
-// ── Recibir config actualizada desde la app ──
-self.addEventListener('message', e=>{
-  if(e.data&&e.data.type==='UPDATE_CONFIG'){
-    const c=e.data.config;
-    if(c.alertMinutes!=null)alertMinutes=c.alertMinutes;
-    if(c.endAlertEnabled!=null)endAlertEnabled=c.endAlertEnabled;
-    if(c.noMolestar!=null)noMolestar=c.noMolestar;
-    if(c.noMolestarStart!=null)noMolestarStart=c.noMolestarStart;
-    if(c.noMolestarEnd!=null)noMolestarEnd=c.noMolestarEnd;
-  }
-});
-
-// ── Periodic check cada 60 segundos via setInterval en SW ──
-let _checkInterval=null;
+// ── Activación ──
 self.addEventListener('activate', e=>{
   e.waitUntil(
     caches.keys().then(keys=>
