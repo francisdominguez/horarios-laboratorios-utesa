@@ -585,25 +585,6 @@
     </div>
     <button class="btn-reset" onclick="resetFilters()">✕ Limpiar</button>
   </div>
-  <div class="alert-config">
-    <div>
-      <div class="alert-config-title">⏰ Alertas de clase</div>
-      <p>Notificación cuando una clase esté por comenzar</p>
-    </div>
-    <div class="acc">
-      <label>Avisar con</label>
-      <input type="number" id="alertMinutes" value="15" min="1" max="60">
-      <label>min de anticipación</label>
-      <label class="toggle"><input type="checkbox" id="alertEnabled" checked><span class="toggle-slider"></span></label>
-    </div>
-  </div>
-  <div class="stats-bar">
-    <div class="stat"><span class="stat-val" id="statTotal">0</span><span class="stat-lbl">clases totales</span></div>
-    <span class="stat-sep" id="sepFiltered">·</span>
-    <div class="stat" id="statFilteredWrap" style="display:none"><span class="stat-val" id="statFiltered">0</span><span class="stat-lbl" id="statFilteredLbl">mostrando</span></div>
-    <span class="stat-sep">·</span>
-    <div class="stat"><span class="stat-val" id="statToday">0</span><span class="stat-lbl" id="statTodayLbl">hoy</span></div>
-  </div>
   <div id="occupancy-bar" style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;padding:.85rem 1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;animation:fadeUp .6s .28s ease both">
     <div style="display:flex;align-items:center;gap:.5rem">
       <span style="width:10px;height:10px;border-radius:50%;background:#00e5a0;display:inline-block;box-shadow:0 0 6px #00e5a0"></span>
@@ -625,6 +606,18 @@
       <span id="occ-total" style="font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;color:var(--muted)">28</span>
     </div>
   </div>
+  <!-- IDs requeridos por JS (ocultos, los controles reales están en el sidebar) -->
+  <div style="display:none">
+    <input type="checkbox" id="alertEnabled" checked>
+    <input type="number" id="alertMinutes" value="15">
+    <span id="statTotal"></span>
+    <span id="statFiltered"></span>
+    <span id="statFilteredLbl"></span>
+    <span id="statToday"></span>
+    <div id="statFilteredWrap"></div>
+    <span id="sepFiltered"></span>
+    <span id="statTodayLbl"></span>
+  </div>
   <div id="global-search-wrap">
     <input id="global-search" type="search" placeholder="🔍 Buscar aula, materia, grupo, día, hora..." oninput="onGlobalSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
     <button id="gs-clear" onclick="clearGlobalSearch()" title="Limpiar">✕</button>
@@ -634,7 +627,6 @@
     <button class="vt-btn active" id="vt-list" onclick="switchView('list')">📋 Lista</button>
     <button class="vt-btn" id="vt-grid" onclick="switchView('grid')">📊 Cuadrícula</button>
     <button class="vt-btn" id="vt-group" onclick="toggleGroupEdificio()">🏷️ Agrupar</button>
-    <button class="vt-btn" onclick="openSidebar()" style="flex:0;padding:.4rem .65rem" title="Más opciones">⋯</button>
   </div>
   <!-- ✅ FIX: grid-view con overflow propio -->
   <div id="grid-view"></div>
@@ -1334,7 +1326,7 @@ document.addEventListener('DOMContentLoaded', function(){
       tr.style.animationDelay=`${i*.018}s`;
       const badge=
         marked==='ausente'   ?'<span class="b-past">🚫 Ausente</span>':
-        marked==='finalizada'?'<span class="b-past">✔ Finalizada</span>':
+        marked==='finalizada'?`<span class="b-past">✔ Finalizada ${window.markedRows[rowKey+'_time']||''}</span>`:
         s==='active'  ?'<span class="b-active">🟢 En curso</span>':
         s==='imminent'?`<span class="b-imm">⚡ ${timeUntil(c)}</span>`:
         s==='upcoming'?`<span class="b-upcoming">⏳ ${timeUntil(c)}</span>`:
@@ -1474,7 +1466,7 @@ document.addEventListener('DOMContentLoaded', function(){
       const key=`${c.aula}-${c.mat}${c.grp}-${c.inicio}`;
       const keyEnd=`END-${key}`;
       if(diff>0&&diff<=alertMinutes&&!notified.has(key)){notified.add(key);if(repeatAlert)notifiedRepeat[key]=Date.now();pending.push({c,diff});}
-      if(endAlertEnabled&&diffEnd<=0&&diffEnd>=-2&&!notifiedEnd.has(keyEnd)){notifiedEnd.add(keyEnd);ended.push({c});}
+      if(endAlertEnabled&&diffEnd<=0&&diffEnd>=-3&&!notifiedEnd.has(keyEnd)){notifiedEnd.add(keyEnd);ended.push({c});}
     });
     if(repeatAlert){
       const rp=[];
@@ -1549,12 +1541,92 @@ document.addEventListener('DOMContentLoaded', function(){
   };
 
   if('Notification'in window&&Notification.permission==='default'){
-    // NO llamar requestPermission() aquí — browsers modernos lo bloquean sin gesto del usuario
-    // Se pedirá cuando el usuario active las alertas
+    // Push VAPID se encarga de las notificaciones en background
+  }
+
+// ── VAPID PUBLIC KEY ──
+const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eSzKJr58Mt4f8wE4rsP8_JdCAqx8iPsBp9c';
+
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+  }
+
+  async function subscribeToPush(reg) {
+    if(VAPID_PUBLIC_KEY === 'PLACEHOLDER') return;
+    try {
+      const existing = await reg.pushManager.getSubscription();
+      if(existing){ savePushSubscription(existing); return; }
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+      savePushSubscription(sub);
+      console.log('✅ Push subscription activa');
+    } catch(e) {
+      console.log('Push no disponible:', e.message);
+    }
+  }
+
+  function savePushSubscription(sub) {
+    localStorage.setItem('utesa-push-sub', JSON.stringify(sub));
+    console.log('📋 Suscripción lista. Copia este JSON al Secret PUSH_SUBSCRIPTIONS de GitHub:');
+    console.log(JSON.stringify([sub], null, 2));
+  }
+
+  window.showPushJson = function(){
+    const box = document.getElementById('push-json-box');
+    const txt = document.getElementById('push-json-text');
+    const sub = localStorage.getItem('utesa-push-sub');
+    if(!sub){ txt.value = 'No hay suscripción aún. Asegúrate de haber aceptado los permisos de notificación.'; }
+    else { txt.value = '[' + sub + ']'; }
+    box.style.display = box.style.display==='none' ? 'block' : 'none';
+  };
+
+  window.copyPushJson = function(){
+    const txt = document.getElementById('push-json-text');
+    txt.select();
+    document.execCommand('copy');
+    const btn = document.getElementById('copy-json-btn');
+    btn.textContent = '✅ Copiado';
+    setTimeout(()=>btn.textContent='Copiar', 2000);
+  };
+
+  function syncConfigToSW(){
+    if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;
+    navigator.serviceWorker.controller.postMessage({
+      type:'UPDATE_CONFIG',
+      config:{ alertMinutes, endAlertEnabled, noMolestar, noMolestarStart, noMolestarEnd }
+    });
   }
 
   if('serviceWorker'in navigator){
     navigator.serviceWorker.register('sw.js').then(reg=>{
+      navigator.serviceWorker.ready.then(()=>{
+        syncConfigToSW();
+        subscribeToPush(reg);
+      });
+      // Check push status display
+      if('PushManager' in window){
+        reg.pushManager.getSubscription().then(sub=>{
+          const txt=document.getElementById('push-status-text');
+          const ico=document.getElementById('push-status-icon');
+          if(txt&&ico){
+            if(sub&&VAPID_PUBLIC_KEY!=='PLACEHOLDER'){
+              txt.textContent='Activo — notifica con pantalla bloqueada';
+              ico.textContent='✅';
+            } else if(VAPID_PUBLIC_KEY==='PLACEHOLDER'){
+              txt.textContent='Pendiente configurar (ver manual)';
+              ico.textContent='⚙️';
+            } else {
+              txt.textContent='Inactivo — toca para activar';
+              ico.textContent='❌';
+            }
+          }
+        });
+      }
       reg.addEventListener('updatefound',()=>{
         const newSW=reg.installing;
         newSW.addEventListener('statechange',()=>{
@@ -1726,33 +1798,8 @@ document.addEventListener('DOMContentLoaded', function(){
     if(document.getElementById('fs-favonly'))document.getElementById('fs-favonly').checked=false;
   };
 
-  window.updateNotifStatus = function(){
-    const el = document.getElementById('as-notif-status');
-    if(!el) return;
-    if(!('Notification' in window)){
-      el.style.background = 'rgba(107,114,128,.12)';
-      el.style.border = '1px solid rgba(107,114,128,.25)';
-      el.innerHTML = '<span style="color:var(--muted)">🔕 Notificaciones no soportadas en este navegador</span>';
-      return;
-    }
-    const perm = Notification.permission;
-    if(perm === 'granted'){
-      el.style.background = 'rgba(0,229,160,.08)';
-      el.style.border = '1px solid rgba(0,229,160,.25)';
-      el.innerHTML = '<span style="color:#00e5a0">✅ Notificaciones activas</span><span style="font-size:.7rem;color:var(--muted)">El sistema puede enviarte alertas</span>';
-    } else if(perm === 'denied'){
-      el.style.background = 'rgba(239,68,68,.08)';
-      el.style.border = '1px solid rgba(239,68,68,.25)';
-      el.innerHTML = '<span style="color:#ef4444">🚫 Notificaciones bloqueadas</span><button onclick="window.open(\'https://support.google.com/chrome/answer/3220216\')" style="font-size:.7rem;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444;padding:.2rem .55rem;border-radius:6px;cursor:pointer">Cómo activarlas</button>';
-    } else {
-      el.style.background = 'rgba(255,200,50,.07)';
-      el.style.border = '1px solid rgba(255,200,50,.2)';
-      el.innerHTML = '<span style="color:#ffc832">⚠️ Permiso no otorgado</span><button onclick="Notification.requestPermission().then(updateNotifStatus)" style="font-size:.75rem;background:rgba(255,200,50,.15);border:1px solid rgba(255,200,50,.3);color:#ffc832;padding:.25rem .65rem;border-radius:6px;cursor:pointer;font-weight:600">Activar notificaciones</button>';
-    }
-  };
 
   window.openAlertSheet=function(){
-    updateNotifStatus();
     document.getElementById('bnav-alert').classList.add('active');
     document.getElementById('as-enabled').checked=alertEnabled;
     document.getElementById('as-sound').checked=soundEnabled;
@@ -1769,16 +1816,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('alert-sheet').classList.add('open');
   };
   window.closeAlertSheet=function(){document.getElementById('alert-sheet').classList.remove('open');document.getElementById('bnav-alert').classList.remove('active');};
-  window.syncAlertEnabled=function(el){
-    alertEnabled=el.checked;
-    document.getElementById('alertEnabled').checked=el.checked;
-    if(el.checked && 'Notification' in window && Notification.permission === 'default'){
-      Notification.requestPermission().then(perm => {
-        updateNotifStatus();
-      });
-    }
-    updateNotifStatus();
-  };
+  window.syncAlertEnabled=function(el){alertEnabled=el.checked;document.getElementById('alertEnabled').checked=el.checked;};
   window.syncAlertMinutes=function(el){alertMinutes=parseInt(el.value)||15;document.getElementById('alertMinutes').value=el.value;};
   window.syncAlertSound=function(el){soundEnabled=el.checked;};
   window.syncEndAlert=function(el){endAlertEnabled=el.checked;};
@@ -1907,6 +1945,9 @@ document.addEventListener('DOMContentLoaded', function(){
 // ✅ FIX: marcar/desmarcar usando estado persistente — sobreviven al re-render
 window.marcarFinalizada = function(rowKey){
   window.markedRows[rowKey] = 'finalizada';
+  const n = new Date(), h = n.getHours(), mn = n.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM', h12 = h % 12 || 12;
+  window.markedRows[rowKey + '_time'] = `· ${h12}:${String(mn).padStart(2,'0')} ${ampm}`;
   render();
 };
 
@@ -1917,6 +1958,7 @@ window.marcarAusente = function(rowKey){
 
 window.desmarcar = function(rowKey){
   delete window.markedRows[rowKey];
+  delete window.markedRows[rowKey + '_time'];
   render();
 };
 
@@ -2091,16 +2133,85 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
   <div class="as-box">
     <div class="as-handle"></div>
     <div class="as-title">⏰ Configurar alertas</div>
-    <!-- Estado del permiso de notificaciones -->
-    <div id="as-notif-status" style="margin-bottom:.75rem;padding:.65rem .85rem;border-radius:10px;font-size:.82rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem"></div>
-    <div class="as-row"><div><div class="as-row-label">Alertas activas</div><div class="as-row-sub">Notificar antes de cada clase</div></div><label class="toggle"><input type="checkbox" id="as-enabled" checked onchange="syncAlertEnabled(this)"><span class="toggle-slider"></span></label></div>
-    <div class="as-row"><div><div class="as-row-label">Anticipación</div><div class="as-row-sub">Minutos antes de la clase</div></div><input type="number" class="as-input" id="as-minutes" value="15" min="1" max="60" onchange="syncAlertMinutes(this)"></div>
-    <div class="as-row"><div><div class="as-row-label">Sonido</div><div class="as-row-sub">Tono al alertar clase</div></div><label class="toggle"><input type="checkbox" id="as-sound" checked onchange="syncAlertSound(this)"><span class="toggle-slider"></span></label></div>
-    <div class="as-row"><div><div class="as-row-label">🔁 Repetir alerta</div><div class="as-row-sub">Volver a notificar cada 5 min</div></div><label class="toggle"><input type="checkbox" id="as-repeat" onchange="syncRepeatAlert(this)"><span class="toggle-slider"></span></label></div>
-    <div class="as-row"><div><div class="as-row-label">Alerta clase finalizada</div><div class="as-row-sub">Avisar cuando termine una clase</div></div><label class="toggle"><input type="checkbox" id="as-end-enabled" checked onchange="syncEndAlert(this)"><span class="toggle-slider"></span></label></div>
-    <div class="as-row"><div><div class="as-row-label">🌙 No molestar</div><div class="as-row-sub">Silenciar fuera de horario</div></div><label class="toggle"><input type="checkbox" id="as-nomolestar" onchange="syncNoMolestar(this)"><span class="toggle-slider"></span></label></div>
-    <div class="as-row" id="as-nomolestar-horario" style="display:none"><div style="width:100%"><div class="as-row-label" style="margin-bottom:.5rem">Horario de silencio</div><div style="display:flex;align-items:center;gap:.5rem"><input type="number" class="as-input" id="as-nm-end" value="7" min="0" max="23" onchange="syncNoMolestarHours()" style="width:52px"><span style="font-size:.78rem;color:var(--muted)">AM hasta</span><input type="number" class="as-input" id="as-nm-start" value="22" min="0" max="23" onchange="syncNoMolestarHours()" style="width:52px"><span style="font-size:.78rem;color:var(--muted)">PM</span></div></div></div>
-    <div class="as-row" id="as-pending-row" style="display:none"><div><div class="as-row-label">Próximas ahora</div><div class="as-row-sub" id="as-pending-text">—</div></div><button class="fs-btn fs-btn-apply" style="flex:0;padding:.4rem .8rem;font-size:.78rem" onclick="openAlertModal();closeAlertSheet()">Ver</button></div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">Alertas activas</div>
+        <div class="as-row-sub">Notificar antes de cada clase</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="as-enabled" checked onchange="syncAlertEnabled(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">Anticipación</div>
+        <div class="as-row-sub">Minutos antes de la clase</div>
+      </div>
+      <input type="number" class="as-input" id="as-minutes" value="15" min="1" max="60" onchange="syncAlertMinutes(this)">
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">Sonido</div>
+        <div class="as-row-sub">Tono al alertar clase</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="as-sound" checked onchange="syncAlertSound(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">📲 Push en background</div>
+        <div class="as-row-sub" id="push-status-text">Verificando...</div>
+      </div>
+      <span id="push-status-icon" style="font-size:.85rem">⏳</span>
+    </div>
+    <div class="as-row" style="flex-direction:column;align-items:flex-start;gap:.5rem">
+      <button onclick="showPushJson()" style="background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--accent);padding:.4rem .8rem;border-radius:8px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif">
+        📋 Ver mi suscripción JSON
+      </button>
+      <div id="push-json-box" style="display:none;background:#0a0c10;border:1px solid #3a4258;border-radius:8px;padding:.6rem;width:100%;box-sizing:border-box">
+        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.4rem;font-family:'Space Mono',monospace">COPIA ESTE JSON → GitHub Secret PUSH_SUBSCRIPTIONS</div>
+        <textarea id="push-json-text" readonly style="width:100%;background:transparent;border:none;color:#a0a8bf;font-size:.62rem;font-family:'Space Mono',monospace;resize:none;outline:none;height:80px;box-sizing:border-box"></textarea>
+        <button onclick="copyPushJson()" style="margin-top:.3rem;background:var(--accent);color:#000;border:none;padding:.35rem .7rem;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif" id="copy-json-btn">
+          Copiar
+        </button>
+      </div>
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">🔁 Repetir alerta</div>
+        <div class="as-row-sub">Volver a notificar cada 5 min si no tocas</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="as-repeat" onchange="syncRepeatAlert(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">Alerta clase finalizada</div>
+        <div class="as-row-sub">Avisar cuando termine una clase</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="as-end-enabled" checked onchange="syncEndAlert(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="as-row">
+      <div>
+        <div class="as-row-label">🌙 No molestar</div>
+        <div class="as-row-sub">Silenciar fuera del horario de clases</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="as-nomolestar" onchange="syncNoMolestar(this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="as-row" id="as-nomolestar-horario" style="display:none">
+      <div style="width:100%">
+        <div class="as-row-label" style="margin-bottom:.5rem">Horario de silencio</div>
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <input type="number" class="as-input" id="as-nm-end" value="7" min="0" max="23" onchange="syncNoMolestarHours()" style="width:52px">
+          <span style="font-size:.78rem;color:var(--muted)">AM hasta</span>
+          <input type="number" class="as-input" id="as-nm-start" value="22" min="0" max="23" onchange="syncNoMolestarHours()" style="width:52px">
+          <span style="font-size:.78rem;color:var(--muted)">PM</span>
+        </div>
+      </div>
+    </div>
+    <div class="as-row" id="as-pending-row" style="display:none">
+      <div>
+        <div class="as-row-label">Próximas ahora</div>
+        <div class="as-row-sub" id="as-pending-text">—</div>
+      </div>
+      <button class="fs-btn fs-btn-apply" style="flex:0;padding:.4rem .8rem;font-size:.78rem" onclick="openAlertModal();closeAlertSheet()">Ver</button>
+    </div>
   </div>
 </div>
 
