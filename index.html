@@ -1245,7 +1245,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(el_f)el_f.textContent=totalLabs-activeLabs.size;
   }
 
-  function render(){
+  window.render = function render(){
     const tbody=document.getElementById('tableBody'), empty=document.getElementById('emptyState');
     if(!tbody||!empty)return;
     tbody.innerHTML='';
