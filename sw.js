@@ -1,4 +1,4 @@
-const CACHE = 'utesa-labs-v21';
+const CACHE = 'utesa-labs-v22';
 const ASSETS = [
   '/horarios-laboratorios-utesa/',
   '/horarios-laboratorios-utesa/index.html',
@@ -498,7 +498,6 @@ self.addEventListener('push', e=>{
       badge:            data.badge||'/horarios-laboratorios-utesa/icon-192.png',
       tag:              data.tag||'utesa-push',
       vibrate:          data.vibrate||[200,100,200],
-      requireInteraction: true,
       data:             { url: data.url||'/horarios-laboratorios-utesa/' }
     })
   );
@@ -526,8 +525,7 @@ self.addEventListener('activate', e=>{
       self.clients.matchAll({type:'window'}).then(cls=>{
         cls.forEach(c=>c.postMessage({type:'RELOAD'}));
       });
-      if(_checkInterval)clearInterval(_checkInterval);
-      _checkInterval=setInterval(checkAndNotify, 60000);
+      // background check handled by GitHub Actions push
     })
   );
 });
