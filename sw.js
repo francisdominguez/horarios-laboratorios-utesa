@@ -365,62 +365,62 @@ const raw=[
   {aula:'C205',mat:'INF331',grp:'004',dia:'Jueves',si:18,ei:20},
   {aula:'C205',mat:'ICV945',grp:'002',dia:'Viernes',si:8,ei:12},
   // C206 — Lab. Informática 06
-  {aula:'C206',mat:'INF113003',grp:'003',dia:'Lunes',si:1,ei:5},
-{aula:'C206',mat:'INF117002',grp:'002',dia:'Lunes',si:5,ei:8},
-{aula:'C206',mat:'INF113053',grp:'053',dia:'Lunes',si:10,ei:12},
-{aula:'C206',mat:'INF113010',grp:'010',dia:'Lunes',si:12,ei:16},
-{aula:'C206',mat:'INF165008',grp:'008',dia:'Lunes',si:16,ei:18},
-{aula:'C206',mat:'INF168005',grp:'005',dia:'Lunes',si:18,ei:20},
-{aula:'C206',mat:'INF117002',grp:'002',dia:'Martes',si:2,ei:5},
-{aula:'C206',mat:'INF113051',grp:'051',dia:'Martes',si:8,ei:10},
-{aula:'C206',mat:'INF113053',grp:'053',dia:'Martes',si:10,ei:12},
-{aula:'C206',mat:'INF113020',grp:'020',dia:'Martes',si:12,ei:14},
-{aula:'C206',mat:'INF406004',grp:'004',dia:'Martes',si:14,ei:16},
-{aula:'C206',mat:'INF117010',grp:'010',dia:'Martes',si:16,ei:18},
-{aula:'C206',mat:'MER402001',grp:'001',dia:'Martes',si:18,ei:20},
-{aula:'C206',mat:'INF113045',grp:'045',dia:'Miércoles',si:3,ei:7},
-{aula:'C206',mat:'INF113051',grp:'051',dia:'Miércoles',si:8,ei:10},
-{aula:'C206',mat:'INF113008',grp:'008',dia:'Miércoles',si:10,ei:14},
-{aula:'C206',mat:'TUR101003',grp:'003',dia:'Miércoles',si:15,ei:18},
-{aula:'C206',mat:'INF412002',grp:'002',dia:'Miércoles',si:18,ei:20},
-{aula:'C206',mat:'INF113001',grp:'001',dia:'Jueves',si:1,ei:5},
-{aula:'C206',mat:'INF113002',grp:'002',dia:'Jueves',si:5,ei:9},
-{aula:'C206',mat:'INF113020',grp:'020',dia:'Jueves',si:12,ei:14},
-{aula:'C206',mat:'MED203021',grp:'021',dia:'Jueves',si:14,ei:17},
-{aula:'C206',mat:'INF165004',grp:'004',dia:'Jueves',si:16,ei:18},
-{aula:'C206',mat:'INF113018',grp:'018',dia:'Viernes',si:4,ei:8},
-{aula:'C206',mat:'INF391001',grp:'001',dia:'Viernes',si:14,ei:16},
-{aula:'C206',mat:'INF113030',grp:'030',dia:'Viernes',si:16,ei:20},
-{aula:'C206',mat:'INF024001',grp:'001',dia:'Sábado',si:1,ei:4},
-{aula:'C206',mat:'INF840002',grp:'002',dia:'Sábado',si:7,ei:12},
-  {aula:'C206',mat:'INF168002',grp:'002',dia:'Jueves',si:18,ei:20},
+  {aula:'C206',mat:'INF113',grp:'003',dia:'Lunes',si:1,ei:5},
+{aula:'C206',mat:'INF117',grp:'002',dia:'Lunes',si:5,ei:8},
+{aula:'C206',mat:'INF113',grp:'053',dia:'Lunes',si:10,ei:12},
+{aula:'C206',mat:'INF113',grp:'010',dia:'Lunes',si:12,ei:16},
+{aula:'C206',mat:'INF165',grp:'008',dia:'Lunes',si:16,ei:18},
+{aula:'C206',mat:'INF168',grp:'005',dia:'Lunes',si:18,ei:20},
+{aula:'C206',mat:'INF117',grp:'002',dia:'Martes',si:2,ei:5},
+{aula:'C206',mat:'INF113',grp:'051',dia:'Martes',si:8,ei:10},
+{aula:'C206',mat:'INF113',grp:'053',dia:'Martes',si:10,ei:12},
+{aula:'C206',mat:'INF113',grp:'020',dia:'Martes',si:12,ei:14},
+{aula:'C206',mat:'INF406',grp:'004',dia:'Martes',si:14,ei:16},
+{aula:'C206',mat:'INF117',grp:'010',dia:'Martes',si:16,ei:18},
+{aula:'C206',mat:'MER402',grp:'001',dia:'Martes',si:18,ei:20},
+{aula:'C206',mat:'INF113',grp:'045',dia:'Miércoles',si:3,ei:7},
+{aula:'C206',mat:'INF113',grp:'051',dia:'Miércoles',si:8,ei:10},
+{aula:'C206',mat:'INF113',grp:'008',dia:'Miércoles',si:10,ei:14},
+{aula:'C206',mat:'TUR101',grp:'003',dia:'Miércoles',si:15,ei:18},
+{aula:'C206',mat:'INF412',grp:'002',dia:'Miércoles',si:18,ei:20},
+{aula:'C206',mat:'INF113',grp:'001',dia:'Jueves',si:1,ei:5},
+{aula:'C206',mat:'INF113',grp:'002',dia:'Jueves',si:5,ei:9},
+{aula:'C206',mat:'INF113',grp:'020',dia:'Jueves',si:12,ei:14},
+{aula:'C206',mat:'MED203',grp:'021',dia:'Jueves',si:14,ei:17},
+{aula:'C206',mat:'INF165',grp:'004',dia:'Jueves',si:16,ei:18},
+{aula:'C206',mat:'INF113',grp:'018',dia:'Viernes',si:4,ei:8},
+{aula:'C206',mat:'INF391',grp:'001',dia:'Viernes',si:14,ei:16},
+{aula:'C206',mat:'INF113',grp:'030',dia:'Viernes',si:16,ei:20},
+{aula:'C206',mat:'INF024',grp:'001',dia:'Sábado',si:1,ei:4},
+{aula:'C206',mat:'INF840',grp:'002',dia:'Sábado',si:7,ei:12},
+  {aula:'C206',mat:'INF168',grp:'002',dia:'Jueves',si:18,ei:20},
   // C207 — Lab. Informática 07
- {aula:'C207',mat:'INF117005',grp:'005',dia:'Lunes',si:1,ei:4},
-{aula:'C207',mat:'INF113050',grp:'050',dia:'Lunes',si:5,ei:9},
-{aula:'C207',mat:'INF113031',grp:'031',dia:'Lunes',si:12,ei:14},
-{aula:'C207',mat:'INF173001',grp:'001',dia:'Lunes',si:14,ei:16},
-{aula:'C207',mat:'INF482002',grp:'002',dia:'Lunes',si:18,ei:20},
-{aula:'C207',mat:'INF113012',grp:'012',dia:'Martes',si:2,ei:6},
-{aula:'C207',mat:'INF103078',grp:'078',dia:'Martes',si:7,ei:9},
-{aula:'C207',mat:'INF113005',grp:'005',dia:'Martes',si:10,ei:12},
-{aula:'C207',mat:'INF113040',grp:'040',dia:'Martes',si:12,ei:14},
-{aula:'C207',mat:'MED203014',grp:'014',dia:'Martes',si:15,ei:16},
-{aula:'C207',mat:'INF535001',grp:'001',dia:'Martes',si:16,ei:18},
-{aula:'C207',mat:'INF103030',grp:'030',dia:'Miércoles',si:7,ei:9},
-{aula:'C207',mat:'INF113005',grp:'005',dia:'Miércoles',si:10,ei:12},
-{aula:'C207',mat:'INF113033',grp:'033',dia:'Miércoles',si:14,ei:16},
-{aula:'C207',mat:'INF103005',grp:'005',dia:'Miércoles',si:16,ei:18},
-{aula:'C207',mat:'INF168001',grp:'001',dia:'Miércoles',si:18,ei:20},
-{aula:'C207',mat:'INF103078',grp:'078',dia:'Jueves',si:7,ei:9},
-{aula:'C207',mat:'INF113039',grp:'039',dia:'Jueves',si:8,ei:12},
-{aula:'C207',mat:'INF165005',grp:'005',dia:'Jueves',si:15,ei:17},
-{aula:'C207',mat:'INF168002',grp:'002',dia:'Jueves',si:18,ei:20},
-{aula:'C207',mat:'INF117005',grp:'005',dia:'Viernes',si:1,ei:4},
-{aula:'C207',mat:'INF117001',grp:'001',dia:'Viernes',si:12,ei:16},
-{aula:'C207',mat:'INF387002',grp:'002',dia:'Viernes',si:18,ei:20},
-{aula:'C207',mat:'INF113022',grp:'022',dia:'Sábado',si:1,ei:5},
-{aula:'C207',mat:'INF167003',grp:'003',dia:'Sábado',si:5,ei:8},
-{aula:'C207',mat:'INF535001',grp:'001',dia:'Sábado',si:8,ei:11},
+ {aula:'C207',mat:'INF117',grp:'005',dia:'Lunes',si:1,ei:4},
+{aula:'C207',mat:'INF113',grp:'050',dia:'Lunes',si:5,ei:9},
+{aula:'C207',mat:'INF113',grp:'031',dia:'Lunes',si:12,ei:14},
+{aula:'C207',mat:'INF173',grp:'001',dia:'Lunes',si:14,ei:16},
+{aula:'C207',mat:'INF482',grp:'002',dia:'Lunes',si:18,ei:20},
+{aula:'C207',mat:'INF113',grp:'012',dia:'Martes',si:2,ei:6},
+{aula:'C207',mat:'INF103',grp:'078',dia:'Martes',si:7,ei:9},
+{aula:'C207',mat:'INF113',grp:'005',dia:'Martes',si:10,ei:12},
+{aula:'C207',mat:'INF113',grp:'040',dia:'Martes',si:12,ei:14},
+{aula:'C207',mat:'MED203',grp:'014',dia:'Martes',si:15,ei:16},
+{aula:'C207',mat:'INF535',grp:'001',dia:'Martes',si:16,ei:18},
+{aula:'C207',mat:'INF103',grp:'030',dia:'Miércoles',si:7,ei:9},
+{aula:'C207',mat:'INF113',grp:'005',dia:'Miércoles',si:10,ei:12},
+{aula:'C207',mat:'INF113',grp:'033',dia:'Miércoles',si:14,ei:16},
+{aula:'C207',mat:'INF103',grp:'005',dia:'Miércoles',si:16,ei:18},
+{aula:'C207',mat:'INF168',grp:'001',dia:'Miércoles',si:18,ei:20},
+{aula:'C207',mat:'INF103',grp:'078',dia:'Jueves',si:7,ei:9},
+{aula:'C207',mat:'INF113',grp:'039',dia:'Jueves',si:8,ei:12},
+{aula:'C207',mat:'INF165',grp:'005',dia:'Jueves',si:15,ei:17},
+{aula:'C207',mat:'INF168',grp:'002',dia:'Jueves',si:18,ei:20},
+{aula:'C207',mat:'INF117',grp:'005',dia:'Viernes',si:1,ei:4},
+{aula:'C207',mat:'INF117',grp:'001',dia:'Viernes',si:12,ei:16},
+{aula:'C207',mat:'INF387',grp:'002',dia:'Viernes',si:18,ei:20},
+{aula:'C207',mat:'INF113',grp:'022',dia:'Sábado',si:1,ei:5},
+{aula:'C207',mat:'INF167',grp:'003',dia:'Sábado',si:5,ei:8},
+{aula:'C207',mat:'INF535',grp:'001',dia:'Sábado',si:8,ei:11},
   // C208 C208 — Lab. Mecatrónica
   {aula:'C208',mat:'IEL415',grp:'001',dia:'Lunes',si:5,ei:9},
   {aula:'C208',mat:'IEL315',grp:'002',dia:'Lunes',si:14,ei:16},
@@ -483,7 +483,30 @@ const classes=raw.map(c=>{
 
 // ── Skip waiting on demand from app ──
 self.addEventListener('message', e=>{
-  if(e.data&&e.data.type==='SKIP_WAITING') self.skipWaiting();
+  if(!e.data) return;
+  // Actualizar SW
+  if(e.data.type==='SKIP_WAITING'){
+    self.skipWaiting();
+    return;
+  }
+  // Sincronizar config de alertas
+  if(e.data.type==='UPDATE_CONFIG'){
+    // config stored for future background checks
+    return;
+  }
+  // ── Notificación local enviada desde la app (celular desbloqueado en background) ──
+  if(e.data.type==='SHOW_NOTIFICATION'){
+    self.registration.showNotification(e.data.title||'UTESA Labs', {
+      body:    e.data.body||'',
+      icon:    '/horarios-laboratorios-utesa/icon-192.png',
+      badge:   '/horarios-laboratorios-utesa/icon-192.png',
+      tag:     e.data.tag||'utesa-local',
+      vibrate: [100,50,100,50,300,100,300],
+      requireInteraction: true,
+      data:    { url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/' }
+    });
+    return;
+  }
 });
 
 // ── Recibir push del servidor (GitHub Actions) ──
