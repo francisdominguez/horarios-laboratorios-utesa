@@ -14,27 +14,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{--bg:#0a0c10;--surface:#111318;--surface2:#181c24;--border:#222733;--accent:#00e5a0;--accent2:#ff6b35;--accent3:#5b8cff;--text:#e8eaf0;--muted:#6b7280;--header-bg:rgba(10,12,16,.93)}
-  /* ── TEMA CLARO ── */
   [data-theme="light"]{--bg:#f0f2f5;--surface:#ffffff;--surface2:#e8eaed;--border:#d1d5db;--accent:#00a372;--accent2:#e55a1c;--accent3:#3b6fd4;--text:#111827;--muted:#6b7280;--header-bg:rgba(240,242,245,.95)}
-  /* ── TEMA SEPIA ── */
   [data-theme="sepia"]{--bg:#f5efe6;--surface:#fdf8f0;--surface2:#ede8df;--border:#d4c9b8;--accent:#a0722a;--accent2:#c0522a;--accent3:#7a6abf;--text:#3b2f1e;--muted:#8a7560;--header-bg:rgba(245,239,230,.95)}
-  /* ── TEMA UTESA ── */
   [data-theme="utesa"]{--bg:#0a1a0a;--surface:#0f2410;--surface2:#162d17;--border:#1e3d20;--accent:#6db33f;--accent2:#f5c200;--accent3:#4caf50;--text:#e8f5e9;--muted:#81a682;--header-bg:rgba(10,26,10,.93)}
   [data-theme="ocean"]{--bg:#050d1a;--surface:#0a1628;--surface2:#0f1f38;--border:#1a2f50;--accent:#00b4d8;--accent2:#f77f00;--accent3:#7b2fff;--text:#e0f4ff;--muted:#5b8fa8;--header-bg:rgba(5,13,26,.93)}
   [data-theme="purple"]{--bg:#0d0a1a;--surface:#130f24;--surface2:#1a1530;--border:#2a2040;--accent:#a855f7;--accent2:#f472b6;--accent3:#60a5fa;--text:#f3e8ff;--muted:#7c6a9a;--header-bg:rgba(13,10,26,.93)}
   [data-theme="red"]{--bg:#120a0a;--surface:#1e0f0f;--surface2:#261414;--border:#3d1c1c;--accent:#ef4444;--accent2:#f59e0b;--accent3:#fb923c;--text:#fff1f1;--muted:#9a6b6b;--header-bg:rgba(18,10,10,.93)}
-  /* Font size */
   html[data-font="sm"]{font-size:13px}
   html[data-font="md"]{font-size:15px}
   html[data-font="lg"]{font-size:17px}
-  /* Custom background */
   body.bg-gradient-ocean{background:linear-gradient(135deg,#050d1a 0%,#0a1628 50%,#050d1a 100%)!important;background-attachment:fixed!important}
   body.bg-gradient-purple{background:linear-gradient(135deg,#0d0a1a 0%,#1a0d2e 50%,#0d0a1a 100%)!important;background-attachment:fixed!important}
   body.bg-gradient-sunset{background:linear-gradient(135deg,#1a0a05 0%,#2a0f0f 40%,#1a0a1a 100%)!important;background-attachment:fixed!important}
   body.bg-gradient-forest{background:linear-gradient(135deg,#0a1a0a 0%,#0f2410 50%,#0a1a0a 100%)!important;background-attachment:fixed!important}
   body.bg-gradient-midnight{background:linear-gradient(135deg,#000005 0%,#050520 50%,#050510 100%)!important;background-attachment:fixed!important}
-  body.bg-gradient-none{}
-
   .theme-switcher{display:flex;align-items:center;gap:.3rem;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:.25rem .35rem}
   .theme-btn{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0}
   .theme-btn:hover{transform:scale(1.15)}
@@ -125,6 +118,9 @@
   tbody tr.row-upcoming{background:rgba(91,140,255,.04);border-left:3px solid var(--accent3)}
   tbody tr.row-later{background:rgba(255,200,50,.03);border-left:3px solid #ffc832}
   tbody tr.row-past{opacity:.45}
+  /* ✅ FIX 1: row-finalizada y row-ausente */
+  tbody tr.row-finalizada{background:#14532d !important;opacity:.8}
+  tbody tr.row-ausente{background:#7f1d1d !important;opacity:.8}
   td{padding:.8rem 1.25rem;font-size:.875rem;vertical-align:middle}
   .td-aula{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;color:var(--accent);letter-spacing:.05em}
   .td-lab{color:var(--muted);font-size:.68rem}
@@ -148,6 +144,12 @@
   .b-nottoday{display:inline-flex;align-items:center;gap:.3rem;background:rgba(107,114,128,.1);border:1px solid rgba(107,114,128,.2);padding:.2rem .5rem;border-radius:20px;font-size:.68rem;color:var(--muted)}
   .btn-img{display:inline-flex;align-items:center;gap:.3rem;background:rgba(91,140,255,.1);border:1px solid rgba(91,140,255,.25);color:var(--accent3);padding:.25rem .6rem;border-radius:6px;font-size:.7rem;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;white-space:nowrap}
   .btn-img:hover{background:rgba(91,140,255,.22);border-color:var(--accent3)}
+  /* ✅ FIX 2: botones control clase */
+  .btn-control{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;border:none;font-size:12px;cursor:pointer;font-weight:500;white-space:nowrap;margin-top:.2rem}
+  .btn-finalizada{background:#16a34a;color:#fff}
+  .btn-finalizada:hover{background:#15803d}
+  .btn-ausente{background:#ef4444;color:#fff}
+  .btn-ausente:hover{background:#dc2626}
   .empty-state{text-align:center;padding:4rem 2rem;display:none}
   .empty-state.show{display:block}
   .empty-state svg{color:var(--border);margin-bottom:1rem}
@@ -189,15 +191,12 @@
   @keyframes fadeUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
   @keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
   ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-
-  /* ══ BOTTOM NAV BAR ══ */
   #bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--surface);border-top:1px solid var(--border);backdrop-filter:blur(16px);padding:0 .5rem env(safe-area-inset-bottom,.5rem);height:60px;align-items:center;justify-content:space-around;gap:.25rem}
   .bnav-btn{display:flex;flex-direction:column;align-items:center;gap:.18rem;background:transparent;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.58rem;font-weight:500;padding:.4rem .5rem;border-radius:10px;cursor:pointer;min-width:52px;transition:all .18s;letter-spacing:.02em;text-transform:uppercase}
   .bnav-btn .bnav-icon{font-size:1.15rem;line-height:1}
   .bnav-btn.active{color:var(--accent);background:rgba(0,229,160,.1)}
   .bnav-btn.active .bnav-icon{filter:drop-shadow(0 0 6px var(--accent))}
   .bnav-btn:active{transform:scale(.92)}
-  /* Theme picker popover */
   #theme-picker{position:fixed;inset:0;z-index:600}
   .tp-overlay{position:absolute;inset:0}
   .tp-box{position:absolute;bottom:68px;right:.75rem;background:#1a1f2e;border:1px solid var(--accent);border-radius:16px;padding:.75rem;min-width:210px;max-height:80vh;overflow-y:auto;box-shadow:0 -4px 24px rgba(0,0,0,.7);animation:tpIn .2s cubic-bezier(.32,.72,0,1)}
@@ -214,7 +213,6 @@
   .tp-dot[data-t="ocean"]{background:radial-gradient(circle at 30% 30%,#00b4d8,#050d1a)}
   .tp-dot[data-t="purple"]{background:radial-gradient(circle at 30% 30%,#a855f7,#0d0a1a)}
   .tp-dot[data-t="red"]{background:radial-gradient(circle at 30% 30%,#ef4444,#120a0a)}
-  /* Font size picker */
   .tp-section{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:.6rem 0 .3rem;padding:0 .25rem}
   .tp-font-row{display:flex;gap:.3rem;margin-bottom:.5rem}
   .tp-font-btn{flex:1;background:transparent;border:1px solid #3a4258;color:#a0a8bf;padding:.35rem;border-radius:7px;font-family:'DM Sans',sans-serif;cursor:pointer;font-size:.78rem;transition:all .15s;text-align:center}
@@ -230,14 +228,13 @@
   .tp-check{font-size:.75rem;color:var(--accent);opacity:0;transition:opacity .15s}
   .tp-opt.active .tp-check{opacity:1}
   @keyframes tpIn{from{transform:translateY(8px) scale(.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
-
-  /* ── GRID VIEW ── */
-  #grid-view{display:none}
+  /* ✅ FIX 3: grid-view scroll corregido */
+  #grid-view{display:none;overflow-x:auto;width:100%}
   #grid-view.active{display:block}
   #table-section.hidden{display:none}
-  .grid-time-col{position:sticky;left:0;z-index:10}
-  .gv-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);background:var(--surface)}
-  .gv-table{border-collapse:collapse;min-width:100%}
+  .grid-scroll{overflow-x:auto;width:100%}
+  .gv-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);background:var(--surface);min-width:100%}
+  .gv-table{border-collapse:collapse;width:100%}
   .gv-th{background:var(--surface2);padding:.7rem .9rem;font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;text-align:center;min-width:140px}
   .gv-th:first-child{min-width:72px;position:sticky;left:0;z-index:11;background:var(--surface2)}
   .gv-time{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--muted);padding:.6rem .7rem;border-right:2px solid var(--border);border-bottom:1px solid var(--border);position:sticky;left:0;background:var(--surface);z-index:5;white-space:nowrap;vertical-align:middle;text-align:right;min-width:72px}
@@ -249,15 +246,6 @@
   .gv-block.s-imminent{background:rgba(255,107,53,.15);border-color:#ff6b35;animation:pulse-badge 2s infinite}
   .gv-block.s-upcoming{background:rgba(91,140,255,.12);border-color:#5b8cff}
   .gv-block.s-later{background:rgba(255,200,50,.09);border-color:#ffc832}
-  .group-sep{background:var(--surface2)!important}
-  .group-sep td{padding:.4rem .75rem;font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);font-weight:700}
-  .group-sep.sep-b td{color:#5b8cff;border-left:3px solid #5b8cff}
-  .group-sep.sep-c td{color:#ff6b35;border-left:3px solid #ff6b35}
-  th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
-  th.sortable:hover{background:var(--surface)!important;color:var(--text)}
-  th.sortable::after{content:' ⇅';opacity:.3;font-size:.6rem}
-  th.sort-asc::after{content:' ↑';opacity:1;color:var(--accent)}
-  th.sort-desc::after{content:' ↓';opacity:1;color:var(--accent)}
   .gv-block.s-past{background:rgba(107,114,128,.07);border-color:var(--border);opacity:.55}
   .gv-block.s-nottoday{background:rgba(107,114,128,.05);border-color:var(--border)}
   .gv-block-top{display:flex;align-items:center;justify-content:space-between;gap:.3rem}
@@ -269,9 +257,15 @@
   .gv-block.s-imminent .gv-block-mat{color:#ff6b35}
   .gv-block.s-upcoming .gv-block-mat{color:#7aa3ff}
   .gv-block.s-later .gv-block-mat{color:#ffc832}
-  .gv-now-line{position:absolute;left:0;right:0;height:2px;background:var(--accent);z-index:8;pointer-events:none}
-  .gv-now-line::before{content:'';position:absolute;left:-4px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
-  /* ── SIDEBAR ── */
+  .group-sep{background:var(--surface2)!important}
+  .group-sep td{padding:.4rem .75rem;font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);font-weight:700}
+  .group-sep.sep-b td{color:#5b8cff;border-left:3px solid #5b8cff}
+  .group-sep.sep-c td{color:#ff6b35;border-left:3px solid #ff6b35}
+  th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+  th.sortable:hover{background:var(--surface)!important;color:var(--text)}
+  th.sortable::after{content:' ⇅';opacity:.3;font-size:.6rem}
+  th.sort-asc::after{content:' ↑';opacity:1;color:var(--accent)}
+  th.sort-desc::after{content:' ↓';opacity:1;color:var(--accent)}
   #sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:800;opacity:0;pointer-events:none;transition:opacity .25s}
   #sidebar-overlay.open{opacity:1;pointer-events:all}
   #sidebar{position:fixed;top:0;right:-320px;bottom:0;width:300px;max-width:90vw;background:var(--surface);border-left:1px solid var(--border);z-index:801;transition:right .28s cubic-bezier(.32,.72,0,1);display:flex;flex-direction:column;overflow:hidden}
@@ -295,17 +289,11 @@
   .sb-stats-row:last-child{margin-bottom:0}
   .sb-stats-label{color:var(--muted)}
   .sb-stats-val{font-family:'Space Mono',monospace;font-weight:700;color:var(--accent)}
-  /* sidebar trigger button in header */
   .sb-trigger{background:none;border:1px solid var(--border);color:var(--muted);width:36px;height:36px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .15s;flex-shrink:0}
   .sb-trigger:hover{border-color:var(--accent);color:var(--accent)}
-  .share-btn:hover{filter:brightness(1.1)}
-  .share-btn svg{width:15px;height:15px;fill:#fff;flex-shrink:0}
-
   .view-toggle{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.2rem;gap:.2rem;margin-bottom:1rem}
   .vt-btn{flex:1;padding:.4rem;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.78rem;border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:.3rem}
   .vt-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3)}
-
-  /* ══ FILTER SHEET (bottom drawer) ══ */
   #filter-sheet{display:none;position:fixed;inset:0;z-index:500}
   #filter-sheet.open{display:block}
   .fs-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
@@ -321,9 +309,6 @@
   .fs-btn{flex:1;padding:.7rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:all .15s}
   .fs-btn-reset{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
   .fs-btn-apply{background:var(--accent);color:#000}
-  .fs-active-badge{display:inline-flex;align-items:center;gap:.3rem;background:rgba(0,229,160,.15);border:1px solid var(--accent);padding:.15rem .5rem;border-radius:20px;font-size:.65rem;color:var(--accent);font-family:'Space Mono',monospace}
-
-  /* ══ ALERT SHEET ══ */
   #alert-sheet{display:none;position:fixed;inset:0;z-index:500}
   #alert-sheet.open{display:block}
   .as-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
@@ -336,8 +321,6 @@
   .as-row-sub{font-size:.72rem;color:var(--muted);margin-top:.15rem}
   .as-input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.4rem .6rem;border-radius:8px;font-family:'Space Mono',monospace;font-size:.85rem;width:60px;outline:none;text-align:center}
   @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-
-  /* ── ONBOARDING ── */
   #onboarding{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem}
   #onboarding.show{display:flex}
   .ob-box{background:#1a1f2e;border:1px solid var(--accent);border-radius:20px;width:100%;max-width:420px;overflow:hidden}
@@ -353,8 +336,6 @@
   .ob-skip{flex:1;background:transparent;border:1px solid #3a4258;color:#a0a8bf;padding:.6rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer}
   .ob-next{flex:2;background:var(--accent);color:#000;border:none;padding:.6rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:filter .15s}
   .ob-next:hover{filter:brightness(1.1)}
-
-  /* ── BÚSQUEDA GLOBAL ── */
   #global-search-wrap{position:relative;margin-bottom:.75rem}
   #global-search{width:100%;background:var(--surface);border:1.5px solid var(--border);color:var(--text);padding:.65rem 2.5rem .65rem .95rem;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;box-sizing:border-box;transition:border-color .2s}
   #global-search:focus{border-color:var(--accent)}
@@ -363,21 +344,13 @@
   #gs-clear.show{display:block}
   #gs-count{font-size:.7rem;color:var(--muted);margin-top:.3rem;font-family:'Space Mono',monospace;display:none}
   #gs-count.show{display:block}
-
-  /* ── UPDATE BANNER ── */
-  #update-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,#1a3a5c,#0d2137);border-bottom:2px solid var(--accent);padding:.7rem 1rem;display:none;align-items:center;gap:.75rem;animation:slideDown .3s ease}
+  #update-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,#1a3a5c,#0d2137);border-bottom:2px solid var(--accent);padding:.7rem 1rem;align-items:center;gap:.75rem;animation:slideDown .3s ease}
   #update-banner.show{display:flex}
-  .upd-text{flex:1;font-size:.82rem;color:#e8eaf0;font-family:'DM Sans',sans-serif}
+  .upd-text{flex:1;font-size:.82rem;color:#e8eaf0}
   .upd-text strong{color:var(--accent);font-family:'Space Mono',monospace}
-  .upd-btn{background:var(--accent);color:#000;border:none;padding:.45rem .9rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .15s}
-  .upd-btn:hover{filter:brightness(1.1)}
+  .upd-btn{background:var(--accent);color:#000;border:none;padding:.45rem .9rem;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;flex-shrink:0}
   .upd-dismiss{background:transparent;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:.2rem;flex-shrink:0}
   @keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
-
-  /* ── WIDGET PRÓXIMA CLASE ── */
-
-
-  /* ── WEEK VIEW MODAL ── */
   #week-modal{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem}
   #week-modal.open{display:flex}
   .wm-box{background:#1a1f2e;border:1px solid var(--border);border-radius:16px;width:100%;max-width:680px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
@@ -396,8 +369,6 @@
   .wm-empty{font-size:.75rem;color:#a0a8bf;padding:.6rem .85rem;font-style:italic}
   .wm-copy-btn{display:flex;align-items:center;justify-content:center;gap:.4rem;margin:.75rem 1rem .25rem;padding:.55rem;background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.25);color:var(--accent);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s}
   .wm-copy-btn:hover{background:rgba(0,229,160,.2)}
-
-  /* ── COMPARE VIEW ── */
   #compare-sheet{display:none;position:fixed;inset:0;z-index:500}
   #compare-sheet.open{display:block}
   .cmp-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
@@ -412,8 +383,7 @@
   .cmp-snap-btn{background:transparent;border:1px solid #3a4258;color:#a0a8bf;padding:.3rem .55rem;border-radius:7px;font-size:.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
   .cmp-snap-btn:hover{border-color:var(--accent3);color:var(--accent3)}
   .cmp-snap-btn.danger:hover{border-color:#ff6b35;color:#ff6b35}
-  .cmp-save-btn{width:100%;padding:.7rem;background:var(--accent3);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;margin-bottom:.5rem;transition:all .15s}
-  .cmp-save-btn:hover{filter:brightness(1.1)}
+  .cmp-save-btn{width:100%;padding:.7rem;background:var(--accent3);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;margin-bottom:.5rem}
   .cmp-result{margin-top:.75rem;border-top:1px solid #3a4258;padding-top:.75rem}
   .cmp-result-title{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem}
   .cmp-diff{display:flex;flex-direction:column;gap:.35rem}
@@ -423,6 +393,12 @@
   .cmp-diff-icon{font-size:.85rem;flex-shrink:0;margin-top:.05rem}
   .cmp-diff-text{line-height:1.4}
   .cmp-empty{text-align:center;padding:1.5rem;color:#a0a8bf;font-size:.82rem}
+  /* Labs modal */
+  .labs-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:9999}
+  .labs-modal-content{background:var(--surface);color:var(--text);border:1px solid var(--border);padding:20px;border-radius:12px;width:340px;max-height:70vh;overflow:auto;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  .labs-modal-header{display:flex;justify-content:space-between;font-weight:bold;margin-bottom:14px;font-family:'Space Mono',monospace;font-size:.85rem;color:var(--accent)}
+  .labs-modal-header button{border:none;background:none;font-size:18px;cursor:pointer;color:var(--muted)}
+  .lab-item{padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem;font-family:'DM Sans',sans-serif}
   @media(max-width:768px){
     body{padding-bottom:60px}
     main{padding:.75rem .75rem 1rem;width:100%;max-width:100vw;overflow-x:hidden}
@@ -433,23 +409,17 @@
     .hdiv{height:20px}
     .hright{gap:.5rem}
     .theme-switcher{display:none}
-    .theme-btn{width:18px;height:18px}
-    /* Hide desktop filters, alert config, stats on mobile */
     .filters{display:none}
     .alert-config{display:none}
     .stats-bar{display:none}
     .page-title{margin-bottom:.75rem}
     .page-title h1{font-size:1.1rem}
     .page-title p{font-size:.72rem}
-    /* Table mobile */
-    .table-wrapper{border-radius:10px;border-left:none;border-right:none;border-radius:0;margin:0 -.75rem;width:calc(100% + 1.5rem)}
+    .table-wrapper{border-radius:0;margin:0 -.75rem;width:calc(100% + 1.5rem)}
     td{padding:.55rem .65rem;font-size:.78rem}
     thead th{padding:.55rem .65rem;font-size:.62rem}
-    .btn-img span{display:none}
-    .btn-img{padding:.2rem .45rem}
-    /* Show bottom nav */
+    .btn-img{padding:.2rem .45rem;font-size:.62rem}
     #bottom-nav{display:flex}
-    /* Mobile stats row */
     #mobile-stats{display:flex;gap:.75rem;margin-bottom:.6rem;flex-wrap:wrap}
   }
   @media(min-width:769px){
@@ -472,22 +442,22 @@
     <div class="ob-slide active" id="ob-slide-0">
       <div class="ob-icon">🎓</div>
       <div class="ob-title">Bienvenido a UTESA Labs</div>
-      <div class="ob-desc">Consulta los horarios de los 28 laboratorios de los edificios B y C en tiempo real. Te mostramos en 3 pasos cómo sacarle el máximo provecho.</div>
+      <div class="ob-desc">Consulta los horarios de los 28 laboratorios de los edificios B y C en tiempo real.</div>
     </div>
     <div class="ob-slide" id="ob-slide-1">
       <div class="ob-icon">🔍</div>
       <div class="ob-title">Filtra lo que necesitas</div>
-      <div class="ob-desc">Usa la búsqueda rápida para encontrar cualquier lab, materia o grupo al instante. O toca <strong>🔍 Filtrar por</strong> en la barra inferior para filtrar por edificio, día, horario y más.</div>
+      <div class="ob-desc">Usa la búsqueda rápida o toca <strong>🔍 Filtrar por</strong> en la barra inferior.</div>
     </div>
     <div class="ob-slide" id="ob-slide-2">
       <div class="ob-icon">⏰</div>
       <div class="ob-title">Activa las alertas</div>
-      <div class="ob-desc">Toca <strong>⏰ Alertas</strong> en la barra inferior para recibir notificaciones antes de que empiece una clase — incluso con el teléfono bloqueado en Android.</div>
+      <div class="ob-desc">Toca <strong>⏰ Alertas</strong> para recibir notificaciones antes de que empiece una clase.</div>
     </div>
     <div class="ob-slide" id="ob-slide-3">
       <div class="ob-icon">⭐</div>
       <div class="ob-title">Marca tus favoritos</div>
-      <div class="ob-desc">Toca la <strong>☆</strong> junto a cualquier laboratorio para marcarlo como favorito. Aparecerá siempre primero y podrás filtrar solo tus labs con un toque.</div>
+      <div class="ob-desc">Toca la <strong>☆</strong> junto a cualquier laboratorio para marcarlo como favorito.</div>
     </div>
     <div class="ob-actions">
       <button class="ob-skip" onclick="closeOnboarding()">Saltar</button>
@@ -499,8 +469,9 @@
 <div id="update-banner">
   <span class="upd-text">🆕 <strong>Nueva versión disponible</strong> — hay cambios en los horarios</span>
   <button class="upd-btn" onclick="applyUpdate()">Actualizar</button>
-  <button class="upd-dismiss" onclick="document.getElementById('update-banner').classList.remove('show')" title="Ignorar">✕</button>
+  <button class="upd-dismiss" onclick="document.getElementById('update-banner').classList.remove('show')">✕</button>
 </div>
+
 <header>
   <div>
     <div class="logo">UTESA <span>// SANTIAGO</span></div>
@@ -519,12 +490,12 @@
     <button class="sb-trigger" onclick="openSidebar()" title="Menú">☰</button>
   </div>
 </header>
+
 <main>
-  <!-- Mobile stats row -->
   <div id="mobile-stats" style="display:none">
     <div class="stat"><span class="stat-val" id="mStatTotal">0</span><span class="stat-lbl">clases</span></div>
     <span class="stat-sep">·</span>
-    <div class="stat"><span class="stat-val" id="mStatToday">0</span><span class="stat-lbl" id="mStatTodayLbl">hoy</span></div>
+    <div class="stat"><span class="stat-val" id="mStatToday">0</span><span class="stat-lbl">hoy</span></div>
     <span class="stat-sep" id="mSepFiltered">·</span>
     <div class="stat" id="mStatFilteredWrap" style="display:none"><span class="stat-val" id="mStatFiltered">0</span><span class="stat-lbl" id="mStatFilteredLbl">filtradas</span></div>
   </div>
@@ -555,36 +526,36 @@
       <select id="filterLab">
         <option value="">Todos los labs</option>
         <optgroup label="🏢 Edificio B">
-        <option value="B120">B120 — Geol. y Topografía</option>
-        <option value="B121">B121 — Materiales</option>
-        <option value="B123">B123 — Hidráulica</option>
-        <option value="B213">B213 — Lab. TIC</option>
-        <option value="B217">B217 — Comunicación</option>
-        <option value="B211">B211 — Comunicación 02</option>
-        <option value="B219">B219 — Programación</option>
+          <option value="B120">B120 — Geol. y Topografía</option>
+          <option value="B121">B121 — Materiales</option>
+          <option value="B123">B123 — Hidráulica</option>
+          <option value="B213">B213 — Lab. TIC</option>
+          <option value="B217">B217 — Comunicación</option>
+          <option value="B211">B211 — Comunicación 02</option>
+          <option value="B219">B219 — Programación</option>
         </optgroup>
         <optgroup label="🏛️ Edificio C">
-        <option value="C001">C001 — Máquinas y Herram.</option>
-        <option value="C1002">C1002 — Taller de Bancos</option>
-        <option value="C101">C101 — Lab. Industrial</option>
-        <option value="C102">C102 — Automatización</option>
-        <option value="C103">C103 — Lab. Industrial 02</option>
-        <option value="C104">C104 — Lab. CAD CAM</option>
-        <option value="C105">C105 — Ing. Térmica</option>
-        <option value="C106">C106 — Lab. Neumática</option>
-        <option value="C107">C107 — Inst. Eléctricas</option>
-        <option value="C201">C201 — Lab. Informática</option>
-        <option value="C202">C202 — Lab. Informática 02</option>
-        <option value="C203">C203 — Lab. Informática 03</option>
-        <option value="C204">C204 — Lab. Informática 04</option>
-        <option value="C205">C205 — Lab. AutoCAD</option>
-        <option value="C206">C206 — Lab. Informática 06</option>
-        <option value="C207">C207 — Lab. Informática 07</option>
-        <option value="C208">C208 — Lab. Mecatrónica</option>
-        <option value="C413">C413 — Lab. Comunicación</option>
-        <option value="C414A">C414A — Lab. Electrónica</option>
-        <option value="C414B">C414B — Lab. Electrónica 02</option>
-        <option value="C415">C415 — Lab. Electricidad</option>
+          <option value="C001">C001 — Máquinas y Herram.</option>
+          <option value="C1002">C1002 — Taller de Bancos</option>
+          <option value="C101">C101 — Lab. Industrial</option>
+          <option value="C102">C102 — Automatización</option>
+          <option value="C103">C103 — Lab. Industrial 02</option>
+          <option value="C104">C104 — Lab. CAD CAM</option>
+          <option value="C105">C105 — Ing. Térmica</option>
+          <option value="C106">C106 — Lab. Neumática</option>
+          <option value="C107">C107 — Inst. Eléctricas</option>
+          <option value="C201">C201 — Lab. Informática</option>
+          <option value="C202">C202 — Lab. Informática 02</option>
+          <option value="C203">C203 — Lab. Informática 03</option>
+          <option value="C204">C204 — Lab. Informática 04</option>
+          <option value="C205">C205 — Lab. AutoCAD</option>
+          <option value="C206">C206 — Lab. Informática 06</option>
+          <option value="C207">C207 — Lab. Informática 07</option>
+          <option value="C208">C208 — Lab. Mecatrónica</option>
+          <option value="C413">C413 — Lab. Comunicación</option>
+          <option value="C414A">C414A — Lab. Electrónica</option>
+          <option value="C414B">C414B — Lab. Electrónica 02</option>
+          <option value="C415">C415 — Lab. Electricidad</option>
         </optgroup>
       </select>
     </div>
@@ -595,7 +566,6 @@
         <option value="active">🟢 En curso</option>
         <option value="imminent">⚡ Inminente</option>
         <option value="upcoming">⏳ Próxima</option>
-        
         <option value="past">✓ Finalizada</option>
       </select>
     </div>
@@ -652,7 +622,7 @@
     </div>
     <div style="display:flex;align-items:center;gap:.5rem;margin-left:auto">
       <span style="font-size:.72rem;color:var(--muted)">Labs totales:</span>
-      <span id="occ-total" style="font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;color:var(--muted)">0</span>
+      <span id="occ-total" style="font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;color:var(--muted)">28</span>
     </div>
   </div>
   <div id="global-search-wrap">
@@ -666,13 +636,14 @@
     <button class="vt-btn" id="vt-group" onclick="toggleGroupEdificio()">🏷️ Agrupar</button>
     <button class="vt-btn" onclick="openSidebar()" style="flex:0;padding:.4rem .65rem" title="Más opciones">⋯</button>
   </div>
+  <!-- ✅ FIX: grid-view con overflow propio -->
   <div id="grid-view"></div>
   <div id="table-section" class="table-wrapper">
     <table>
       <thead>
         <tr>
           <th>Laboratorio</th><th>Materia</th><th>Grupo</th><th>Día</th>
-          <th>Inicio</th><th>Fin</th><th>Duración</th><th>Créditos</th><th>Estado</th><th>Distribución</th>
+          <th>Inicio</th><th>Fin</th><th>Duración</th><th>Créditos</th><th>Estado</th><th>Acciones</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -683,7 +654,9 @@
     </div>
   </div>
 </main>
+
 <div id="toast-container"></div>
+
 <div class="modal-overlay" id="imgModal">
   <div class="modal-box">
     <div class="modal-header">
@@ -691,9 +664,10 @@
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body"><img id="modalImg" src="" alt="Distribución del laboratorio"></div>
-    <div class="modal-foot">ESC o clic fuera para cerrar · Distribución del laboratorio</div>
+    <div class="modal-foot">ESC o clic fuera para cerrar</div>
   </div>
 </div>
+
 <div class="alert-modal-overlay" id="alertModal">
   <div class="alert-modal-box">
     <div class="alert-modal-header">
@@ -706,7 +680,22 @@
     <div class="alert-modal-body" id="alertModalBody"></div>
   </div>
 </div>
+
+<!-- Labs libres modal -->
+<div id="labsModal" class="labs-modal">
+  <div class="labs-modal-content">
+    <div class="labs-modal-header">
+      <span>🟢 Laboratorios libres ahora</span>
+      <button onclick="closeLabsModal()">✖</button>
+    </div>
+    <div id="labsModalList"></div>
+  </div>
+</div>
+
 <script>
+// ══════════════════════════════════════════════
+// CONSTANTES GLOBALES
+// ══════════════════════════════════════════════
 const SLOTS=[
   {m:420,l:'7:00 AM'},{m:465,l:'7:45 AM'},{m:510,l:'8:30 AM'},{m:555,l:'9:15 AM'},
   {m:600,l:'10:00 AM'},{m:645,l:'10:45 AM'},{m:690,l:'11:30 AM'},{m:735,l:'12:15 PM'},
@@ -715,7 +704,7 @@ const SLOTS=[
   {m:1140,l:'7:00 PM'},{m:1185,l:'7:45 PM'},{m:1230,l:'8:30 PM'},{m:1275,l:'9:15 PM'},
   {m:1320,l:'10:00 PM'},
 ];
-const SLOT_END_M=1320, SLOT_END_LBL='10:00 PM';
+
 const LABS={
   B120:{name:'Geol. y Topografía',  img:'img0.jpeg'},
   B121:{name:'Materiales',           img:'img1.jpeg'},
@@ -746,7 +735,12 @@ const LABS={
   C414B:{name:'Lab. Electrónica 02', img:'img27.jpeg'},
   C415:{name:'Lab. Electricidad',    img:'img26.jpeg'},
 };
+
 const HORA_RANGES={manana:{from:420,to:690},mediodia:{from:690,to:870},tarde:{from:870,to:1080},noche:{from:1080,to:1320}};
+
+// ✅ FIX: nowM y todayName definidas UNA SOLA VEZ en scope global
+function nowM(){const n=new Date();return n.getHours()*60+n.getMinutes();}
+function todayName(){const DIAS={0:'Domingo',1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado'};return DIAS[new Date().getDay()];}
 
 const raw=[
   // B120
@@ -838,7 +832,7 @@ const raw=[
   {aula:'B219',mat:'INF503',grp:'001',dia:'Viernes',   si:14,ei:16},
   {aula:'B219',mat:'INF820',grp:'002',dia:'Viernes',   si:16,ei:19},
   {aula:'B219',mat:'INF025',grp:'002',dia:'Sábado',    si:1, ei:6},
-  // C001 — Máquinas y Herramientas
+  // C001
   {aula:'C001',mat:'IMC215',grp:'001',dia:'Lunes',si:14,ei:16},
   {aula:'C001',mat:'IMC105',grp:'002',dia:'Lunes',si:16,ei:18},
   {aula:'C001',mat:'IID631',grp:'002',dia:'Lunes',si:18,ei:20},
@@ -846,14 +840,14 @@ const raw=[
   {aula:'C001',mat:'IID631',grp:'002',dia:'Miércoles',si:18,ei:20},
   {aula:'C001',mat:'IMC321',grp:'001',dia:'Jueves',si:16,ei:18},
   {aula:'C001',mat:'IMC321',grp:'003',dia:'Jueves',si:18,ei:20},
-  // C1002 — Taller de Bancos
+  // C1002
   {aula:'C1002',mat:'IMC105',grp:'011',dia:'Jueves',si:14,ei:16},
   {aula:'C1002',mat:'IMC426',grp:'001',dia:'Lunes',si:16,ei:18},
   {aula:'C1002',mat:'IID631',grp:'001',dia:'Martes',si:16,ei:18},
   {aula:'C1002',mat:'IMC321',grp:'002',dia:'Lunes',si:18,ei:20},
   {aula:'C1002',mat:'IMC321',grp:'004',dia:'Miércoles',si:18,ei:20},
   {aula:'C1002',mat:'IID631',grp:'001',dia:'Viernes',si:18,ei:20},
-  // C101 — Lab. Industrial
+  // C101
   {aula:'C101',mat:'ARQ540',grp:'001',dia:'Lunes',si:3,ei:5},
   {aula:'C101',mat:'IID915',grp:'002',dia:'Lunes',si:14,ei:16},
   {aula:'C101',mat:'IID870',grp:'002',dia:'Lunes',si:18,ei:20},
@@ -871,7 +865,7 @@ const raw=[
   {aula:'C101',mat:'IID950',grp:'003',dia:'Viernes',si:16,ei:20},
   {aula:'C101',mat:'IID522',grp:'001',dia:'Sábado',si:1,ei:7},
   {aula:'C101',mat:'IID950',grp:'001',dia:'Sábado',si:8,ei:12},
-  // C102 C102 — Automatización
+  // C102
   {aula:'C102',mat:'IID420',grp:'001',dia:'Lunes',si:11,ei:14},
   {aula:'C102',mat:'IID615',grp:'002',dia:'Lunes',si:14,ei:16},
   {aula:'C102',mat:'IID420',grp:'002',dia:'Lunes',si:17,ei:20},
@@ -883,7 +877,7 @@ const raw=[
   {aula:'C102',mat:'IID420',grp:'004',dia:'Jueves',si:17,ei:20},
   {aula:'C102',mat:'IEL405',grp:'008',dia:'Viernes',si:14,ei:16},
   {aula:'C102',mat:'IID420',grp:'003',dia:'Viernes',si:17,ei:20},
-  // C103  — Lab. Industrial 02
+  // C103
   {aula:'C103',mat:'ICV215',grp:'006',dia:'Miércoles',si:12,ei:15},
   {aula:'C103',mat:'IID480',grp:'001',dia:'Lunes',si:15,ei:18},
   {aula:'C103',mat:'IID481',grp:'001',dia:'Lunes',si:18,ei:20},
@@ -896,7 +890,7 @@ const raw=[
   {aula:'C103',mat:'ICV215',grp:'001',dia:'Viernes',si:17,ei:20},
   {aula:'C103',mat:'IID480',grp:'003',dia:'Miércoles',si:16,ei:18},
   {aula:'C103',mat:'IET725',grp:'003',dia:'Jueves',si:14,ei:16},
-  // C104 — Lab. CAD CAM
+  // C104
   {aula:'C104',mat:'IET825',grp:'001',dia:'Lunes',si:14,ei:16},
   {aula:'C104',mat:'INF706',grp:'004',dia:'Martes',si:14,ei:16},
   {aula:'C104',mat:'IMC500',grp:'001',dia:'Martes',si:16,ei:20},
@@ -904,7 +898,7 @@ const raw=[
   {aula:'C104',mat:'IMC070',grp:'001',dia:'Jueves',si:14,ei:16},
   {aula:'C104',mat:'IMC102',grp:'001',dia:'Viernes',si:16,ei:19},
   {aula:'C104',mat:'IMC530',grp:'001',dia:'Sábado',si:7,ei:10},
-  // C105 — Ing. Térmica
+  // C105
   {aula:'C105',mat:'IMC960',grp:'001',dia:'Lunes',si:14,ei:18},
   {aula:'C105',mat:'IMC965',grp:'001',dia:'Lunes',si:18,ei:20},
   {aula:'C105',mat:'IMC070',grp:'001',dia:'Martes',si:14,ei:16},
@@ -914,7 +908,7 @@ const raw=[
   {aula:'C105',mat:'IEL405',grp:'001',dia:'Miércoles',si:18,ei:20},
   {aula:'C105',mat:'IEL520',grp:'001',dia:'Viernes',si:16,ei:18},
   {aula:'C105',mat:'IMC805',grp:'001',dia:'Sábado',si:10,ei:12},
-  // C106 — Lab. Neumática
+  // C106
   {aula:'C106',mat:'IMC675',grp:'001',dia:'Lunes',si:15,ei:17},
   {aula:'C106',mat:'IMC635',grp:'003',dia:'Martes',si:16,ei:18},
   {aula:'C106',mat:'IMC110',grp:'002',dia:'Martes',si:18,ei:20},
@@ -924,7 +918,7 @@ const raw=[
   {aula:'C106',mat:'IID241',grp:'004',dia:'Jueves',si:18,ei:20},
   {aula:'C106',mat:'IMC815',grp:'001',dia:'Viernes',si:14,ei:16},
   {aula:'C106',mat:'IEL915',grp:'003',dia:'Sábado',si:8,ei:10},
-  // C107 — Inst. Eléctricas
+  // C107
   {aula:'C107',mat:'IEL315',grp:'004',dia:'Lunes',si:14,ei:16},
   {aula:'C107',mat:'IEL405',grp:'009',dia:'Martes',si:12,ei:14},
   {aula:'C107',mat:'IET930',grp:'001',dia:'Martes',si:14,ei:17},
@@ -936,7 +930,7 @@ const raw=[
   {aula:'C107',mat:'IEL640',grp:'001',dia:'Jueves',si:17,ei:20},
   {aula:'C107',mat:'IEL640',grp:'001',dia:'Viernes',si:11,ei:14},
   {aula:'C107',mat:'IEL620',grp:'001',dia:'Viernes',si:18,ei:20},
-  // C201 — Lab. Informática
+  // C201
   {aula:'C201',mat:'INF103',grp:'056',dia:'Lunes',si:3,ei:6},
   {aula:'C201',mat:'INF113',grp:'017',dia:'Lunes',si:6,ei:8},
   {aula:'C201',mat:'INF103',grp:'057',dia:'Lunes',si:9,ei:12},
@@ -968,7 +962,7 @@ const raw=[
   {aula:'C201',mat:'INF331',grp:'003',dia:'Sábado',si:8,ei:11},
   {aula:'C201',mat:'INF204',grp:'003',dia:'Miércoles',si:18,ei:20},
   {aula:'C201',mat:'INF387',grp:'001',dia:'Jueves',si:16,ei:18},
-  // C202 — Lab. Informática 02
+  // C202
   {aula:'C202',mat:'INF113',grp:'009',dia:'Lunes',si:1,ei:5},
   {aula:'C202',mat:'INF103',grp:'098',dia:'Lunes',si:15,ei:18},
   {aula:'C202',mat:'INF173',grp:'006',dia:'Lunes',si:18,ei:20},
@@ -994,9 +988,10 @@ const raw=[
   {aula:'C202',mat:'INF113',grp:'033',dia:'Viernes',si:18,ei:20},
   {aula:'C202',mat:'INF225',grp:'002',dia:'Sábado',si:6,ei:12},
   {aula:'C202',mat:'CON500',grp:'002',dia:'Jueves',si:15,ei:17},
-  // C203 — Lab. Informática 03
+  // C203
   {aula:'C203',mat:'MED203',grp:'001',dia:'Lunes',si:3,ei:5},
   {aula:'C203',mat:'MED203',grp:'002',dia:'Lunes',si:5,ei:7},
+  {aula:'C203',mat:'MED203',grp:'003',dia:'Lunes',si:7,ei:9},
   {aula:'C203',mat:'INF117',grp:'003',dia:'Lunes',si:12,ei:15},
   {aula:'C203',mat:'INF103',grp:'006',dia:'Lunes',si:15,ei:18},
   {aula:'C203',mat:'INF353',grp:'002',dia:'Lunes',si:18,ei:20},
@@ -1004,13 +999,15 @@ const raw=[
   {aula:'C203',mat:'MED203',grp:'002',dia:'Martes',si:5,ei:7},
   {aula:'C203',mat:'MED203',grp:'003',dia:'Martes',si:7,ei:9},
   {aula:'C203',mat:'INF103',grp:'023',dia:'Martes',si:11,ei:14},
+  {aula:'C203',mat:'INF113',grp:'029',dia:'Martes',si:16,ei:18},
   {aula:'C203',mat:'CON500',grp:'001',dia:'Martes',si:18,ei:20},
   {aula:'C203',mat:'INF113',grp:'038',dia:'Miércoles',si:4,ei:8},
+  {aula:'C203',mat:'INF113',grp:'019',dia:'Miércoles',si:10,ei:12},
   {aula:'C203',mat:'INF117',grp:'003',dia:'Miércoles',si:12,ei:15},
   {aula:'C203',mat:'INF173',grp:'002',dia:'Miércoles',si:15,ei:17},
-  {aula:'C203',mat:'INF113',grp:'019',dia:'Miércoles',si:10,ei:12},
   {aula:'C203',mat:'CON500',grp:'001',dia:'Miércoles',si:19,ei:20},
   {aula:'C203',mat:'INF113',grp:'007',dia:'Jueves',si:4,ei:8},
+  {aula:'C203',mat:'INF103',grp:'030',dia:'Jueves',si:8,ei:9},
   {aula:'C203',mat:'INF113',grp:'019',dia:'Jueves',si:10,ei:12},
   {aula:'C203',mat:'INF353',grp:'011',dia:'Jueves',si:12,ei:14},
   {aula:'C203',mat:'INF113',grp:'046',dia:'Jueves',si:14,ei:18},
@@ -1021,10 +1018,7 @@ const raw=[
   {aula:'C203',mat:'INF706',grp:'001',dia:'Viernes',si:16,ei:20},
   {aula:'C203',mat:'INF706',grp:'006',dia:'Sábado',si:3,ei:7},
   {aula:'C203',mat:'INF408',grp:'007',dia:'Sábado',si:8,ei:12},
-  {aula:'C203',mat:'MED203',grp:'003',dia:'Lunes',si:7,ei:9},
-  {aula:'C203',mat:'INF113',grp:'029',dia:'Martes',si:16,ei:18},
-  {aula:'C203',mat:'INF103',grp:'030',dia:'Jueves',si:8,ei:9},
-  // C204 — Lab. Informática 04
+  // C204
   {aula:'C204',mat:'INF113',grp:'049',dia:'Lunes',si:1,ei:5},
   {aula:'C204',mat:'INF113',grp:'035',dia:'Lunes',si:5,ei:9},
   {aula:'C204',mat:'INF113',grp:'041',dia:'Lunes',si:10,ei:14},
@@ -1037,12 +1031,12 @@ const raw=[
   {aula:'C204',mat:'INF113',grp:'032',dia:'Martes',si:16,ei:18},
   {aula:'C204',mat:'INF103',grp:'032',dia:'Martes',si:18,ei:20},
   {aula:'C204',mat:'INF113',grp:'036',dia:'Miércoles',si:1,ei:5},
-  {aula:'C204',mat:'INF113',grp:'016',dia:'Miércoles',si:12,ei:15},
   {aula:'C204',mat:'INF113',grp:'044',dia:'Miércoles',si:7,ei:11},
+  {aula:'C204',mat:'INF113',grp:'016',dia:'Miércoles',si:12,ei:15},
   {aula:'C204',mat:'MER402',grp:'003',dia:'Miércoles',si:18,ei:20},
   {aula:'C204',mat:'MED203',grp:'009',dia:'Jueves',si:1,ei:3},
-  {aula:'C204',mat:'INF113',grp:'042',dia:'Jueves',si:10,ei:14},
   {aula:'C204',mat:'INF103',grp:'019',dia:'Jueves',si:3,ei:5},
+  {aula:'C204',mat:'INF113',grp:'042',dia:'Jueves',si:10,ei:14},
   {aula:'C204',mat:'INF406',grp:'001',dia:'Jueves',si:14,ei:16},
   {aula:'C204',mat:'INF103',grp:'062',dia:'Jueves',si:16,ei:19},
   {aula:'C204',mat:'INF353',grp:'002',dia:'Jueves',si:19,ei:20},
@@ -1051,7 +1045,7 @@ const raw=[
   {aula:'C204',mat:'MER402',grp:'003',dia:'Viernes',si:18,ei:20},
   {aula:'C204',mat:'INF408',grp:'002',dia:'Sábado',si:4,ei:8},
   {aula:'C204',mat:'INF445',grp:'003',dia:'Sábado',si:8,ei:12},
-  // C205  — Lab. AutoCAD
+  // C205
   {aula:'C205',mat:'ICV915',grp:'003',dia:'Sábado',si:1,ei:4},
   {aula:'C205',mat:'ICV915',grp:'002',dia:'Sábado',si:4,ei:7},
   {aula:'C205',mat:'ARQ545',grp:'001',dia:'Lunes',si:9,ei:12},
@@ -1067,64 +1061,64 @@ const raw=[
   {aula:'C205',mat:'INF113',grp:'043',dia:'Jueves',si:14,ei:16},
   {aula:'C205',mat:'INF331',grp:'004',dia:'Jueves',si:18,ei:20},
   {aula:'C205',mat:'ICV945',grp:'002',dia:'Viernes',si:8,ei:12},
-  // C206 — Lab. Informática 06
- {aula:'C206',mat:'INF113003',grp:'003',dia:'Lunes',si:1,ei:5},
-{aula:'C206',mat:'INF117002',grp:'002',dia:'Lunes',si:5,ei:8},
-{aula:'C206',mat:'INF113053',grp:'053',dia:'Lunes',si:10,ei:12},
-{aula:'C206',mat:'INF113010',grp:'010',dia:'Lunes',si:12,ei:16},
-{aula:'C206',mat:'INF165008',grp:'008',dia:'Lunes',si:16,ei:18},
-{aula:'C206',mat:'INF168005',grp:'005',dia:'Lunes',si:18,ei:20},
-{aula:'C206',mat:'INF117002',grp:'002',dia:'Martes',si:2,ei:5},
-{aula:'C206',mat:'INF113051',grp:'051',dia:'Martes',si:8,ei:10},
-{aula:'C206',mat:'INF113053',grp:'053',dia:'Martes',si:10,ei:12},
-{aula:'C206',mat:'INF113020',grp:'020',dia:'Martes',si:12,ei:14},
-{aula:'C206',mat:'INF406004',grp:'004',dia:'Martes',si:14,ei:16},
-{aula:'C206',mat:'INF117010',grp:'010',dia:'Martes',si:16,ei:18},
-{aula:'C206',mat:'MER402001',grp:'001',dia:'Martes',si:18,ei:20},
-{aula:'C206',mat:'INF113045',grp:'045',dia:'Miércoles',si:3,ei:7},
-{aula:'C206',mat:'INF113051',grp:'051',dia:'Miércoles',si:8,ei:10},
-{aula:'C206',mat:'INF113008',grp:'008',dia:'Miércoles',si:10,ei:14},
-{aula:'C206',mat:'TUR101003',grp:'003',dia:'Miércoles',si:15,ei:18},
-{aula:'C206',mat:'INF412002',grp:'002',dia:'Miércoles',si:18,ei:20},
-{aula:'C206',mat:'INF113001',grp:'001',dia:'Jueves',si:1,ei:5},
-{aula:'C206',mat:'INF113002',grp:'002',dia:'Jueves',si:5,ei:9},
-{aula:'C206',mat:'INF113020',grp:'020',dia:'Jueves',si:12,ei:14},
-{aula:'C206',mat:'MED203021',grp:'021',dia:'Jueves',si:14,ei:17},
-{aula:'C206',mat:'INF165004',grp:'004',dia:'Jueves',si:16,ei:18},
-{aula:'C206',mat:'INF113018',grp:'018',dia:'Viernes',si:4,ei:8},
-{aula:'C206',mat:'INF391001',grp:'001',dia:'Viernes',si:14,ei:16},
-{aula:'C206',mat:'INF113030',grp:'030',dia:'Viernes',si:16,ei:20},
-{aula:'C206',mat:'INF024001',grp:'001',dia:'Sábado',si:1,ei:4},
-{aula:'C206',mat:'INF840002',grp:'002',dia:'Sábado',si:7,ei:12},
-  {aula:'C206',mat:'INF168002',grp:'002',dia:'Jueves',si:18,ei:20},
-  // C207 — Lab. Informática 07
- {aula:'C207',mat:'INF117005',grp:'005',dia:'Lunes',si:1,ei:4},
-{aula:'C207',mat:'INF113050',grp:'050',dia:'Lunes',si:5,ei:9},
-{aula:'C207',mat:'INF113031',grp:'031',dia:'Lunes',si:12,ei:14},
-{aula:'C207',mat:'INF173001',grp:'001',dia:'Lunes',si:14,ei:16},
-{aula:'C207',mat:'INF482002',grp:'002',dia:'Lunes',si:18,ei:20},
-{aula:'C207',mat:'INF113012',grp:'012',dia:'Martes',si:2,ei:6},
-{aula:'C207',mat:'INF103078',grp:'078',dia:'Martes',si:7,ei:9},
-{aula:'C207',mat:'INF113005',grp:'005',dia:'Martes',si:10,ei:12},
-{aula:'C207',mat:'INF113040',grp:'040',dia:'Martes',si:12,ei:14},
-{aula:'C207',mat:'MED203014',grp:'014',dia:'Martes',si:15,ei:16},
-{aula:'C207',mat:'INF535001',grp:'001',dia:'Martes',si:16,ei:18},
-{aula:'C207',mat:'INF103030',grp:'030',dia:'Miércoles',si:7,ei:9},
-{aula:'C207',mat:'INF113005',grp:'005',dia:'Miércoles',si:10,ei:12},
-{aula:'C207',mat:'INF113033',grp:'033',dia:'Miércoles',si:14,ei:16},
-{aula:'C207',mat:'INF103005',grp:'005',dia:'Miércoles',si:16,ei:18},
-{aula:'C207',mat:'INF168001',grp:'001',dia:'Miércoles',si:18,ei:20},
-{aula:'C207',mat:'INF103078',grp:'078',dia:'Jueves',si:7,ei:9},
-{aula:'C207',mat:'INF113039',grp:'039',dia:'Jueves',si:8,ei:12},
-{aula:'C207',mat:'INF165005',grp:'005',dia:'Jueves',si:15,ei:17},
-{aula:'C207',mat:'INF168002',grp:'002',dia:'Jueves',si:18,ei:20},
-{aula:'C207',mat:'INF117005',grp:'005',dia:'Viernes',si:1,ei:4},
-{aula:'C207',mat:'INF117001',grp:'001',dia:'Viernes',si:12,ei:16},
-{aula:'C207',mat:'INF387002',grp:'002',dia:'Viernes',si:18,ei:20},
-{aula:'C207',mat:'INF113022',grp:'022',dia:'Sábado',si:1,ei:5},
-{aula:'C207',mat:'INF167003',grp:'003',dia:'Sábado',si:5,ei:8},
-{aula:'C207',mat:'INF535001',grp:'001',dia:'Sábado',si:8,ei:11},
-  // C208 C208 — Lab. Mecatrónica
+  // C206
+  {aula:'C206',mat:'INF113',grp:'003',dia:'Lunes',si:1,ei:5},
+  {aula:'C206',mat:'INF117',grp:'002',dia:'Lunes',si:5,ei:8},
+  {aula:'C206',mat:'INF113',grp:'053',dia:'Lunes',si:10,ei:12},
+  {aula:'C206',mat:'INF113',grp:'010',dia:'Lunes',si:12,ei:16},
+  {aula:'C206',mat:'INF165',grp:'008',dia:'Lunes',si:16,ei:18},
+  {aula:'C206',mat:'INF168',grp:'005',dia:'Lunes',si:18,ei:20},
+  {aula:'C206',mat:'INF117',grp:'002',dia:'Martes',si:2,ei:5},
+  {aula:'C206',mat:'INF113',grp:'051',dia:'Martes',si:8,ei:10},
+  {aula:'C206',mat:'INF113',grp:'053',dia:'Martes',si:10,ei:12},
+  {aula:'C206',mat:'INF113',grp:'020',dia:'Martes',si:12,ei:14},
+  {aula:'C206',mat:'INF406',grp:'004',dia:'Martes',si:14,ei:16},
+  {aula:'C206',mat:'INF117',grp:'010',dia:'Martes',si:16,ei:18},
+  {aula:'C206',mat:'MER402',grp:'001',dia:'Martes',si:18,ei:20},
+  {aula:'C206',mat:'INF113',grp:'045',dia:'Miércoles',si:3,ei:7},
+  {aula:'C206',mat:'INF113',grp:'051',dia:'Miércoles',si:8,ei:10},
+  {aula:'C206',mat:'INF113',grp:'008',dia:'Miércoles',si:10,ei:14},
+  {aula:'C206',mat:'TUR101',grp:'003',dia:'Miércoles',si:15,ei:18},
+  {aula:'C206',mat:'INF412',grp:'002',dia:'Miércoles',si:18,ei:20},
+  {aula:'C206',mat:'INF113',grp:'001',dia:'Jueves',si:1,ei:5},
+  {aula:'C206',mat:'INF113',grp:'002',dia:'Jueves',si:5,ei:9},
+  {aula:'C206',mat:'INF113',grp:'020',dia:'Jueves',si:12,ei:14},
+  {aula:'C206',mat:'MED203',grp:'021',dia:'Jueves',si:14,ei:17},
+  {aula:'C206',mat:'INF165',grp:'004',dia:'Jueves',si:16,ei:18},
+  {aula:'C206',mat:'INF168',grp:'002',dia:'Jueves',si:18,ei:20},
+  {aula:'C206',mat:'INF113',grp:'018',dia:'Viernes',si:4,ei:8},
+  {aula:'C206',mat:'INF391',grp:'001',dia:'Viernes',si:14,ei:16},
+  {aula:'C206',mat:'INF113',grp:'030',dia:'Viernes',si:16,ei:20},
+  {aula:'C206',mat:'INF024',grp:'001',dia:'Sábado',si:1,ei:4},
+  {aula:'C206',mat:'INF840',grp:'002',dia:'Sábado',si:7,ei:12},
+  // C207
+  {aula:'C207',mat:'INF117',grp:'005',dia:'Lunes',si:1,ei:4},
+  {aula:'C207',mat:'INF113',grp:'050',dia:'Lunes',si:5,ei:9},
+  {aula:'C207',mat:'INF113',grp:'031',dia:'Lunes',si:12,ei:14},
+  {aula:'C207',mat:'INF173',grp:'001',dia:'Lunes',si:14,ei:16},
+  {aula:'C207',mat:'INF482',grp:'002',dia:'Lunes',si:18,ei:20},
+  {aula:'C207',mat:'INF113',grp:'012',dia:'Martes',si:2,ei:6},
+  {aula:'C207',mat:'INF103',grp:'078',dia:'Martes',si:7,ei:9},
+  {aula:'C207',mat:'INF113',grp:'005',dia:'Martes',si:10,ei:12},
+  {aula:'C207',mat:'INF113',grp:'040',dia:'Martes',si:12,ei:14},
+  {aula:'C207',mat:'MED203',grp:'014',dia:'Martes',si:15,ei:16},
+  {aula:'C207',mat:'INF535',grp:'001',dia:'Martes',si:16,ei:18},
+  {aula:'C207',mat:'INF103',grp:'030',dia:'Miércoles',si:7,ei:9},
+  {aula:'C207',mat:'INF113',grp:'005',dia:'Miércoles',si:10,ei:12},
+  {aula:'C207',mat:'INF113',grp:'033',dia:'Miércoles',si:14,ei:16},
+  {aula:'C207',mat:'INF103',grp:'005',dia:'Miércoles',si:16,ei:18},
+  {aula:'C207',mat:'INF168',grp:'001',dia:'Miércoles',si:18,ei:20},
+  {aula:'C207',mat:'INF103',grp:'078',dia:'Jueves',si:7,ei:9},
+  {aula:'C207',mat:'INF113',grp:'039',dia:'Jueves',si:8,ei:12},
+  {aula:'C207',mat:'INF165',grp:'005',dia:'Jueves',si:15,ei:17},
+  {aula:'C207',mat:'INF168',grp:'002',dia:'Jueves',si:18,ei:20},
+  {aula:'C207',mat:'INF117',grp:'005',dia:'Viernes',si:1,ei:4},
+  {aula:'C207',mat:'INF117',grp:'001',dia:'Viernes',si:12,ei:16},
+  {aula:'C207',mat:'INF387',grp:'002',dia:'Viernes',si:18,ei:20},
+  {aula:'C207',mat:'INF113',grp:'022',dia:'Sábado',si:1,ei:5},
+  {aula:'C207',mat:'INF167',grp:'003',dia:'Sábado',si:5,ei:8},
+  {aula:'C207',mat:'INF535',grp:'001',dia:'Sábado',si:8,ei:11},
+  // C208
   {aula:'C208',mat:'IEL415',grp:'001',dia:'Lunes',si:5,ei:9},
   {aula:'C208',mat:'IEL315',grp:'002',dia:'Lunes',si:14,ei:16},
   {aula:'C208',mat:'IEL955',grp:'002',dia:'Lunes',si:18,ei:20},
@@ -1135,10 +1129,10 @@ const raw=[
   {aula:'C208',mat:'IEL955',grp:'002',dia:'Viernes',si:14,ei:16},
   {aula:'C208',mat:'IEL955',grp:'004',dia:'Viernes',si:16,ei:20},
   {aula:'C208',mat:'IEL415',grp:'001',dia:'Sábado',si:6,ei:8},
-  {aula:'C208',mat:'IEL625',grp:'002',dia:'Sábado',si:11,ei:14},
-  {aula:'C208',mat:'IEL525',grp:'002',dia:'Sábado',si:8,ei:11},
   {aula:'C208',mat:'IEL415',grp:'002',dia:'Sábado',si:0,ei:2},
-  // C413 — Lab. Comunicación
+  {aula:'C208',mat:'IEL525',grp:'002',dia:'Sábado',si:8,ei:11},
+  {aula:'C208',mat:'IEL625',grp:'002',dia:'Sábado',si:11,ei:14},
+  // C413
   {aula:'C413',mat:'IET675',grp:'001',dia:'Lunes',si:14,ei:16},
   {aula:'C413',mat:'IET415',grp:'002',dia:'Lunes',si:18,ei:20},
   {aula:'C413',mat:'IET325',grp:'002',dia:'Martes',si:16,ei:18},
@@ -1149,7 +1143,7 @@ const raw=[
   {aula:'C413',mat:'IET745',grp:'001',dia:'Viernes',si:18,ei:20},
   {aula:'C413',mat:'IET845',grp:'001',dia:'Sábado',si:4,ei:6},
   {aula:'C413',mat:'IEL305',grp:'004',dia:'Sábado',si:7,ei:9},
-  // C414A — Lab. Electrónica
+  // C414A
   {aula:'C414A',mat:'IET315',grp:'001',dia:'Martes',si:16,ei:18},
   {aula:'C414A',mat:'IET965',grp:'002',dia:'Miércoles',si:14,ei:16},
   {aula:'C414A',mat:'IET545',grp:'002',dia:'Miércoles',si:17,ei:19},
@@ -1157,64 +1151,61 @@ const raw=[
   {aula:'C414A',mat:'IET705',grp:'001',dia:'Sábado',si:2,ei:4},
   {aula:'C414A',mat:'IET815',grp:'001',dia:'Sábado',si:4,ei:6},
   {aula:'C414A',mat:'IET415',grp:'001',dia:'Sábado',si:11,ei:13},
-  // C414B — Lab. Electrónica 02
+  // C414B
   {aula:'C414B',mat:'IET315',grp:'002',dia:'Viernes',si:15,ei:17},
   // C415
   {aula:'C415',mat:'IEL105',grp:'010',dia:'Lunes',si:14,ei:16},
   {aula:'C415',mat:'IEL205',grp:'005',dia:'Lunes',si:18,ei:20},
   {aula:'C415',mat:'IET115',grp:'001',dia:'Martes',si:16,ei:18},
   {aula:'C415',mat:'IEL205',grp:'004',dia:'Miércoles',si:12,ei:14},
-  {aula:'C415',mat:'IET405',grp:'001',dia:'Miércoles',si:16,ei:18},
   {aula:'C415',mat:'IEL115',grp:'001',dia:'Miércoles',si:14,ei:16},
   {aula:'C415',mat:'IEL205',grp:'004',dia:'Miércoles',si:14,ei:16},
+  {aula:'C415',mat:'IET405',grp:'001',dia:'Miércoles',si:16,ei:18},
+  {aula:'C415',mat:'IEL305',grp:'001',dia:'Miércoles',si:18,ei:20},
+  {aula:'C415',mat:'IEL105',grp:'004',dia:'Jueves',si:14,ei:16},
   {aula:'C415',mat:'IEL105',grp:'009',dia:'Jueves',si:18,ei:20},
   {aula:'C415',mat:'IEL105',grp:'001',dia:'Viernes',si:14,ei:16},
   {aula:'C415',mat:'IEL105',grp:'002',dia:'Viernes',si:16,ei:18},
   {aula:'C415',mat:'IEL105',grp:'003',dia:'Viernes',si:18,ei:20},
   {aula:'C415',mat:'IEL115',grp:'003',dia:'Sábado',si:10,ei:12},
-  {aula:'C415',mat:'IEL305',grp:'001',dia:'Miércoles',si:18,ei:20},
-  {aula:'C415',mat:'IEL105',grp:'004',dia:'Jueves',si:14,ei:16},
 ];
 
+// ✅ FIX: Construir classes y exponerlo globalmente
 const classes = raw.map(c => {
-
   const inicioSlot = SLOTS[c.si];
-  const finSlot = SLOTS[c.ei] || {l:'10:00 PM', m:'22:00'};
-
-  if (!inicioSlot || !finSlot) {
-    console.error("Error en índices:", c);
-    return null;
-  }
-
-  return {
-    ...c,
-    inicio: inicioSlot.l,
-    fin:    finSlot.l,
-    inicioM: inicioSlot.m,
-    finM:    finSlot.m,
-    durMin: (c.ei - c.si) * 45
-  };
-
+  const finSlot = SLOTS[c.ei] || {l:'10:00 PM', m:1320};
+  if (!inicioSlot || !finSlot) { console.error("Error en índices:", c); return null; }
+  return { ...c, inicio: inicioSlot.l, fin: finSlot.l, inicioM: inicioSlot.m, finM: finSlot.m, durMin: (c.ei - c.si) * 45 };
 }).filter(Boolean);
+
+// ✅ FIX: Exponer classes globalmente para que sidebar pueda accederlo
+window.classes = classes;
 window._allClasses = classes;
 
-document.addEventListener('DOMContentLoaded',function(){
+// ══════════════════════════════════════════════
+// APP PRINCIPAL
+// ══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function(){
   let sortCol='', sortDir=1, groupByEdificio=false;
-  let filterDia='',filterLab='',filterMateria='',filterHora='',filterEdificio='',filterEstado='',globalSearch='',alertEnabled=true,alertMinutes=15;
-  let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true, endAlertEnabled=true, noMolestar=false, noMolestarStart=22, noMolestarEnd=7, repeatAlert=localStorage.getItem('utesa-repeat-alert')==='1';
-  const notifiedRepeat={}; // key -> last repeat time
+  let filterDia='', filterLab='', filterMateria='', filterHora='', filterEdificio='', filterEstado='', globalSearch='';
+  let alertEnabled=true, alertMinutes=15;
+  let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true, endAlertEnabled=true, noMolestar=false, noMolestarStart=22, noMolestarEnd=7;
+  let repeatAlert=localStorage.getItem('utesa-repeat-alert')==='1';
+  const notifiedRepeat={};
   let favorites=new Set(JSON.parse(localStorage.getItem('utesa-favs')||'[]')), favOnly=false;
+  // ✅ FIX: Persistir marcas de ausente/finalizado entre re-renders
+  const markedRows = {}; // key: `${aula}-${mat}-${grp}-${dia}-${inicio}` => 'ausente'|'finalizada'
+  window.markedRows = markedRows; // Exponer globalmente para las funciones window.*
+
   function saveFavs(){localStorage.setItem('utesa-favs',JSON.stringify([...favorites]));}
   window.toggleFav = function(aula){
     if(favorites.has(aula)){favorites.delete(aula);}else{favorites.add(aula);}
-    saveFavs();render();
-  }
-  function toggleFav(aula){ window.toggleFav(aula); }
+    saveFavs(); render();
+  };
+
   const DIAS={0:'Domingo',1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado'};
   const DIA_ORDER=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
   const DIA_CSS={Lunes:'dL',Martes:'dM','Miércoles':'dX',Jueves:'dJ',Viernes:'dV','Sábado':'dS'};
-  const nowM=()=>{const n=new Date();return n.getHours()*60+n.getMinutes();};
-  const todayName=()=>DIAS[new Date().getDay()];
 
   function getStatus(c){
     if(c.dia!==todayName())return'';
@@ -1223,7 +1214,7 @@ document.addEventListener('DOMContentLoaded',function(){
     if(m>=c.finM)return'past';
     const d=c.inicioM-m;
     if(d>0&&d<=alertMinutes)return'imminent';
-    if(d>0)return'upcoming'; // todas las clases futuras de hoy muestran tiempo
+    if(d>0)return'upcoming';
     return'';
   }
 
@@ -1236,11 +1227,8 @@ document.addEventListener('DOMContentLoaded',function(){
     return`En ${h}h ${m}min`;
   }
 
-
-
   function updateOccupancy(){
     const today=todayName();
-    // Count unique labs occupied right now
     const activeLabs=new Set(), immLabs=new Set();
     classes.forEach(c=>{
       if(c.dia!==today)return;
@@ -1249,19 +1237,16 @@ document.addEventListener('DOMContentLoaded',function(){
       if(s==='imminent')immLabs.add(c.aula);
     });
     const totalLabs=Object.keys(LABS).length;
-    const free=totalLabs-activeLabs.size;
     const el_a=document.getElementById('occ-active');
     const el_i=document.getElementById('occ-imm');
     const el_f=document.getElementById('occ-free');
-    const el_t=document.getElementById('occ-total');
     if(el_a)el_a.textContent=activeLabs.size;
     if(el_i)el_i.textContent=immLabs.size;
-    if(el_f)el_f.textContent=free;
-    if(el_t)el_t.textContent=totalLabs;
+    if(el_f)el_f.textContent=totalLabs-activeLabs.size;
   }
 
   function render(){
-    const tbody=document.getElementById('tableBody'),empty=document.getElementById('emptyState');
+    const tbody=document.getElementById('tableBody'), empty=document.getElementById('emptyState');
     if(!tbody||!empty)return;
     tbody.innerHTML='';
     let filtered=classes.filter(c=>{
@@ -1271,65 +1256,61 @@ document.addEventListener('DOMContentLoaded',function(){
       if(filterMateria&&!(c.mat+c.grp).toLowerCase().includes(filterMateria.toLowerCase()))return false;
       if(favOnly&&!favorites.has(c.aula))return false;
       if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
+      if(filterEstado){const s=getStatus(c);if(s!==filterEstado)return false;}
+      if(globalSearch){
+        const q=globalSearch.toLowerCase();
+        const h=(c.aula+' '+c.mat+' '+c.grp+' '+c.dia+' '+c.inicio+' '+c.fin).toLowerCase();
+        if(!h.includes(q))return false;
+      }
       return true;
     });
+
     filtered.sort((a,b)=>{
-      // Favorites always first
       const favA=favorites.has(a.aula)?0:1, favB=favorites.has(b.aula)?0:1;
       if(favA!==favB)return favA-favB;
-      // Custom sort column
       if(sortCol){
         let vA=a[sortCol]??'', vB=b[sortCol]??'';
         if(sortCol==='creditos'){vA=a.durMin/45;vB=b.durMin/45;}
-        if(typeof vA==='number') return (vA-vB)*sortDir;
+        if(typeof vA==='number')return(vA-vB)*sortDir;
         return String(vA).localeCompare(String(vB))*sortDir;
       }
       const rank=s=>({active:0,imminent:1,upcoming:2,later:3}[s]??4);
-      const pA=a.dia===todayName()&&getStatus(a)==='past',pB=b.dia===todayName()&&getStatus(b)==='past';
-      if(pA&&!pB)return 1;if(!pA&&pB)return-1;
-      const d=rank(getStatus(a))-rank(getStatus(b));if(d)return d;
+      const pA=a.dia===todayName()&&getStatus(a)==='past', pB=b.dia===todayName()&&getStatus(b)==='past';
+      if(pA&&!pB)return 1; if(!pA&&pB)return-1;
+      const d=rank(getStatus(a))-rank(getStatus(b)); if(d)return d;
       const dd=DIA_ORDER.indexOf(a.dia)-DIA_ORDER.indexOf(b.dia);
       return dd||a.inicioM-b.inicioM;
     });
+
     document.getElementById('statTotal').textContent=classes.length;
-    // Contador dinámico según filtro activo
-    const wrap=document.getElementById('statFilteredWrap');
-    const sep=document.getElementById('sepFiltered');
-    if(filterDia||filterLab||filterMateria||filterHora||filterEdificio){
-      wrap.style.display='flex';
-      sep.style.display='';
+    const wrap=document.getElementById('statFilteredWrap'), sep=document.getElementById('sepFiltered');
+    if(filterDia||filterLab||filterMateria||filterHora||filterEdificio||filterEstado){
+      wrap.style.display='flex'; sep.style.display='';
       document.getElementById('statFiltered').textContent=filtered.length;
       const nombres={manana:'Mañana',mediodia:'Mediodía',tarde:'Tarde',noche:'Noche'};
       let partes=[];
-    if(filterEdificio) partes.push(`Edif. ${filterEdificio}`);
-      if(filterLab) partes.push(filterLab);
-      if(filterDia) partes.push(filterDia);
-      if(filterHora) partes.push(nombres[filterHora]||filterHora);
-      if(filterMateria) partes.push(`"${filterMateria}"`);
+      if(filterEdificio)partes.push(`Edif. ${filterEdificio}`);
+      if(filterLab)partes.push(filterLab);
+      if(filterDia)partes.push(filterDia);
+      if(filterHora)partes.push(nombres[filterHora]||filterHora);
+      if(filterMateria)partes.push(`"${filterMateria}"`);
       document.getElementById('statFilteredLbl').textContent=`en ${partes.join(' · ')}`;
-    } else {
-      wrap.style.display='none';
-      sep.style.display='none';
-    }
-    // Hoy dinámico según filtro
+    } else { wrap.style.display='none'; sep.style.display='none'; }
+
     document.getElementById('statToday').textContent=filtered.filter(c=>c.dia===todayName()).length;
-    // Update search count
     const gsCount=document.getElementById('gs-count');
-    if(globalSearch){
-      gsCount.textContent=`${filtered.length} resultado${filtered.length!==1?'s':''} para "${globalSearch}"`;
-      gsCount.classList.add('show');
-    } else {
-      gsCount.classList.remove('show');
-    }
+    if(globalSearch){gsCount.textContent=`${filtered.length} resultado${filtered.length!==1?'s':''} para "${globalSearch}"`;gsCount.classList.add('show');}
+    else{gsCount.classList.remove('show');}
     updateOccupancy();
+
     if(!filtered.length){empty.classList.add('show');return;}
     empty.classList.remove('show');
-    // Group by edificio if enabled
-    let renderList = filtered;
-    if(groupByEdificio && !sortCol){
-      const bList = filtered.filter(c=>c.aula.startsWith('B'));
-      const cList = filtered.filter(c=>c.aula.startsWith('C'));
-      renderList = [{__sep:'B',__label:'🔵 Edificio B'}, ...bList, {__sep:'C',__label:'🟠 Edificio C'}, ...cList];
+
+    let renderList=filtered;
+    if(groupByEdificio&&!sortCol){
+      const bList=filtered.filter(c=>c.aula.startsWith('B'));
+      const cList=filtered.filter(c=>c.aula.startsWith('C'));
+      renderList=[{__sep:'B',__label:'🔵 Edificio B'},...bList,{__sep:'C',__label:'🟠 Edificio C'},...cList];
     }
 
     renderList.forEach((c,i)=>{
@@ -1337,62 +1318,70 @@ document.addEventListener('DOMContentLoaded',function(){
         const sepRow=document.createElement('tr');
         sepRow.className=`group-sep sep-${c.__sep.toLowerCase()}`;
         sepRow.innerHTML=`<td colspan="10">${c.__label}</td>`;
-        tbody.appendChild(sepRow);
-        return;
+        tbody.appendChild(sepRow); return;
       }
-      const s=getStatus(c),tr=document.createElement('tr');
-      const bldg=c.aula.startsWith('B')?'bldg-b':'bldg-c';
-      tr.className=bldg;
-      if(s==='active')tr.className+=' row-active';
-      if(s==='imminent')tr.className='row-imm';
-      if(s==='upcoming')tr.className='row-upcoming';
-      if(s==='later')tr.className='row-later';
-      if(s==='past')tr.className='row-past';
+      const s=getStatus(c), tr=document.createElement('tr');
+      const rowKey=`${c.aula}-${c.mat}-${c.grp}-${c.dia}-${c.inicio}`;
+      const marked = window.markedRows[rowKey]; // 'finalizada' | 'ausente' | undefined
+      // Clases marcadas no muestran badge En curso ni son afectadas por filtro estado
+      const displayStatus = marked ? marked : s;
+      if(marked==='finalizada') tr.className='row-finalizada';
+      else if(marked==='ausente') tr.className='row-ausente';
+      else if(s==='active')tr.className='row-active';
+      else if(s==='imminent')tr.className='row-imm';
+      else if(s==='upcoming')tr.className='row-upcoming';
+      else if(s==='past')tr.className='row-past';
       tr.style.animationDelay=`${i*.018}s`;
       const badge=
-        s==='active'   ?'<span class="b-active">🟢 En curso</span>':
-        s==='imminent' ?`<span class="b-imm">⚡ ${timeUntil(c)}</span>`:
-        s==='upcoming' ?`<span class="b-upcoming">⏳ ${timeUntil(c)}</span>`:
-        s==='past'     ?'<span class="b-past">✓ Finalizada</span>':
-                        '<span class="b-nottoday">⏸ No es hoy</span>';
+        marked==='ausente'   ?'<span class="b-past">🚫 Ausente</span>':
+        marked==='finalizada'?'<span class="b-past">✔ Finalizada</span>':
+        s==='active'  ?'<span class="b-active">🟢 En curso</span>':
+        s==='imminent'?`<span class="b-imm">⚡ ${timeUntil(c)}</span>`:
+        s==='upcoming'?`<span class="b-upcoming">⏳ ${timeUntil(c)}</span>`:
+        s==='past'    ?'<span class="b-past">✓ Finalizada</span>':
+                       '<span class="b-nottoday">⏸ No es hoy</span>';
       const creditos=c.durMin/45;
-      const lab=LABS[c.aula],labName=lab?lab.name:'',imgFile=lab?lab.img:'';
-      const prog=s==='active'?`<div class="progress-wrap"><div class="progress-bar" id="prog-${c.aula}-${c.mat}${c.grp}" style="width:${Math.round((nowM()-c.inicioM)/((c.finM-c.inicioM))*100)}%"></div></div>`:'';
-      const bldgBadgeClass = c.aula.startsWith('B') ? 'bldg-badge-b' : 'bldg-badge-c';
-      const bldgLetter = c.aula.startsWith('B') ? 'B' : 'C';
-      tr.innerHTML=`<td><div style="display:flex;align-items:center;gap:.4rem"><button onclick="window.toggleFav('${c.aula}')" style="background:none;border:none;cursor:pointer;font-size:.95rem;padding:0;line-height:1;flex-shrink:0;transition:transform .15s" onmousedown="this.style.transform='scale(1.4)'" onmouseup="this.style.transform='scale(1)'">${favorites.has(c.aula)?'⭐':'☆'}</button><div><span class="td-aula">${c.aula}</span><span class="bldg-badge ${bldgBadgeClass}">${bldgLetter}</span><br><span class="td-lab">${labName}</span></div></div></td><td class="td-mat">${c.mat}</td><td class="td-grp">${c.grp}</td><td><span class="dia-tag ${DIA_CSS[c.dia]||'dL'}">${c.dia}</span></td><td class="td-hora">${c.inicio}</td><td class="td-hora">${c.fin}</td><td class="td-dur">${c.durMin} min</td><td class="td-cred">${creditos}</td><td>${badge}${prog}</td><td><button class="btn-img" onclick="openModal('${c.aula}','${labName}','${imgFile}')">🗓️ <span>Ver</span></button> <button class="btn-img" style="margin-top:.2rem;background:rgba(0,229,160,.08);border-color:rgba(0,229,160,.2);color:var(--accent)" onclick="openWeekModal('${c.aula}')">📅 <span>Semana</span></button></td>`;
+      const lab=LABS[c.aula], labName=lab?lab.name:'', imgFile=lab?lab.img:'';
+      tr.innerHTML=`
+        <td><div style="display:flex;align-items:center;gap:.4rem">
+          <button onclick="window.toggleFav('${c.aula}')" style="background:none;border:none;cursor:pointer;font-size:.95rem;padding:0;line-height:1;flex-shrink:0">${favorites.has(c.aula)?'⭐':'☆'}</button>
+          <div><span class="td-aula">${c.aula}</span><br><span class="td-lab">${labName}</span></div>
+        </div></td>
+        <td class="td-mat">${c.mat}</td>
+        <td class="td-grp">${c.grp}</td>
+        <td><span class="dia-tag ${DIA_CSS[c.dia]||'dL'}">${c.dia}</span></td>
+        <td class="td-hora">${c.inicio}</td>
+        <td class="td-hora">${c.fin}</td>
+        <td class="td-dur">${c.durMin} min</td>
+        <td class="td-cred">${creditos}</td>
+        <td>${badge}</td>
+        <td style="white-space:nowrap">
+          <button class="btn-img" onclick="openModal('${c.aula}','${labName}','${imgFile}')">🗓️ <span>Distribución</span></button>
+          <button class="btn-img" style="margin-left:.3rem;background:rgba(0,229,160,.08);border-color:rgba(0,229,160,.2);color:var(--accent)" onclick="openWeekModal('${c.aula}')">📅 <span>Semana</span></button>
+          <br>
+          ${marked ? `<button class="btn-control" style="background:#374151;color:#9ca3af" onclick="desmarcar('${rowKey}')">↩ Desmarcar</button>` : `<button class="btn-control btn-finalizada" onclick="marcarFinalizada('${rowKey}')">✔ Finalizada</button> <button class="btn-control btn-ausente" onclick="marcarAusente('${rowKey}')">🚫 Ausente</button>`}
+        </td>`;
       tbody.appendChild(tr);
     });
+
+    // Sync mobile stats
+    updateMobileStats();
+    // Sync grid if active
+    if(currentView==='grid') renderGrid();
   }
 
   // ── TEMAS ──
   const THEMES=['dark','light','sepia','utesa','ocean','purple','red'];
-  let currentBg = localStorage.getItem('utesa-bg')||'none';
-  let currentFont = localStorage.getItem('utesa-font')||'md';
-
-  window.setFontSize = function(size) {
-    currentFont = size;
-    document.documentElement.setAttribute('data-font', size);
-    localStorage.setItem('utesa-font', size);
-    document.querySelectorAll('.tp-font-btn').forEach(b=>b.classList.toggle('active', b.id===`tp-font-${size}`));
-  };
-
-  window.setBg = function(bg) {
-    currentBg = bg;
-    localStorage.setItem('utesa-bg', bg);
-    document.body.className = document.body.className.replace(/bg-gradient-\w+/g,'').trim();
-    if(bg!=='none') document.body.classList.add(`bg-gradient-${bg}`);
-    document.querySelectorAll('.tp-bg-opt').forEach(b=>b.classList.toggle('active', b.id===`tp-bg-${bg}`));
-  };
-
-  // Restore font and bg on load
+  let currentBg=localStorage.getItem('utesa-bg')||'none';
+  let currentFont=localStorage.getItem('utesa-font')||'md';
   (function(){
     const f=localStorage.getItem('utesa-font')||'md';
     const b=localStorage.getItem('utesa-bg')||'none';
-    if(f!=='md') document.documentElement.setAttribute('data-font',f);
-    if(b!=='none') document.body.classList.add(`bg-gradient-${b}`);
+    if(f!=='md')document.documentElement.setAttribute('data-font',f);
+    if(b!=='none')document.body.classList.add(`bg-gradient-${b}`);
   })();
-
+  window.setFontSize=function(size){currentFont=size;document.documentElement.setAttribute('data-font',size);localStorage.setItem('utesa-font',size);document.querySelectorAll('.tp-font-btn').forEach(b=>b.classList.toggle('active',b.id===`tp-font-${size}`));};
+  window.setBg=function(bg){currentBg=bg;localStorage.setItem('utesa-bg',bg);document.body.className=document.body.className.replace(/bg-gradient-\w+/g,'').trim();if(bg!=='none')document.body.classList.add(`bg-gradient-${bg}`);document.querySelectorAll('.tp-bg-opt').forEach(b=>b.classList.toggle('active',b.id===`tp-bg-${bg}`));};
   window.setTheme=function(t){
     if(!THEMES.includes(t))t='dark';
     document.documentElement.setAttribute('data-theme',t==='dark'?'':t);
@@ -1400,47 +1389,24 @@ document.addEventListener('DOMContentLoaded',function(){
     document.querySelectorAll('.tp-opt').forEach(b=>b.classList.toggle('active',b.dataset.t===t));
     localStorage.setItem('utesa-theme',t);
   };
-  // Cargar tema guardado
-  const savedTheme=localStorage.getItem('utesa-theme')||'dark';
-  setTheme(savedTheme);
+  setTheme(localStorage.getItem('utesa-theme')||'dark');
 
   function updateClock(){
     const n=new Date(),pad=x=>String(x).padStart(2,'0');
     const cd=document.getElementById('clockDisplay'),dd=document.getElementById('dateDisplay');
-    if(cd){
-      const h=n.getHours(),ampm=h>=12?'PM':'AM',h12=h%12||12;
-      cd.textContent=`${pad(h12)}:${pad(n.getMinutes())}:${pad(n.getSeconds())} ${ampm}`;
-    }
+    if(cd){const h=n.getHours(),ampm=h>=12?'PM':'AM',h12=h%12||12;cd.textContent=`${pad(h12)}:${pad(n.getMinutes())}:${pad(n.getSeconds())} ${ampm}`;}
     const ds=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],ms=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
     if(dd)dd.textContent=`${ds[n.getDay()]} ${n.getDate()} ${ms[n.getMonth()]} ${n.getFullYear()}`;
   }
 
-  // ── SONIDOS CON WEB AUDIO API ──
+  // ── SONIDOS ──
   function playSound(type){
     try{
       const ctx=new(window.AudioContext||window.webkitAudioContext)();
       if(type==='upcoming'){
-        // Tres tonos ascendentes: alerta clase próxima
-        [[0,.12,880,.3],[.15,.12,1108,.3],[.32,.18,1318,.45]].forEach(([t,dur,freq,vol])=>{
-          const o=ctx.createOscillator(),g=ctx.createGain();
-          o.connect(g);g.connect(ctx.destination);
-          o.type='sine';o.frequency.value=freq;
-          g.gain.setValueAtTime(0,ctx.currentTime+t);
-          g.gain.linearRampToValueAtTime(vol,ctx.currentTime+t+.02);
-          g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+dur);
-          o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+dur+.05);
-        });
-      } else if(type==='ended'){
-        // Tres tonos descendentes suaves: clase terminada
-        [[0,.18,880,.22],[.22,.18,659,.22],[.44,.25,523,.28]].forEach(([t,dur,freq,vol])=>{
-          const o=ctx.createOscillator(),g=ctx.createGain();
-          o.connect(g);g.connect(ctx.destination);
-          o.type='triangle';o.frequency.value=freq;
-          g.gain.setValueAtTime(0,ctx.currentTime+t);
-          g.gain.linearRampToValueAtTime(vol,ctx.currentTime+t+.03);
-          g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+dur);
-          o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+dur+.05);
-        });
+        [[0,.12,880,.3],[.15,.12,1108,.3],[.32,.18,1318,.45]].forEach(([t,dur,freq,vol])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(0,ctx.currentTime+t);g.gain.linearRampToValueAtTime(vol,ctx.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+dur);o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+dur+.05);});
+      }else if(type==='ended'){
+        [[0,.18,880,.22],[.22,.18,659,.22],[.44,.25,523,.28]].forEach(([t,dur,freq,vol])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='triangle';o.frequency.value=freq;g.gain.setValueAtTime(0,ctx.currentTime+t);g.gain.linearRampToValueAtTime(vol,ctx.currentTime+t+.03);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+dur);o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+dur+.05);});
       }
       setTimeout(()=>ctx.close(),2000);
     }catch(e){}
@@ -1448,27 +1414,13 @@ document.addEventListener('DOMContentLoaded',function(){
 
   function showToast(pending){
     lastPending=pending;
-    // Sonido: 3 tonos ascendentes
     if(soundEnabled)playSound('upcoming');
-    // Vibración fuerte patrón alerta
     if('vibrate'in navigator)navigator.vibrate([100,50,100,50,300,100,300]);
     const count=pending.length;
     const label=count===1?`Clase en ${pending[0].diff} min`:`${count} clases próximas`;
     let classesHTML=pending.map(({c,diff})=>{
-      const lab=LABS[c.aula];
-      const cred=c.durMin/45;
-      return`<div class="toast-class">
-        <div class="toast-class-lab">
-          <span class="toast-class-lab-code">📍 ${c.aula}</span>
-          <span class="toast-class-lab-name">— ${lab?lab.name:''}</span>
-        </div>
-        <div class="toast-class-mat">${c.mat} <span style="color:var(--muted);font-size:.72rem">grp. ${c.grp}</span></div>
-        <div class="toast-class-meta">
-          <span class="toast-class-hora">⏰ ${c.inicio} → ${c.fin}</span>
-          <span class="toast-class-cred">${cred} crédito${cred>1?'s':''}</span>
-          <span class="toast-class-mins">Empieza en ${diff} min</span>
-        </div>
-      </div>`;
+      const lab=LABS[c.aula],cred=c.durMin/45;
+      return`<div class="toast-class"><div class="toast-class-lab"><span class="toast-class-lab-code">📍 ${c.aula}</span><span class="toast-class-lab-name">— ${lab?lab.name:''}</span></div><div class="toast-class-mat">${c.mat} <span style="color:var(--muted);font-size:.72rem">grp. ${c.grp}</span></div><div class="toast-class-meta"><span class="toast-class-hora">⏰ ${c.inicio} → ${c.fin}</span><span class="toast-class-cred">${cred} crédito${cred>1?'s':''}</span><span class="toast-class-mins">Empieza en ${diff} min</span></div></div>`;
     }).join('');
     const el=document.createElement('div');
     el.className='toast';
@@ -1476,101 +1428,62 @@ document.addEventListener('DOMContentLoaded',function(){
     el.style.cursor='pointer';
     el.addEventListener('click',openAlertModal);
     const container=document.getElementById('toast-container');
-    container.querySelectorAll('.toast').forEach(t=>t.remove());
+    container.querySelectorAll('.toast:not(.toast-end)').forEach(t=>t.remove());
     container.appendChild(el);
     document.getElementById('alertBadge').classList.add('show');
     document.getElementById('alertBadgeText').textContent=label;
     setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),400);},9000);
     if('Notification'in window&&Notification.permission==='granted'){
-      const body=pending.map(({c,diff})=>`${c.mat} grp.${c.grp} — ${LABS[c.aula].name}\n${c.inicio}→${c.fin} · Empieza en ${diff} min`).join('\n\n');
-      new Notification(`⏰ ${label}`,{body, requireInteraction:true, icon:'icon-192.png'});
+      const body=pending.map(({c,diff})=>`${c.mat} grp.${c.grp} — ${LABS[c.aula]?LABS[c.aula].name:''}\n${c.inicio}→${c.fin} · Empieza en ${diff} min`).join('\n\n');
+      new Notification(`⏰ ${label}`,{body,requireInteraction:true,icon:'icon-192.png'});
     }
   }
 
   function showEndToast(ended){
     const count=ended.length;
     const label=count===1?'Clase finalizada':`${count} clases finalizadas`;
-    const classesHTML=ended.map(({c})=>{
-      const lab=LABS[c.aula];
-      const cred=c.durMin/45;
-      return`<div class="toast-class">
-        <div class="toast-class-lab">
-          <span class="toast-class-lab-code">✅ ${c.aula}</span>
-          <span class="toast-class-lab-name">— ${lab?lab.name:''}</span>
-        </div>
-        <div class="toast-class-mat">${c.mat} <span style="color:var(--muted);font-size:.72rem">grp. ${c.grp}</span></div>
-        <div class="toast-class-meta">
-          <span class="toast-class-hora">🏁 ${c.inicio} → ${c.fin}</span>
-          <span class="toast-class-cred">${cred} crédito${cred>1?'s':''}</span>
-          <span style="font-size:.68rem;color:#5cb870;font-weight:600">Clase terminada</span>
-        </div>
-      </div>`;
-    }).join('');
+    const classesHTML=ended.map(({c})=>{const lab=LABS[c.aula],cred=c.durMin/45;return`<div class="toast-class"><div class="toast-class-lab"><span class="toast-class-lab-code">✅ ${c.aula}</span><span class="toast-class-lab-name">— ${lab?lab.name:''}</span></div><div class="toast-class-mat">${c.mat} <span style="color:var(--muted);font-size:.72rem">grp.${c.grp}</span></div><div class="toast-class-meta"><span class="toast-class-hora">🏁 ${c.inicio}→${c.fin}</span><span class="toast-class-cred">${cred} crédito${cred>1?'s':''}</span><span style="font-size:.68rem;color:#5cb870;font-weight:600">Clase terminada</span></div></div>`;}).join('');
     const el=document.createElement('div');
     el.className='toast toast-end';
     el.innerHTML=`<div class="toast-header"><span class="toast-header-title">✅ ${label}</span><span class="toast-header-count">${count}</span></div><div class="toast-classes">${classesHTML}</div>`;
     const container=document.getElementById('toast-container');
     container.appendChild(el);
-    // Sonido: 3 tonos descendentes suaves
     if(soundEnabled)playSound('ended');
-    // Vibración suave doble: clase terminada
     if(navigator.vibrate)navigator.vibrate([200,100,200]);
-    const dur=8000;
-    const tid=setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),400);},dur);
+    const tid=setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),400);},8000);
     el.addEventListener('click',()=>{clearTimeout(tid);el.classList.add('fade-out');setTimeout(()=>el.remove(),400);});
     if('Notification'in window&&Notification.permission==='granted'){
-      const body=ended.map(({c})=>`${c.mat} grp.${c.grp} — ${LABS[c.aula].name}\n${c.inicio} → ${c.fin}`).join('\n\n');
-      new Notification(`✅ ${label}`,{body, icon:'icon-192.png'});
+      const body=ended.map(({c})=>`${c.mat} grp.${c.grp} — ${LABS[c.aula]?LABS[c.aula].name:''}\n${c.inicio} → ${c.fin}`).join('\n\n');
+      new Notification(`✅ ${label}`,{body,icon:'icon-192.png'});
     }
   }
 
   function checkAlerts(){
     if(!alertEnabled)return;
-    // Skip if today has no classes at all
-    const todayHasClasses = classes.some(c=>c.dia===todayName());
-    if(!todayHasClasses)return;
-    // No molestar
+    if(!classes.some(c=>c.dia===todayName()))return;
     if(noMolestar){
       const h=new Date().getHours();
-      const silenced=(noMolestarStart<noMolestarEnd)
-        ?(h>=noMolestarStart&&h<noMolestarEnd)
-        :(h>=noMolestarStart||h<noMolestarEnd);
+      const silenced=(noMolestarStart<noMolestarEnd)?(h>=noMolestarStart&&h<noMolestarEnd):(h>=noMolestarStart||h<noMolestarEnd);
       if(silenced)return;
     }
     const today=todayName(),m=nowM();
-    const pending=[];
-    const ended=[];
+    const pending=[], ended=[];
     classes.forEach(c=>{
       if(c.dia!==today)return;
-      const diff=c.inicioM-m;
-      const diffEnd=c.finM-m;
+      const diff=c.inicioM-m, diffEnd=c.finM-m;
       const key=`${c.aula}-${c.mat}${c.grp}-${c.inicio}`;
       const keyEnd=`END-${key}`;
-      // Upcoming alert
-      if(diff>0&&diff<=alertMinutes&&!notified.has(key)){
-        notified.add(key);
-        if(repeatAlert) notifiedRepeat[key]=Date.now();
-        pending.push({c,diff});
-      }
-      // Ended alert: within 2 min after class ended
-      if(endAlertEnabled&&diffEnd<=0&&diffEnd>=-2&&!notifiedEnd.has(keyEnd)){
-        notifiedEnd.add(keyEnd);
-        ended.push({c});
-      }
+      if(diff>0&&diff<=alertMinutes&&!notified.has(key)){notified.add(key);if(repeatAlert)notifiedRepeat[key]=Date.now();pending.push({c,diff});}
+      if(endAlertEnabled&&diffEnd<=0&&diffEnd>=-2&&!notifiedEnd.has(keyEnd)){notifiedEnd.add(keyEnd);ended.push({c});}
     });
-    // Repeat alerts every 5 minutes if still pending
     if(repeatAlert){
-      const repeatPending=[];
+      const rp=[];
       classes.forEach(c=>{
         if(c.dia!==today)return;
-        const diff=c.inicioM-m;
-        const key=`${c.aula}-${c.mat}${c.grp}-${c.inicio}`;
-        if(diff>0&&diff<=alertMinutes&&notifiedRepeat[key]&&(Date.now()-notifiedRepeat[key])>=300000){
-          notifiedRepeat[key]=Date.now();
-          repeatPending.push({c,diff});
-        }
+        const diff=c.inicioM-m, key=`${c.aula}-${c.mat}${c.grp}-${c.inicio}`;
+        if(diff>0&&diff<=alertMinutes&&notifiedRepeat[key]&&(Date.now()-notifiedRepeat[key])>=300000){notifiedRepeat[key]=Date.now();rp.push({c,diff});}
       });
-      if(repeatPending.length>0)showToast(repeatPending);
+      if(rp.length>0)showToast(rp);
     }
     if(pending.length>0)showToast(pending);
     if(ended.length>0)showEndToast(ended);
@@ -1578,59 +1491,24 @@ document.addEventListener('DOMContentLoaded',function(){
       document.getElementById('alertBadge').classList.remove('show');
   }
 
-  window.openModal=function(aula,labName,imgFile){
-    document.getElementById('modalTitle').textContent=`${aula} — ${labName}`;
-    document.getElementById('modalImg').src=imgFile;
-    document.getElementById('imgModal').classList.add('open');
-  };
+  window.openModal=function(aula,labName,imgFile){document.getElementById('modalTitle').textContent=`${aula} — ${labName}`;document.getElementById('modalImg').src=imgFile;document.getElementById('imgModal').classList.add('open');};
   window.closeModal=function(){document.getElementById('imgModal').classList.remove('open');};
   document.getElementById('imgModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 
-  // Alert modal
   let lastPending=[];
   function buildAlertModalContent(pending){
-    const body=document.getElementById('alertModalBody');
-    const title=document.getElementById('alertModalTitle');
-    if(!pending||pending.length===0){
-      title.textContent='⏰ Clases próximas';
-      body.innerHTML='<div class="alert-modal-empty">No hay clases próximas en este momento</div>';
-      return;
-    }
+    const body=document.getElementById('alertModalBody'),title=document.getElementById('alertModalTitle');
+    if(!pending||!pending.length){title.textContent='⏰ Clases próximas';body.innerHTML='<div class="alert-modal-empty">No hay clases próximas en este momento</div>';return;}
     title.textContent=`⏰ ${pending.length} clase${pending.length>1?'s':''} próxima${pending.length>1?'s':''}`;
-    body.innerHTML=pending.map(({c,diff})=>{
-      const lab=LABS[c.aula];
-      const cred=c.durMin/45;
-      return`<div class="alert-modal-class">
-        <div class="alert-modal-lab">
-          <span class="alert-modal-lab-code">📍 ${c.aula}</span>
-          <span class="alert-modal-lab-name">— ${lab?lab.name:''}</span>
-        </div>
-        <div class="alert-modal-mat">${c.mat} <span class="alert-modal-grp">grp. ${c.grp}</span></div>
-        <div class="alert-modal-meta">
-          <span class="alert-modal-hora">⏰ ${c.inicio} → ${c.fin}</span>
-          <span class="alert-modal-cred">${cred} crédito${cred>1?'s':''}</span>
-          <span class="alert-modal-mins">Empieza en ${diff} min</span>
-        </div>
-      </div>`;
-    }).join('');
+    body.innerHTML=pending.map(({c,diff})=>{const lab=LABS[c.aula],cred=c.durMin/45;return`<div class="alert-modal-class"><div class="alert-modal-lab"><span class="alert-modal-lab-code">📍 ${c.aula}</span><span class="alert-modal-lab-name">— ${lab?lab.name:''}</span></div><div class="alert-modal-mat">${c.mat} <span class="alert-modal-grp">grp. ${c.grp}</span></div><div class="alert-modal-meta"><span class="alert-modal-hora">⏰ ${c.inicio} → ${c.fin}</span><span class="alert-modal-cred">${cred} crédito${cred>1?'s':''}</span><span class="alert-modal-mins">Empieza en ${diff} min</span></div></div>`;}).join('');
   }
-  window.openAlertModal=function(){
-    buildAlertModalContent(lastPending);
-    document.getElementById('alertModal').classList.add('open');
-  };
+  window.openAlertModal=function(){buildAlertModalContent(lastPending);document.getElementById('alertModal').classList.add('open');};
   window.closeAlertModal=function(){document.getElementById('alertModal').classList.remove('open');};
   document.getElementById('alertModal').addEventListener('click',function(e){if(e.target===this)closeAlertModal();});
   document.getElementById('alertBadge').addEventListener('click',openAlertModal);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeAlertModal();closeWeekModal();}});
 
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Escape'){closeModal();closeAlertModal();}
-  });
-
-  document.getElementById('filterEdificio').addEventListener('change',e=>{
-    filterEdificio=e.target.value;
-    filterLabByEdificio(filterEdificio,'filterLab');
-    render();
-  });
+  document.getElementById('filterEdificio').addEventListener('change',e=>{filterEdificio=e.target.value;filterLabByEdificio(filterEdificio,'filterLab');render();});
   document.getElementById('filterDia').addEventListener('change',e=>{filterDia=e.target.value;render();});
   document.getElementById('filterLab').addEventListener('change',e=>{filterLab=e.target.value;render();});
   document.getElementById('filterEstado').addEventListener('change',e=>{filterEstado=e.target.value;render();});
@@ -1639,28 +1517,19 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('alertEnabled').addEventListener('change',e=>{alertEnabled=e.target.checked;});
   document.getElementById('alertMinutes').addEventListener('change',e=>{alertMinutes=parseInt(e.target.value)||15;});
 
-  function filterLabByEdificio(edif, selectId){
+  function filterLabByEdificio(edif,selectId){
     const sel=document.getElementById(selectId);
     if(!sel)return;
     Array.from(sel.options).forEach(opt=>{
-      if(!opt.value){opt.style.display='';return;} // "Todos"
-      const isB=opt.value.startsWith('B');
-      const isC=opt.value.startsWith('C');
+      if(!opt.value){opt.style.display='';return;}
       if(!edif){opt.style.display='';}
-      else if(edif==='B'){opt.style.display=isB?'':'none';}
-      else if(edif==='C'){opt.style.display=isC?'':'none';}
+      else{opt.style.display=opt.value.startsWith(edif)?'':'none';}
     });
-    // Also hide optgroups
     Array.from(sel.querySelectorAll('optgroup')).forEach(og=>{
       if(!edif){og.style.display='';}
-      else if(edif==='B'){og.style.display=og.label.includes('B')?'':' none';}
-      else if(edif==='C'){og.style.display=og.label.includes('C')?'':'none';}
+      else{og.style.display=og.label.includes(`🏢 Edificio ${edif}`)||og.label.includes(`🏛️ Edificio ${edif}`)?'':'none';}
     });
-    // Reset lab if current selection doesn't match
-    if(sel.value && !sel.value.startsWith(edif) && edif){
-      sel.value='';
-      filterLab='';
-    }
+    if(sel.value&&!sel.value.startsWith(edif)&&edif){sel.value='';filterLab='';}
   }
 
   function getCurrentFranja(){
@@ -1679,86 +1548,40 @@ document.addEventListener('DOMContentLoaded',function(){
     render();
   };
 
- if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
-// ── VAPID PUBLIC KEY ──
-const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eSzKJr58Mt4f8wE4rsP8_JdCAqx8iPsBp9c';
-
-  function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
-  }
-
-  async function subscribeToPush(reg) {
-   if(VAPID_PUBLIC_KEY === 'PLACEHOLDER') return;
-    try {
-      const existing = await reg.pushManager.getSubscription();
-      if(existing){ savePushSubscription(existing); return; }
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-      });
-      savePushSubscription(sub);
-      console.log('✅ Push subscription activa');
-    } catch(e) {
-      console.log('Push no disponible:', e.message);
-    }
-  }
-
-  function savePushSubscription(sub) {
-    // Guarda la suscripción localmente
-    localStorage.setItem('utesa-push-sub', JSON.stringify(sub));
-    // Muestra instrucciones para agregar al GitHub Secret
-    console.log('📋 Suscripción lista. Copia este JSON al Secret PUSH_SUBSCRIPTIONS de GitHub:');
-    console.log(JSON.stringify([sub], null, 2));
+  if('Notification'in window&&Notification.permission==='default'){
+    // NO llamar requestPermission() aquí — browsers modernos lo bloquean sin gesto del usuario
+    // Se pedirá cuando el usuario active las alertas
   }
 
   if('serviceWorker'in navigator){
     navigator.serviceWorker.register('sw.js').then(reg=>{
-      navigator.serviceWorker.ready.then(()=>{
-        syncConfigToSW();
-        subscribeToPush(reg);
-      });
-      // Detect new SW waiting = new version available
       reg.addEventListener('updatefound',()=>{
         const newSW=reg.installing;
         newSW.addEventListener('statechange',()=>{
           if(newSW.state==='installed'&&navigator.serviceWorker.controller){
-            // New version ready — show banner
             document.getElementById('update-banner').classList.add('show');
             window._pendingSW=newSW;
           }
         });
       });
     });
-    // Listen for SW telling us to reload after activation
-    navigator.serviceWorker.addEventListener('message',e=>{
-      if(e.data&&e.data.type==='RELOAD') window.location.reload();
-    });
+    navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.type==='RELOAD')window.location.reload();});
   }
-  window.applyUpdate=function(){
-    if(window._pendingSW){
-      window._pendingSW.postMessage({type:'SKIP_WAITING'});
-    } else {
-      window.location.reload();
-    }
-  };
+  window.applyUpdate=function(){if(window._pendingSW){window._pendingSW.postMessage({type:'SKIP_WAITING'});}else{window.location.reload();}};
+
+  // Init filters
   filterDia=todayName();
   document.getElementById('filterDia').value=todayName();
   const autoFranja=getCurrentFranja();
   if(autoFranja){
     filterHora=autoFranja;
     document.getElementById('filterHora').value=autoFranja;
-    document.getElementById('fs-hora').value=autoFranja;
+    const fsHora=document.getElementById('fs-hora');
+    if(fsHora)fsHora.value=autoFranja;
   }
-  updateClock();render();
-  setInterval(()=>{updateClock();checkAlerts();},1000);
-  setInterval(render,60000);
 
-  // ══ COMPARTIR WHATSAPP ══
-  window.shareWhatsApp = function(){
-    const today=todayName();
+  // ── COMPARTIR WHATSAPP ──
+  window.shareWhatsApp=function(){
     let filtered=classes.filter(c=>{
       if(filterDia&&c.dia!==filterDia)return false;
       if(filterEdificio&&!c.aula.startsWith(filterEdificio))return false;
@@ -1768,86 +1591,47 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
       if(favOnly&&!favorites.has(c.aula))return false;
       return true;
     });
-    if(!filtered.length){alert("No hay clases con los filtros actuales para compartir.");return;}
+    if(!filtered.length){alert("No hay clases con los filtros actuales.");return;}
     const byDia={};
     filtered.forEach(c=>{if(!byDia[c.dia])byDia[c.dia]=[];byDia[c.dia].push(c);});
     const DIAS_ORDER=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
-    const SEP="--------------------";
-    const lines=[];
-    lines.push("🎓 *UTESA — Horarios de Laboratorios*");
-    lines.push("_"+new Date().toLocaleDateString("es-DO",{weekday:"long",year:"numeric",month:"long",day:"numeric"})+"_");
-    lines.push(SEP);
+    const lines=["🎓 *UTESA — Horarios de Laboratorios*","_"+new Date().toLocaleDateString("es-DO",{weekday:"long",year:"numeric",month:"long",day:"numeric"})+"_","--------------------"];
     DIAS_ORDER.forEach(dia=>{
       if(!byDia[dia])return;
-      lines.push("");
-      lines.push("📅 *"+dia+"*");
-      byDia[dia].sort((a,b)=>a.inicioM-b.inicioM).forEach(c=>{
-        const cred=c.durMin/45;
-        lines.push("  📍 "+c.aula+" — "+c.mat+" grp."+c.grp);
-        lines.push("  ⏰ "+c.inicio+" → "+c.fin+" ("+cred+" crédito"+(cred>1?"s":"")+")");
-      });
+      lines.push("","📅 *"+dia+"*");
+      byDia[dia].sort((a,b)=>a.inicioM-b.inicioM).forEach(c=>{const cred=c.durMin/45;lines.push("  📍 "+c.aula+" — "+c.mat+" grp."+c.grp,"  ⏰ "+c.inicio+" → "+c.fin+" ("+cred+" crédito"+(cred>1?"s":"")+")");});
     });
-    lines.push(SEP);
-    lines.push("📲 App: https://francisdominguez.github.io/horarios-laboratorios-utesa/");
-    const url="https://wa.me/?text="+encodeURIComponent(lines.join("\n"));
-    window.open(url,"_blank");
+    lines.push("--------------------","📲 App: https://francisdominguez.github.io/horarios-laboratorios-utesa/");
+    window.open("https://wa.me/?text="+encodeURIComponent(lines.join("\n")),"_blank");
   };
 
-  // ══ AGRUPAR POR EDIFICIO ══
-  window.toggleGroupEdificio = function() {
-    groupByEdificio = !groupByEdificio;
-    const btn = document.getElementById('vt-group');
-    btn.classList.toggle('active', groupByEdificio);
-    btn.textContent = groupByEdificio ? '🏷️ Desagrupar' : '🏷️ Agrupar';
+  // ── AGRUPAR ──
+  window.toggleGroupEdificio=function(){
+    groupByEdificio=!groupByEdificio;
+    const btn=document.getElementById('vt-group');
+    btn.classList.toggle('active',groupByEdificio);
+    btn.textContent=groupByEdificio?'🏷️ Desagrupar':'🏷️ Agrupar';
     render();
   };
 
-  // ══ ORDENAR COLUMNAS ══
-  window.sortBy = function(col) {
-    if(sortCol===col) sortDir*=-1;
-    else { sortCol=col; sortDir=1; }
-    // Update header classes
-    document.querySelectorAll('th.sortable').forEach(th=>{
-      th.classList.remove('sort-asc','sort-desc');
-    });
-    const colMap={'aula':0,'mat':1,'grp':2,'dia':3,'inicio':4,'fin':5,'durMin':6,'creditos':7};
-    const idx=colMap[col];
-    if(idx!==undefined){
-      const ths=document.querySelectorAll('th.sortable');
-      if(ths[idx]){ths[idx].classList.add(sortDir===1?'sort-asc':'sort-desc');}
-    }
-    render();
-  };
+  // ── BÚSQUEDA GLOBAL ──
+  window.onGlobalSearch=function(val){globalSearch=val.trim();document.getElementById('gs-clear').classList.toggle('show',!!globalSearch);render();};
+  window.clearGlobalSearch=function(){globalSearch='';document.getElementById('global-search').value='';document.getElementById('gs-clear').classList.remove('show');document.getElementById('gs-count').classList.remove('show');render();};
 
-  // ══ BÚSQUEDA GLOBAL ══
-  window.onGlobalSearch = function(val) {
-    globalSearch = val.trim();
-    document.getElementById('gs-clear').classList.toggle('show', !!globalSearch);
-    render();
-  };
-  window.clearGlobalSearch = function() {
-    globalSearch = '';
-    document.getElementById('global-search').value = '';
-    document.getElementById('gs-clear').classList.remove('show');
-    document.getElementById('gs-count').classList.remove('show');
-    render();
-  };
-
-  // ══ VIEW SWITCH ══
-  let currentView = 'list';
-  window.switchView = function(v) {
-    currentView = v;
-    document.getElementById('vt-list').classList.toggle('active', v==='list');
-    document.getElementById('vt-grid').classList.toggle('active', v==='grid');
-    document.getElementById('table-section').classList.toggle('hidden', v==='grid');
-    document.getElementById('grid-view').classList.toggle('active', v==='grid');
-    if(v==='grid') renderGrid();
+  // ── VIEW SWITCH ──
+  let currentView='list';
+  window.switchView=function(v){
+    currentView=v;
+    document.getElementById('vt-list').classList.toggle('active',v==='list');
+    document.getElementById('vt-grid').classList.toggle('active',v==='grid');
+    document.getElementById('table-section').classList.toggle('hidden',v==='grid');
+    document.getElementById('grid-view').classList.toggle('active',v==='grid');
+    if(v==='grid')renderGrid();
   };
 
   function renderGrid(){
-    const gv = document.getElementById('grid-view');
-    // Get filtered classes same as render()
-    let filtered = classes.filter(c=>{
+    const gv=document.getElementById('grid-view');
+    let filtered=classes.filter(c=>{
       if(filterDia&&c.dia!==filterDia)return false;
       if(filterEdificio&&!c.aula.startsWith(filterEdificio))return false;
       if(filterLab&&c.aula!==filterLab)return false;
@@ -1855,506 +1639,348 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
       if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
       if(favOnly&&!favorites.has(c.aula))return false;
       if(filterEstado){const s=getStatus(c);if(s!==filterEstado)return false;}
-      if(globalSearch){
-        const q=globalSearch.toLowerCase();
-        const haystack=(c.aula+' '+c.mat+' '+c.grp+' '+c.dia+' '+c.inicio+' '+c.fin).toLowerCase();
-        if(!haystack.includes(q))return false;
-      }
+      if(globalSearch){const q=globalSearch.toLowerCase();const h=(c.aula+' '+c.mat+' '+c.grp+' '+c.dia+' '+c.inicio+' '+c.fin).toLowerCase();if(!h.includes(q))return false;}
       return true;
     });
-
-    if(!filtered.length){
-      gv.innerHTML='<div style="text-align:center;padding:3rem;color:var(--muted);font-size:.88rem">No hay clases con los filtros seleccionados</div>';
-      return;
-    }
-
-    // Get unique labs and time range
-    const labs = [...new Set(filtered.map(c=>c.aula))].sort((a,b)=>{
-      const fa=favorites.has(a)?0:1, fb=favorites.has(b)?0:1;
-      return fa-fb||a.localeCompare(b);
-    });
-
-    const minSlot = Math.min(...filtered.map(c=>c.si));
-    const maxSlot = Math.max(...filtered.map(c=>c.ei));
-
-    // Build slot rows from minSlot to maxSlot
-    const slots = SLOTS.slice(minSlot, maxSlot+1);
-
-    // Build lookup: aula -> slot -> class
-    const lookup = {};
-    filtered.forEach(c=>{
-      if(!lookup[c.aula]) lookup[c.aula]={};
-      for(let s=c.si; s<c.ei; s++){
-        lookup[c.aula][s]={c, isFirst:s===c.si, span:c.ei-c.si};
-      }
-    });
-
-    const nowSlotM = nowM();
-    let html2 = `<div class="gv-wrap"><table class="gv-table"><thead><tr>`;
-    html2 += `<th class="gv-th" style="position:sticky;left:0;z-index:11">Hora</th>`;
-    labs.forEach(aula=>{
-      const lab=LABS[aula];
-      const isFav=favorites.has(aula);
-      html2 += `<th class="gv-th">${isFav?'⭐ ':''}${aula}<br><span style="font-weight:400;font-size:.58rem;color:var(--muted)">${lab?lab.name:''}</span></th>`;
-    });
-    html2 += `</tr></thead><tbody>`;
-
-    const rendered = {}; // track rowspan cells already rendered
-    labs.forEach(a=>{ rendered[a]={}; });
-
-    slots.forEach((slot, si)=>{
-      const slotIdx = minSlot + si;
-      const isNowRow = nowSlotM >= slot.m && nowSlotM < slot.m+45;
-      html2 += `<tr>`;
-      html2 += `<td class="gv-time${isNowRow?' now-row':''}">${slot.l}</td>`;
-
+    if(!filtered.length){gv.innerHTML='<div style="text-align:center;padding:3rem;color:var(--muted);font-size:.88rem">No hay clases con los filtros seleccionados</div>';return;}
+    const labs=[...new Set(filtered.map(c=>c.aula))].sort((a,b)=>{const fa=favorites.has(a)?0:1,fb=favorites.has(b)?0:1;return fa-fb||a.localeCompare(b);});
+    const minSlot=Math.min(...filtered.map(c=>c.si)), maxSlot=Math.max(...filtered.map(c=>c.ei));
+    const slots=SLOTS.slice(minSlot,maxSlot+1);
+    const lookup={};
+    filtered.forEach(c=>{if(!lookup[c.aula])lookup[c.aula]={};for(let s=c.si;s<c.ei;s++){lookup[c.aula][s]={c,isFirst:s===c.si,span:c.ei-c.si};}});
+    const nowSlotM=nowM();
+    let html=`<div class="gv-wrap"><table class="gv-table"><thead><tr><th class="gv-th" style="position:sticky;left:0;z-index:11">Hora</th>`;
+    labs.forEach(aula=>{const lab=LABS[aula],isFav=favorites.has(aula);html+=`<th class="gv-th">${isFav?'⭐ ':''}${aula}<br><span style="font-weight:400;font-size:.58rem;color:var(--muted)">${lab?lab.name:''}</span></th>`;});
+    html+=`</tr></thead><tbody>`;
+    const rendered={};
+    labs.forEach(a=>{rendered[a]={};});
+    slots.forEach((slot,si)=>{
+      const slotIdx=minSlot+si, isNowRow=nowSlotM>=slot.m&&nowSlotM<slot.m+45;
+      html+=`<tr><td class="gv-time${isNowRow?' now-row':''}">${slot.l}</td>`;
       labs.forEach(aula=>{
-        if(rendered[aula][slotIdx]) return; // skip, covered by rowspan
-        const entry = lookup[aula]?.[slotIdx];
-        if(entry && entry.isFirst){
-          const {c, span} = entry;
-          const s = getStatus(c);
-          const isFav = favorites.has(c.aula);
-          // Mark future slots as rendered
-          for(let x=1;x<span;x++) rendered[aula][slotIdx+x]=true;
-          html2 += `<td class="gv-cell${isNowRow?' now-row':''}" rowspan="${span}">
-            <div class="gv-block s-${s||'nottoday'}" onclick="openModal('${c.aula}','${LABS[c.aula]?LABS[c.aula].name:''}','${LABS[c.aula]?LABS[c.aula].img:''}')">
-              <div class="gv-block-top">
-                <span class="gv-block-mat">${c.mat}</span>
-                ${isFav?'<span class="gv-block-fav">⭐</span>':''}
-              </div>
-              <div class="gv-block-grp">grp. ${c.grp}</div>
-              <div class="gv-block-time">${c.inicio}–${c.fin}${(s==="upcoming"||s==="imminent")?" · "+timeUntil(c):""}</div>
-            </div>
-          </td>`;
-        } else if(!entry) {
-          html2 += `<td class="gv-cell${isNowRow?' now-row':''}"></td>`;
-        }
+        if(rendered[aula][slotIdx])return;
+        const entry=lookup[aula]?.[slotIdx];
+        if(entry&&entry.isFirst){
+          const{c,span}=entry, s=getStatus(c), isFav=favorites.has(c.aula);
+          for(let x=1;x<span;x++)rendered[aula][slotIdx+x]=true;
+          html+=`<td class="gv-cell${isNowRow?' now-row':''}" rowspan="${span}"><div class="gv-block s-${s||'nottoday'}" onclick="openModal('${c.aula}','${LABS[c.aula]?LABS[c.aula].name:''}','${LABS[c.aula]?LABS[c.aula].img:''}')"><div class="gv-block-top"><span class="gv-block-mat">${c.mat}</span>${isFav?'<span class="gv-block-fav">⭐</span>':''}</div><div class="gv-block-grp">grp. ${c.grp}</div><div class="gv-block-time">${c.inicio}–${c.fin}${(s==='upcoming'||s==='imminent')?' · '+timeUntil(c):''}</div></div></td>`;
+        }else if(!entry){html+=`<td class="gv-cell${isNowRow?' now-row':''}"></td>`;}
       });
-      html2 += `</tr>`;
+      html+=`</tr>`;
     });
-
-    html2 += `</tbody></table></div>`;
-    gv.innerHTML = html2;
+    html+=`</tbody></table></div>`;
+    gv.innerHTML=html;
   }
 
-  // ══ MOBILE NAV ══
-  let mobileNavMode = 'today'; // 'today' or 'all'
-
-  window.mobileNavTab = function(tab) {
-    mobileNavMode = tab;
-    document.getElementById('bnav-today').classList.toggle('active', tab==='today');
-    document.getElementById('bnav-all').classList.toggle('active', tab==='all');
-    if (tab === 'today') {
-      filterDia = todayName();
-      document.getElementById('filterDia').value = todayName();
-      document.getElementById('fs-dia').value = todayName();
-    } else {
-      filterDia = '';
-      document.getElementById('filterDia').value = '';
-      document.getElementById('fs-dia').value = '';
-    }
+  // ── MOBILE NAV ──
+  let mobileNavMode='today';
+  window.mobileNavTab=function(tab){
+    mobileNavMode=tab;
+    document.getElementById('bnav-today').classList.toggle('active',tab==='today');
+    document.getElementById('bnav-all').classList.toggle('active',tab==='all');
+    filterDia=tab==='today'?todayName():'';
+    document.getElementById('filterDia').value=filterDia;
+    const fsDia=document.getElementById('fs-dia');if(fsDia)fsDia.value=filterDia;
     render();
   };
 
-  window.openFilterSheet = function() {
-    // Sync current filter values into sheet selects
-    document.getElementById('fs-edificio').value = filterEdificio;
-    document.getElementById('fs-dia').value = filterDia;
-    document.getElementById('fs-lab').value = filterLab;
-    document.getElementById('fs-hora').value = filterHora;
-    document.getElementById('fs-materia').value = filterMateria;
-    document.getElementById('fs-favonly').checked = favOnly;
-    document.getElementById('fs-estado').value = filterEstado;
+  window.openFilterSheet=function(){
+    document.getElementById('fs-edificio').value=filterEdificio;
+    document.getElementById('fs-dia').value=filterDia;
+    document.getElementById('fs-lab').value=filterLab;
+    document.getElementById('fs-hora').value=filterHora;
+    document.getElementById('fs-materia').value=filterMateria;
+    if(document.getElementById('fs-favonly'))document.getElementById('fs-favonly').checked=favOnly;
+    document.getElementById('fs-estado').value=filterEstado;
     document.getElementById('bnav-filter').classList.add('active');
     document.getElementById('filter-sheet').classList.add('open');
   };
-  document.getElementById('fs-edificio').addEventListener('change',function(){
-    filterLabByEdificio(this.value,'fs-lab');
-  });
-
-  window.closeFilterSheet = function() {
-    document.getElementById('filter-sheet').classList.remove('open');
-    document.getElementById('bnav-filter').classList.remove('active');
-  };
-  window.applyMobileFilters = function() {
-    filterEdificio = document.getElementById('fs-edificio').value;
+  document.getElementById('fs-edificio').addEventListener('change',function(){filterLabByEdificio(this.value,'fs-lab');});
+  window.closeFilterSheet=function(){document.getElementById('filter-sheet').classList.remove('open');document.getElementById('bnav-filter').classList.remove('active');};
+  window.applyMobileFilters=function(){
+    filterEdificio=document.getElementById('fs-edificio').value;
     filterLabByEdificio(filterEdificio,'fs-lab');
     filterLabByEdificio(filterEdificio,'filterLab');
-    filterDia = document.getElementById('fs-dia').value;
-    filterLab = document.getElementById('fs-lab').value;
-    filterHora = document.getElementById('fs-hora').value;
-    filterEstado = document.getElementById('fs-estado').value;
+    filterDia=document.getElementById('fs-dia').value;
+    filterLab=document.getElementById('fs-lab').value;
+    filterHora=document.getElementById('fs-hora').value;
+    filterEstado=document.getElementById('fs-estado').value;
     if(document.getElementById('filterEstado'))document.getElementById('filterEstado').value=filterEstado;
-    filterMateria = document.getElementById('fs-materia').value;
-    // Sync desktop selects too
-    document.getElementById('filterEdificio').value = filterEdificio;
-    document.getElementById('filterDia').value = filterDia;
-    document.getElementById('filterLab').value = filterLab;
-    document.getElementById('filterHora').value = filterHora;
-    document.getElementById('filterMateria').value = filterMateria;
-    // Update nav tab state
-    if (filterDia === todayName()) { mobileNavMode='today'; document.getElementById('bnav-today').classList.add('active'); document.getElementById('bnav-all').classList.remove('active'); }
-    else if (filterDia === '') { mobileNavMode='all'; document.getElementById('bnav-all').classList.add('active'); document.getElementById('bnav-today').classList.remove('active'); }
-    // Filter badge
-    const count = [filterEdificio,filterLab,filterHora,filterMateria].filter(Boolean).length;
-    const badge = document.getElementById('bnav-filter-count');
-    if(count > 0){ badge.style.display=''; badge.textContent=count; } else { badge.style.display='none'; }
-    closeFilterSheet();
-    render();
+    filterMateria=document.getElementById('fs-materia').value;
+    document.getElementById('filterEdificio').value=filterEdificio;
+    document.getElementById('filterDia').value=filterDia;
+    document.getElementById('filterLab').value=filterLab;
+    document.getElementById('filterHora').value=filterHora;
+    document.getElementById('filterMateria').value=filterMateria;
+    if(filterDia===todayName()){mobileNavMode='today';document.getElementById('bnav-today').classList.add('active');document.getElementById('bnav-all').classList.remove('active');}
+    else if(filterDia===''){mobileNavMode='all';document.getElementById('bnav-all').classList.add('active');document.getElementById('bnav-today').classList.remove('active');}
+    const count=[filterEdificio,filterLab,filterHora,filterMateria].filter(Boolean).length;
+    const badge=document.getElementById('bnav-filter-count');
+    if(count>0){badge.style.display='';badge.textContent=count;}else{badge.style.display='none';}
+    closeFilterSheet(); render();
   };
-  window.resetMobileFilters = function() {
-    ['fs-edificio','fs-dia','fs-lab','fs-hora','fs-materia'].forEach(id => document.getElementById(id).value='');
+  window.resetMobileFilters=function(){
+    ['fs-edificio','fs-dia','fs-lab','fs-hora','fs-materia'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.getElementById('bnav-filter-count').style.display='none';
     favOnly=false;
     if(document.getElementById('fs-favonly'))document.getElementById('fs-favonly').checked=false;
   };
 
-  window.openAlertSheet = function() {
+  window.updateNotifStatus = function(){
+    const el = document.getElementById('as-notif-status');
+    if(!el) return;
+    if(!('Notification' in window)){
+      el.style.background = 'rgba(107,114,128,.12)';
+      el.style.border = '1px solid rgba(107,114,128,.25)';
+      el.innerHTML = '<span style="color:var(--muted)">🔕 Notificaciones no soportadas en este navegador</span>';
+      return;
+    }
+    const perm = Notification.permission;
+    if(perm === 'granted'){
+      el.style.background = 'rgba(0,229,160,.08)';
+      el.style.border = '1px solid rgba(0,229,160,.25)';
+      el.innerHTML = '<span style="color:#00e5a0">✅ Notificaciones activas</span><span style="font-size:.7rem;color:var(--muted)">El sistema puede enviarte alertas</span>';
+    } else if(perm === 'denied'){
+      el.style.background = 'rgba(239,68,68,.08)';
+      el.style.border = '1px solid rgba(239,68,68,.25)';
+      el.innerHTML = '<span style="color:#ef4444">🚫 Notificaciones bloqueadas</span><button onclick="window.open(\'https://support.google.com/chrome/answer/3220216\')" style="font-size:.7rem;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444;padding:.2rem .55rem;border-radius:6px;cursor:pointer">Cómo activarlas</button>';
+    } else {
+      el.style.background = 'rgba(255,200,50,.07)';
+      el.style.border = '1px solid rgba(255,200,50,.2)';
+      el.innerHTML = '<span style="color:#ffc832">⚠️ Permiso no otorgado</span><button onclick="Notification.requestPermission().then(updateNotifStatus)" style="font-size:.75rem;background:rgba(255,200,50,.15);border:1px solid rgba(255,200,50,.3);color:#ffc832;padding:.25rem .65rem;border-radius:6px;cursor:pointer;font-weight:600">Activar notificaciones</button>';
+    }
+  };
+
+  window.openAlertSheet=function(){
+    updateNotifStatus();
     document.getElementById('bnav-alert').classList.add('active');
-    // Sync
-    document.getElementById('as-enabled').checked = alertEnabled;
-    // Check push status
-    if('serviceWorker' in navigator && 'PushManager' in window){
-      navigator.serviceWorker.ready.then(reg=>{
-        reg.pushManager.getSubscription().then(sub=>{
-          const txt=document.getElementById('push-status-text');
-          const ico=document.getElementById('push-status-icon');
-          if(txt&&ico){
-           if(sub&&VAPID_PUBLIC_KEY!=='PLACEHOLDER'){
-              txt.textContent='Activo — notifica con pantalla bloqueada';
-              ico.textContent='✅';
-            } else if(VAPID_PUBLIC_KEY==='PLACEHOLDER'){
-              txt.textContent='Pendiente configurar (ver manual)';
-              ico.textContent='⚙️';
-            } else {
-              txt.textContent='Inactivo — toca para activar';
-              ico.textContent='❌';
-            }
-          }
-        });
-      });
-    }
-    document.getElementById('as-sound').checked = soundEnabled;
-    document.getElementById('as-end-enabled').checked = endAlertEnabled;
-    document.getElementById('as-repeat').checked = repeatAlert;
-    document.getElementById('as-nomolestar').checked = noMolestar;
-    document.getElementById('as-nomolestar-horario').style.display = noMolestar ? '' : 'none';
-    document.getElementById('as-nm-start').value = noMolestarStart;
-    document.getElementById('as-nm-end').value = noMolestarEnd;
-    document.getElementById('as-minutes').value = alertMinutes;
-    // Show pending if any
+    document.getElementById('as-enabled').checked=alertEnabled;
+    document.getElementById('as-sound').checked=soundEnabled;
+    document.getElementById('as-end-enabled').checked=endAlertEnabled;
+    document.getElementById('as-repeat').checked=repeatAlert;
+    document.getElementById('as-nomolestar').checked=noMolestar;
+    document.getElementById('as-nomolestar-horario').style.display=noMolestar?'':'none';
+    document.getElementById('as-nm-start').value=noMolestarStart;
+    document.getElementById('as-nm-end').value=noMolestarEnd;
+    document.getElementById('as-minutes').value=alertMinutes;
     const today=todayName(),m=nowM();
-    const pendingCount = classes.filter(c=>c.dia===today&&c.inicioM-m>0&&c.inicioM-m<=alertMinutes).length;
-    if(pendingCount>0){
-      document.getElementById('as-pending-row').style.display='flex';
-      document.getElementById('as-pending-text').textContent = pendingCount + ' clase' + (pendingCount>1?'s':'') + ' próxima' + (pendingCount>1?'s':'');
-    }
+    const pendingCount=classes.filter(c=>c.dia===today&&c.inicioM-m>0&&c.inicioM-m<=alertMinutes).length;
+    if(pendingCount>0){document.getElementById('as-pending-row').style.display='flex';document.getElementById('as-pending-text').textContent=pendingCount+' clase'+(pendingCount>1?'s':'')+' próxima'+(pendingCount>1?'s':'');}
     document.getElementById('alert-sheet').classList.add('open');
   };
-  window.closeAlertSheet = function() {
-    document.getElementById('alert-sheet').classList.remove('open');
-    document.getElementById('bnav-alert').classList.remove('active');
+  window.closeAlertSheet=function(){document.getElementById('alert-sheet').classList.remove('open');document.getElementById('bnav-alert').classList.remove('active');};
+  window.syncAlertEnabled=function(el){
+    alertEnabled=el.checked;
+    document.getElementById('alertEnabled').checked=el.checked;
+    if(el.checked && 'Notification' in window && Notification.permission === 'default'){
+      Notification.requestPermission().then(perm => {
+        updateNotifStatus();
+      });
+    }
+    updateNotifStatus();
   };
-  window.syncAlertEnabled = function(el) { alertEnabled=el.checked; document.getElementById('alertEnabled').checked=el.checked; syncConfigToSW(); };
-  window.syncAlertMinutes = function(el) { alertMinutes=parseInt(el.value)||15; document.getElementById('alertMinutes').value=el.value; syncConfigToSW(); };
-  window.syncAlertSound = function(el) { soundEnabled=el.checked; };
-  window.syncEndAlert = function(el) { endAlertEnabled=el.checked; syncConfigToSW(); };
-  window.syncRepeatAlert = function(el) { repeatAlert=el.checked; localStorage.setItem('utesa-repeat-alert', el.checked?'1':'0'); };
-  window.showPushJson = function(){
-    const box = document.getElementById('push-json-box');
-    const txt = document.getElementById('push-json-text');
-    const sub = localStorage.getItem('utesa-push-sub');
-    if(!sub){ txt.value = 'No hay suscripción aún. Asegúrate de haber aceptado los permisos de notificación.'; }
-    else { txt.value = '[' + sub + ']'; }
-    box.style.display = box.style.display==='none' ? 'block' : 'none';
-  };
+  window.syncAlertMinutes=function(el){alertMinutes=parseInt(el.value)||15;document.getElementById('alertMinutes').value=el.value;};
+  window.syncAlertSound=function(el){soundEnabled=el.checked;};
+  window.syncEndAlert=function(el){endAlertEnabled=el.checked;};
+  window.syncRepeatAlert=function(el){repeatAlert=el.checked;localStorage.setItem('utesa-repeat-alert',el.checked?'1':'0');};
+  window.syncNoMolestar=function(el){noMolestar=el.checked;document.getElementById('as-nomolestar-horario').style.display=el.checked?'':'none';};
+  window.syncNoMolestarHours=function(){noMolestarStart=parseInt(document.getElementById('as-nm-start').value)||22;noMolestarEnd=parseInt(document.getElementById('as-nm-end').value)||7;};
+  window.toggleFavOnly=function(el){favOnly=el.checked;render();};
 
-  window.copyPushJson = function(){
-    const txt = document.getElementById('push-json-text');
-    txt.select();
-    document.execCommand('copy');
-    const btn = document.getElementById('copy-json-btn');
-    btn.textContent = '✅ Copiado';
-    setTimeout(()=>btn.textContent='Copiar', 2000);
-  };
-
-  function syncConfigToSW(){
-    if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;
-    navigator.serviceWorker.controller.postMessage({
-      type:'UPDATE_CONFIG',
-      config:{
-        alertMinutes,
-        endAlertEnabled,
-        noMolestar,
-        noMolestarStart,
-        noMolestarEnd
-      }
-    });
-  }
-
-  window.syncNoMolestar = function(el) {
-    noMolestar=el.checked;
-    document.getElementById('as-nomolestar-horario').style.display=el.checked?'':'none';
-  };
-  window.toggleFavOnly = function(el) {
-    favOnly=el.checked;
-    render();
-  };
-  window.syncNoMolestarHours = function() {
-    noMolestarStart=parseInt(document.getElementById('as-nm-start').value)||22;
-    noMolestarEnd=parseInt(document.getElementById('as-nm-end').value)||7;
-  };
-  window.toggleThemePicker = function() {
+  window.toggleThemePicker=function(){
     const p=document.getElementById('theme-picker');
     if(p.style.display==='none'||!p.style.display){
       p.style.display='block';
       document.getElementById('bnav-theme-btn').classList.add('active');
-      // Sync font buttons
       document.querySelectorAll('.tp-font-btn').forEach(b=>b.classList.toggle('active',b.id===`tp-font-${currentFont}`));
-      // Sync bg buttons
       document.querySelectorAll('.tp-bg-opt').forEach(b=>b.classList.toggle('active',b.id===`tp-bg-${currentBg}`));
-    } else {
-      closeThemePicker();
-    }
+    }else{closeThemePicker();}
   };
-  // ══ SEMANA DEL LAB ══
-  let currentWeekLab = null;
+  window.closeThemePicker=function(){document.getElementById('theme-picker').style.display='none';const btn=document.getElementById('bnav-theme-btn');if(btn)btn.classList.remove('active');};
 
-  window.openWeekModal = function(aula) {
-    currentWeekLab = aula;
-    const lab = LABS[aula];
-    document.getElementById('wm-title').textContent = `${aula} — ${lab?lab.name:''}`;
-    const DIAS_ORDER = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-    const today = todayName();
-    const labClasses = classes.filter(c=>c.aula===aula);
-    const body = document.getElementById('wm-body');
-    body.innerHTML = DIAS_ORDER.map(dia=>{
-      const diaClasses = labClasses.filter(c=>c.dia===dia).sort((a,b)=>a.inicioM-b.inicioM);
-      const isToday = dia===today;
-      const dotColor = aula.startsWith('B')?'#5b8cff':'#ff6b35';
-      const todayClass=isToday?" today":"";
-      const todayIcon=isToday?"📅 ":"";
-      const todaySuffix=isToday?" — Hoy":"";
-      return `<div class="wm-day">
-        <div class="wm-day-header${todayClass}">${todayIcon} ${dia}${todaySuffix}</div>
-        ${diaClasses.length ? diaClasses.map(c=>{
-          const s = getStatus(c);
-          const statusDot = s==='active'?'#00e5a0':s==='imminent'?'#ff6b35':s==='upcoming'?'#5b8cff':dotColor;
-          const cred = c.durMin/45;
-          return `<div class="wm-class">
-            <div class="wm-dot" style="background:${statusDot}"></div>
-            <div>
-              <div class="wm-class-mat">${c.mat} <span style="font-weight:400;font-size:.7rem;color:#a0a8bf">grp.${c.grp}</span></div>
-              <div style="font-size:.65rem;color:#a0a8bf">${c.inicio} → ${c.fin} · ${cred} crédito${cred>1?'s':''}</div>
-            </div>
-            <div class="wm-class-meta">${s==='active'?'🟢 En curso':s==='imminent'?`⚡ ${timeUntil(c)}`:s==='upcoming'?timeUntil(c):s==='past'?'✓':''}</div>
-          </div>`;
-        }).join('') : '<div class="wm-empty">Sin clases</div>'}
-      </div>`;
+  // ── SEMANA DEL LAB ──
+  let currentWeekLab=null;
+  window.openWeekModal=function(aula){
+    currentWeekLab=aula;
+    const lab=LABS[aula];
+    document.getElementById('wm-title').textContent=`${aula} — ${lab?lab.name:''}`;
+    const DIAS_ORDER=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const today=todayName();
+    const labClasses=classes.filter(c=>c.aula===aula);
+    const body=document.getElementById('wm-body');
+    body.innerHTML=DIAS_ORDER.map(dia=>{
+      const diaClasses=labClasses.filter(c=>c.dia===dia).sort((a,b)=>a.inicioM-b.inicioM);
+      const isToday=dia===today;
+      const dotColor=aula.startsWith('B')?'#5b8cff':'#ff6b35';
+      return`<div class="wm-day"><div class="wm-day-header${isToday?' today':''}">${isToday?'📅 ':''}${dia}${isToday?' — Hoy':''}</div>${diaClasses.length?diaClasses.map(c=>{const s=getStatus(c);const statusDot=s==='active'?'#00e5a0':s==='imminent'?'#ff6b35':s==='upcoming'?'#5b8cff':dotColor;const cred=c.durMin/45;return`<div class="wm-class"><div class="wm-dot" style="background:${statusDot}"></div><div><div class="wm-class-mat">${c.mat} <span style="font-weight:400;font-size:.7rem;color:#a0a8bf">grp.${c.grp}</span></div><div style="font-size:.65rem;color:#a0a8bf">${c.inicio} → ${c.fin} · ${cred} crédito${cred>1?'s':''}</div></div><div class="wm-class-meta">${s==='active'?'🟢 En curso':s==='imminent'?`⚡ ${timeUntil(c)}`:s==='upcoming'?timeUntil(c):s==='past'?'✓':''}</div></div>`;}).join(''):'<div class="wm-empty">Sin clases</div>'}</div>`;
     }).join('');
     document.getElementById('week-modal').classList.add('open');
   };
-
-  window.closeWeekModal = function() {
-    document.getElementById('week-modal').classList.remove('open');
-  };
-  document.getElementById('week-modal').addEventListener('click', function(e){
-    if(e.target===this) closeWeekModal();
-  });
-
-  window.copyLabSchedule = function() {
-    if(!currentWeekLab) return;
-    const lab = LABS[currentWeekLab];
-    const DIAS_ORDER = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-    const labClasses = classes.filter(c=>c.aula===currentWeekLab);
-    let text = `📍 ${currentWeekLab} — ${lab?lab.name:''}
-`;
-    text += `━━━━━━━━━━━━━━━━
-`;
+  window.closeWeekModal=function(){document.getElementById('week-modal').classList.remove('open');};
+  document.getElementById('week-modal').addEventListener('click',function(e){if(e.target===this)closeWeekModal();});
+  window.copyLabSchedule=function(){
+    if(!currentWeekLab)return;
+    const lab=LABS[currentWeekLab];
+    const DIAS_ORDER=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const labClasses=classes.filter(c=>c.aula===currentWeekLab);
+    let text=`📍 ${currentWeekLab} — ${lab?lab.name:''}\n━━━━━━━━━━━━━━━━\n`;
     DIAS_ORDER.forEach(dia=>{
-      const diaClasses = labClasses.filter(c=>c.dia===dia).sort((a,b)=>a.inicioM-b.inicioM);
-      if(!diaClasses.length) return;
-      text += `
-📅 ${dia}
-`;
-      diaClasses.forEach(c=>{
-        const cred = c.durMin/45;
-        text += `  • ${c.mat} grp.${c.grp} · ${c.inicio}–${c.fin} (${cred} cr.)
-`;
-      });
+      const dc=labClasses.filter(c=>c.dia===dia).sort((a,b)=>a.inicioM-b.inicioM);
+      if(!dc.length)return;
+      text+=`\n📅 ${dia}\n`;
+      dc.forEach(c=>{const cred=c.durMin/45;text+=`  • ${c.mat} grp.${c.grp} · ${c.inicio}–${c.fin} (${cred} cr.)\n`;});
     });
     navigator.clipboard.writeText(text).then(()=>{
-      const btn = document.querySelector('.wm-copy-btn');
-      btn.textContent = '✅ Copiado al portapapeles';
-      setTimeout(()=>{ btn.innerHTML = '📋 Copiar horario al portapapeles'; }, 2000);
+      const btn=document.querySelector('.wm-copy-btn');
+      btn.textContent='✅ Copiado al portapapeles';
+      setTimeout(()=>{btn.innerHTML='📋 Copiar horario al portapapeles';},2000);
     });
   };
 
-  // ══ ONBOARDING ══
-  let obStep = 0;
-  const OB_TOTAL = 4;
-
-  function showOnboarding(){
-    if(localStorage.getItem('utesa-onboarded')) return;
-    document.getElementById('onboarding').classList.add('show');
+  // ── COMPARAR CUATRIMESTRES ──
+  function getSnapshots(){return JSON.parse(localStorage.getItem('utesa-snapshots')||'[]');}
+  function saveSnapshots(snaps){localStorage.setItem('utesa-snapshots',JSON.stringify(snaps));}
+  window.saveSnapshot=function(){
+    const name=prompt('Nombre del cuatrimestre (ej: 1-2026):');
+    if(!name||!name.trim())return;
+    const snaps=getSnapshots();
+    snaps.unshift({name:name.trim(),date:new Date().toLocaleDateString('es-DO'),classes:raw.map(c=>({aula:c.aula,mat:c.mat,grp:c.grp,dia:c.dia,si:c.si,ei:c.ei}))});
+    if(snaps.length>5)snaps.length=5;
+    saveSnapshots(snaps); renderSnapshots();
+  };
+  function renderSnapshots(){
+    const snaps=getSnapshots(),el=document.getElementById('cmp-snapshots');
+    if(!snaps.length){el.innerHTML='<div class="cmp-empty">No hay cuatrimestres guardados.</div>';return;}
+    el.innerHTML=snaps.map((s,i)=>`<div class="cmp-snap"><div><div class="cmp-snap-name">${s.name}</div><div class="cmp-snap-meta">Guardado: ${s.date} · ${s.classes.length} clases</div></div><div class="cmp-snap-actions"><button class="cmp-snap-btn" onclick="compareWithCurrent(${i})">Comparar</button><button class="cmp-snap-btn danger" onclick="deleteSnapshot(${i})">✕</button></div></div>`).join('');
   }
+  window.deleteSnapshot=function(i){const snaps=getSnapshots();snaps.splice(i,1);saveSnapshots(snaps);renderSnapshots();document.getElementById('cmp-result').style.display='none';};
+  window.compareWithCurrent=function(i){
+    const snaps=getSnapshots(),old=snaps[i];
+    const oldKeys=new Set(old.classes.map(c=>`${c.aula}|${c.mat}|${c.grp}|${c.dia}|${c.si}|${c.ei}`));
+    const newKeys=new Set(raw.map(c=>`${c.aula}|${c.mat}|${c.grp}|${c.dia}|${c.si}|${c.ei}`));
+    const added=raw.filter(c=>!oldKeys.has(`${c.aula}|${c.mat}|${c.grp}|${c.dia}|${c.si}|${c.ei}`));
+    const removed=old.classes.filter(c=>!newKeys.has(`${c.aula}|${c.mat}|${c.grp}|${c.dia}|${c.si}|${c.ei}`));
+    const result=document.getElementById('cmp-result'),diffEl=document.getElementById('cmp-diff'),titleEl=document.getElementById('cmp-result-title');
+    titleEl.textContent=`Cambios vs ${old.name}`;
+    result.style.display='';
+    if(!added.length&&!removed.length){diffEl.innerHTML='<div class="cmp-empty">✅ Sin cambios — los horarios son idénticos</div>';return;}
+    let out='';
+    added.forEach(c=>{out+=`<div class="cmp-diff-item added"><span class="cmp-diff-icon">＋</span><div class="cmp-diff-text"><strong>${c.aula}</strong> · ${c.mat} grp.${c.grp}<br>${c.dia} ${SLOTS[c.si].l}→${SLOTS[c.ei]?SLOTS[c.ei].l:'10:00 PM'}</div></div>`;});
+    removed.forEach(c=>{out+=`<div class="cmp-diff-item removed"><span class="cmp-diff-icon">−</span><div class="cmp-diff-text"><strong>${c.aula}</strong> · ${c.mat} grp.${c.grp}<br>${c.dia} ${SLOTS[c.si].l}→${SLOTS[c.ei]?SLOTS[c.ei].l:'10:00 PM'}</div></div>`;});
+    diffEl.innerHTML=out;
+    titleEl.textContent=`${added.length} nuevas · ${removed.length} eliminadas vs ${old.name}`;
+  };
+  window.openCompareSheet=function(){document.getElementById('bnav-compare').classList.add('active');renderSnapshots();document.getElementById('compare-sheet').classList.add('open');};
+  window.closeCompareSheet=function(){document.getElementById('compare-sheet').classList.remove('open');document.getElementById('bnav-compare').classList.remove('active');};
 
-  window.obNext = function(){
+  // ── ONBOARDING ──
+  let obStep=0;
+  window.obNext=function(){
     obStep++;
-    if(obStep >= OB_TOTAL){ closeOnboarding(); return; }
+    if(obStep>=4){closeOnboarding();return;}
     document.querySelectorAll('.ob-slide').forEach((s,i)=>s.classList.toggle('active',i===obStep));
     document.querySelectorAll('.ob-dot').forEach((d,i)=>d.classList.toggle('active',i===obStep));
-    document.getElementById('ob-next-btn').textContent = obStep===OB_TOTAL-1 ? '¡Entendido! ✓' : 'Siguiente →';
+    document.getElementById('ob-next-btn').textContent=obStep===3?'¡Entendido! ✓':'Siguiente →';
   };
+  window.closeOnboarding=function(){document.getElementById('onboarding').classList.remove('show');localStorage.setItem('utesa-onboarded','1');};
+  setTimeout(()=>{if(!localStorage.getItem('utesa-onboarded'))document.getElementById('onboarding').classList.add('show');},800);
 
-  window.closeOnboarding = function(){
-    document.getElementById('onboarding').classList.remove('show');
-    localStorage.setItem('utesa-onboarded','1');
-  };
-
-  // Show after 800ms on first visit
-  setTimeout(showOnboarding, 800);
-
-  // ══ COMPARE CUATRIMESTRES ══
-  function getSnapshots(){
-    return JSON.parse(localStorage.getItem('utesa-snapshots')||'[]');
-  }
-  function saveSnapshots(snaps){
-    localStorage.setItem('utesa-snapshots', JSON.stringify(snaps));
-  }
-
-  window.saveSnapshot = function(){
-    const name = prompt('Nombre del cuatrimestre (ej: 1-2026):');
-    if(!name||!name.trim()) return;
-    const snaps = getSnapshots();
-    const snap = {
-      name: name.trim(),
-      date: new Date().toLocaleDateString('es-DO'),
-      classes: raw.map(c=>({aula:c.aula,mat:c.mat,grp:c.grp,dia:c.dia,si:c.si,ei:c.ei}))
-    };
-    snaps.unshift(snap);
-    if(snaps.length > 5) snaps.length = 5; // max 5 snapshots
-    saveSnapshots(snaps);
-    renderSnapshots();
-  };
-
-  function renderSnapshots(){
-    const snaps = getSnapshots();
-    const el = document.getElementById('cmp-snapshots');
-    if(!snaps.length){
-      el.innerHTML = '<div class="cmp-empty">No hay cuatrimestres guardados.<br>Guarda el actual antes de actualizar.</div>';
-      return;
-    }
-    el.innerHTML = snaps.map((s,i)=>`
-      <div class="cmp-snap">
-        <div>
-          <div class="cmp-snap-name">${s.name}</div>
-          <div class="cmp-snap-meta">Guardado: ${s.date} · ${s.classes.length} clases</div>
-        </div>
-        <div class="cmp-snap-actions">
-          <button class="cmp-snap-btn" onclick="compareWithCurrent(${i})">Comparar</button>
-          <button class="cmp-snap-btn danger" onclick="deleteSnapshot(${i})">✕</button>
-        </div>
-      </div>`).join('');
-  }
-
-  window.deleteSnapshot = function(i){
-    const snaps = getSnapshots();
-    snaps.splice(i,1);
-    saveSnapshots(snaps);
-    renderSnapshots();
-    document.getElementById('cmp-result').style.display='none';
-  };
-
-  window.compareWithCurrent = function(i){
-    const snaps = getSnapshots();
-    const old = snaps[i];
-    const oldKeys = new Set(old.classes.map(c=>`${c.aula}|${c.mat}|${c.grp}|${c.dia}|${c.si}|${c.ei}`));
-    const newKeys = new Set(raw.map(c=>`${c.aula}|${c.mat}|${c.grp}|${c.dia}|${c.si}|${c.ei}`));
-
-    const added = raw.filter(c=>!oldKeys.has(`${c.aula}|${c.mat}|${c.grp}|${c.dia}|${c.si}|${c.ei}`));
-    const removed = old.classes.filter(c=>!newKeys.has(`${c.aula}|${c.mat}|${c.grp}|${c.dia}|${c.si}|${c.ei}`));
-
-    const result = document.getElementById('cmp-result');
-    const diffEl = document.getElementById('cmp-diff');
-    const titleEl = document.getElementById('cmp-result-title');
-
-    titleEl.textContent = `Cambios vs ${old.name}`;
-    result.style.display = '';
-
-    if(!added.length && !removed.length){
-      diffEl.innerHTML = '<div class="cmp-empty">✅ Sin cambios — los horarios son idénticos</div>';
-      return;
-    }
-
-    let out = '';
-    added.forEach(c=>{
-      out += `<div class="cmp-diff-item added">
-        <span class="cmp-diff-icon">＋</span>
-        <div class="cmp-diff-text"><strong>${c.aula}</strong> · ${c.mat} grp.${c.grp}<br>${c.dia} ${SLOTS[c.si].l}→${SLOTS[c.ei]?SLOTS[c.ei].l:'10:00 PM'}</div>
-      </div>`;
-    });
-    removed.forEach(c=>{
-      out += `<div class="cmp-diff-item removed">
-        <span class="cmp-diff-icon">−</span>
-        <div class="cmp-diff-text"><strong>${c.aula}</strong> · ${c.mat} grp.${c.grp}<br>${c.dia} ${SLOTS[c.si].l}→${SLOTS[c.ei]?SLOTS[c.ei].l:'10:00 PM'}</div>
-      </div>`;
-    });
-    diffEl.innerHTML = out;
-    titleEl.textContent = `${added.length} nuevas · ${removed.length} eliminadas vs ${old.name}`;
-  };
-
-  window.openCompareSheet = function(){
-    document.getElementById('bnav-compare').classList.add('active');
-    renderSnapshots();
-    document.getElementById('compare-sheet').classList.add('open');
-  };
-  window.closeCompareSheet = function(){
-    document.getElementById('compare-sheet').classList.remove('open');
-    document.getElementById('bnav-compare').classList.remove('active');
-  };
-
-  window.closeThemePicker = function() {
-    document.getElementById('theme-picker').style.display='none';
-    document.getElementById('bnav-theme-btn').classList.remove('active');
-  };
-
-  // Patch render to also update mobile stats
-  const _origRender = render;
-  // Override render to sync mobile stats
-  const _renderOrig = render;
   function updateMobileStats(){
-    const total=document.getElementById('statTotal');
-    const today=document.getElementById('statToday');
-    if(total) document.getElementById('mStatTotal').textContent=total.textContent;
-    if(today) document.getElementById('mStatToday').textContent=today.textContent;
-    const fwrap=document.getElementById('statFilteredWrap');
-    const mfwrap=document.getElementById('mStatFilteredWrap');
-    const msep=document.getElementById('mSepFiltered');
-    if(fwrap && fwrap.style.display!=='none'){
-      mfwrap.style.display='flex';
-      msep.style.display='';
-      document.getElementById('mStatFiltered').textContent=document.getElementById('statFiltered').textContent;
-      document.getElementById('mStatFilteredLbl').textContent=document.getElementById('statFilteredLbl').textContent;
-    } else {
-      mfwrap.style.display='none';
-      msep.style.display='none';
-    }
-    // Highlight bnav-today if today filter active
-    const isTodayFilter = filterDia===todayName();
-    document.getElementById('bnav-today').classList.toggle('active', isTodayFilter && mobileNavMode==='today');
+    const total=document.getElementById('statTotal'), today=document.getElementById('statToday');
+    if(total)document.getElementById('mStatTotal').textContent=total.textContent;
+    if(today)document.getElementById('mStatToday').textContent=today.textContent;
+    const fwrap=document.getElementById('statFilteredWrap'),mfwrap=document.getElementById('mStatFilteredWrap'),msep=document.getElementById('mSepFiltered');
+    if(fwrap&&fwrap.style.display!=='none'){mfwrap.style.display='flex';msep.style.display='';document.getElementById('mStatFiltered').textContent=document.getElementById('statFiltered').textContent;document.getElementById('mStatFilteredLbl').textContent=document.getElementById('statFilteredLbl').textContent;}
+    else{mfwrap.style.display='none';msep.style.display='none';}
+    document.getElementById('bnav-today').classList.toggle('active',filterDia===todayName()&&mobileNavMode==='today');
   }
-  // Wrap render to call updateMobileStats after
-  const __origRender = render;
-  window.render = function(){
-    __origRender();
-    updateMobileStats();
-    if(currentView==='grid') renderGrid();
-  };
 
-
+  updateClock(); render();
+  setInterval(()=>{updateClock();checkAlerts();},1000);
+  setInterval(render,60000);
 });
+
+// ══════════════════════════════════════════════
+// FUNCIONES GLOBALES (fuera de DOMContentLoaded)
+// ══════════════════════════════════════════════
+
+// ✅ FIX: marcar/desmarcar usando estado persistente — sobreviven al re-render
+window.marcarFinalizada = function(rowKey){
+  window.markedRows[rowKey] = 'finalizada';
+  render();
+};
+
+window.marcarAusente = function(rowKey){
+  window.markedRows[rowKey] = 'ausente';
+  render();
+};
+
+window.desmarcar = function(rowKey){
+  delete window.markedRows[rowKey];
+  render();
+};
+
+// ✅ FIX: showLabsFreeSidebar usa window.classes (scope global)
+window.showLabsFreeSidebar = function(){
+  const data = window.classes;
+  if(!data){alert("Datos no cargados aún");return;}
+  const m = nowM(), today = todayName();
+  const aulas = [...new Set(data.map(c=>c.aula))].sort();
+  const libres = [];
+  aulas.forEach(aula=>{
+    const hoy = data.filter(c=>c.aula===aula&&c.dia===today).sort((x,y)=>x.inicioM-y.inicioM);
+    const actual = hoy.find(c=>m>=c.inicioM&&m<c.finM);
+    if(!actual){
+      const next = hoy.find(c=>c.inicioM>m);
+      const libreMin = next ? next.inicioM-m : 300;
+      libres.push({aula, min:libreMin, labName: LABS[aula]?LABS[aula].name:''});
+    }
+  });
+  libres.sort((a,b)=>b.min-a.min);
+  const modal = document.getElementById('labsModal');
+  const list = document.getElementById('labsModalList');
+  list.innerHTML = libres.length
+    ? libres.map(l=>{
+        const h=Math.floor(l.min/60),mn=l.min%60;
+        const tiempo=h?`${h}h ${mn}min`:`${mn}min`;
+        return`<div class="lab-item">🟢 <strong>${l.aula}</strong> <span style="color:var(--muted);font-size:.78rem">— ${l.labName}</span><br><span style="font-size:.75rem;color:var(--accent)">Libre por ${tiempo}</span></div>`;
+      }).join('')
+    : '<div style="padding:1rem;text-align:center;color:var(--muted)">Todos los labs están ocupados ahora</div>';
+  modal.style.display = 'flex';
+};
+
+window.closeLabsModal = function(){
+  document.getElementById('labsModal').style.display = 'none';
+};
+
+// ── SIDEBAR ──
+window.openSidebar=function(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-overlay').classList.add('open');
+  const total=document.getElementById('statTotal');
+  if(total)document.getElementById('sb-stat-total').textContent=total.textContent;
+  const today=document.getElementById('statToday');
+  if(today)document.getElementById('sb-stat-today').textContent=today.textContent;
+  const favs=JSON.parse(localStorage.getItem('utesa-favs')||'[]');
+  document.getElementById('sb-stat-favs').textContent=favs.length;
+  const badge=document.getElementById('sb-fav-count');
+  badge.textContent=favs.length;
+  badge.style.display=favs.length?'inline':'none';
+};
+window.closeSidebar=function(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');};
+window.updateSbViewBtns=function(){const isGrid=document.getElementById('vt-grid').classList.contains('active');document.getElementById('sb-vt-list').classList.toggle('active',!isGrid);document.getElementById('sb-vt-grid').classList.toggle('active',isGrid);};
+window.toggleFavOnlySidebar=function(){const cb=document.getElementById('fs-favonly');if(cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));}};
+window.clearAllFavs=function(){if(!confirm('¿Limpiar todos los favoritos?'))return;localStorage.setItem('utesa-favs','[]');location.reload();};
+window.copyShareLink=function(){navigator.clipboard.writeText(location.href).then(()=>{const btns=[...document.querySelectorAll('.sb-btn')].find(b=>b.textContent.includes('Copiar enlace'));if(btns){const lbl=btns.querySelector('.sb-btn-label');const orig=lbl.textContent;lbl.textContent='✅ ¡Copiado!';setTimeout(()=>lbl.textContent=orig,2000);}});};
+window.exportCSV=function(){
+  const rows=[['Laboratorio','Materia','Grupo','Día','Inicio','Fin','Duración (min)']];
+  (window._allClasses||[]).forEach(c=>rows.push([c.aula,c.mat,c.grp,c.dia,c.inicio,c.fin,c.durMin]));
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='horarios-utesa.csv';a.click();
+  closeSidebar();
+};
+window.printSchedule=function(){closeSidebar();setTimeout(()=>window.print(),300);};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSidebar)closeSidebar();}});
 </script>
 
 <!-- ══ BOTTOM NAV ══ -->
@@ -2376,36 +2002,20 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
     <span class="bnav-icon">📅</span>Comparar
   </button>
   <button class="bnav-btn" id="bnav-theme-btn" onclick="toggleThemePicker()">
-    <span class="bnav-icon" id="bnav-theme-icon">🎨</span>Tema
+    <span class="bnav-icon">🎨</span>Tema
   </button>
-
-  <!-- Theme picker popover -->
   <div id="theme-picker" style="display:none">
     <div class="tp-overlay" onclick="closeThemePicker()"></div>
     <div class="tp-box">
       <div class="tp-title">Apariencia</div>
       <div class="tp-options">
-        <button class="tp-opt active" data-t="dark" onclick="setTheme('dark')">
-          <span class="tp-dot" data-t="dark"></span><span class="tp-label">Oscuro</span><span class="tp-check">✓</span>
-        </button>
-        <button class="tp-opt" data-t="light" onclick="setTheme('light')">
-          <span class="tp-dot" data-t="light"></span><span class="tp-label">Claro</span><span class="tp-check">✓</span>
-        </button>
-        <button class="tp-opt" data-t="sepia" onclick="setTheme('sepia')">
-          <span class="tp-dot" data-t="sepia"></span><span class="tp-label">Sepia</span><span class="tp-check">✓</span>
-        </button>
-        <button class="tp-opt" data-t="utesa" onclick="setTheme('utesa')">
-          <span class="tp-dot" data-t="utesa"></span><span class="tp-label">UTESA</span><span class="tp-check">✓</span>
-        </button>
-        <button class="tp-opt" data-t="ocean" onclick="setTheme('ocean')">
-          <span class="tp-dot" data-t="ocean"></span><span class="tp-label">Océano</span><span class="tp-check">✓</span>
-        </button>
-        <button class="tp-opt" data-t="purple" onclick="setTheme('purple')">
-          <span class="tp-dot" data-t="purple"></span><span class="tp-label">Púrpura</span><span class="tp-check">✓</span>
-        </button>
-        <button class="tp-opt" data-t="red" onclick="setTheme('red')">
-          <span class="tp-dot" data-t="red"></span><span class="tp-label">Rojo</span><span class="tp-check">✓</span>
-        </button>
+        <button class="tp-opt active" data-t="dark" onclick="setTheme('dark')"><span class="tp-dot" data-t="dark"></span><span class="tp-label">Oscuro</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="light" onclick="setTheme('light')"><span class="tp-dot" data-t="light"></span><span class="tp-label">Claro</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="sepia" onclick="setTheme('sepia')"><span class="tp-dot" data-t="sepia"></span><span class="tp-label">Sepia</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="utesa" onclick="setTheme('utesa')"><span class="tp-dot" data-t="utesa"></span><span class="tp-label">UTESA</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="ocean" onclick="setTheme('ocean')"><span class="tp-dot" data-t="ocean"></span><span class="tp-label">Océano</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="purple" onclick="setTheme('purple')"><span class="tp-dot" data-t="purple"></span><span class="tp-label">Púrpura</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="red" onclick="setTheme('red')"><span class="tp-dot" data-t="red"></span><span class="tp-label">Rojo</span><span class="tp-check">✓</span></button>
       </div>
       <div class="tp-section">Tamaño de texto</div>
       <div class="tp-font-row">
@@ -2415,30 +2025,12 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
       </div>
       <div class="tp-section">Fondo</div>
       <div class="tp-bg-row">
-        <button class="tp-bg-opt active" id="tp-bg-none" onclick="setBg('none')">
-          <span class="tp-bg-swatch" style="background:#0a0c10;border:1px solid #333"></span>
-          <span class="tp-bg-label">Por defecto</span>
-        </button>
-        <button class="tp-bg-opt" id="tp-bg-ocean" onclick="setBg('ocean')">
-          <span class="tp-bg-swatch" style="background:linear-gradient(135deg,#050d1a,#0a1628)"></span>
-          <span class="tp-bg-label">Océano profundo</span>
-        </button>
-        <button class="tp-bg-opt" id="tp-bg-purple" onclick="setBg('purple')">
-          <span class="tp-bg-swatch" style="background:linear-gradient(135deg,#0d0a1a,#1a0d2e)"></span>
-          <span class="tp-bg-label">Noche púrpura</span>
-        </button>
-        <button class="tp-bg-opt" id="tp-bg-sunset" onclick="setBg('sunset')">
-          <span class="tp-bg-swatch" style="background:linear-gradient(135deg,#1a0a05,#2a0f0f)"></span>
-          <span class="tp-bg-label">Atardecer</span>
-        </button>
-        <button class="tp-bg-opt" id="tp-bg-forest" onclick="setBg('forest')">
-          <span class="tp-bg-swatch" style="background:linear-gradient(135deg,#0a1a0a,#0f2410)"></span>
-          <span class="tp-bg-label">Bosque</span>
-        </button>
-        <button class="tp-bg-opt" id="tp-bg-midnight" onclick="setBg('midnight')">
-          <span class="tp-bg-swatch" style="background:linear-gradient(135deg,#000005,#050520)"></span>
-          <span class="tp-bg-label">Medianoche</span>
-        </button>
+        <button class="tp-bg-opt active" id="tp-bg-none" onclick="setBg('none')"><span class="tp-bg-swatch" style="background:#0a0c10;border:1px solid #333"></span><span class="tp-bg-label">Por defecto</span></button>
+        <button class="tp-bg-opt" id="tp-bg-ocean" onclick="setBg('ocean')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#050d1a,#0a1628)"></span><span class="tp-bg-label">Océano profundo</span></button>
+        <button class="tp-bg-opt" id="tp-bg-purple" onclick="setBg('purple')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#0d0a1a,#1a0d2e)"></span><span class="tp-bg-label">Noche púrpura</span></button>
+        <button class="tp-bg-opt" id="tp-bg-sunset" onclick="setBg('sunset')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#1a0a05,#2a0f0f)"></span><span class="tp-bg-label">Atardecer</span></button>
+        <button class="tp-bg-opt" id="tp-bg-forest" onclick="setBg('forest')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#0a1a0a,#0f2410)"></span><span class="tp-bg-label">Bosque</span></button>
+        <button class="tp-bg-opt" id="tp-bg-midnight" onclick="setBg('midnight')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#000005,#050520)"></span><span class="tp-bg-label">Medianoche</span></button>
       </div>
     </div>
   </div>
@@ -2451,95 +2043,15 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
     <div class="fs-handle"></div>
     <div class="fs-title">Filtros</div>
     <div class="fs-grid">
-      <div>
-        <span class="fs-label">Edificio</span>
-        <select class="fs-select" id="fs-edificio">
-          <option value="">Todos</option>
-          <option value="B">🏢 Edificio B</option>
-          <option value="C">🏛️ Edificio C</option>
-        </select>
-      </div>
-      <div>
-        <span class="fs-label">Día</span>
-        <select class="fs-select" id="fs-dia">
-          <option value="">Todos los días</option>
-          <option value="Lunes">Lunes</option>
-          <option value="Martes">Martes</option>
-          <option value="Miércoles">Miércoles</option>
-          <option value="Jueves">Jueves</option>
-          <option value="Viernes">Viernes</option>
-          <option value="Sábado">Sábado</option>
-        </select>
-      </div>
-      <div class="fs-full">
-        <span class="fs-label">Laboratorio</span>
-        <select class="fs-select" id="fs-lab">
-          <option value="">Todos los labs</option>
-          <optgroup label="🏢 Edificio B">
-          <option value="B120">B120 — Geol. y Topografía</option>
-          <option value="B121">B121 — Materiales</option>
-          <option value="B123">B123 — Hidráulica</option>
-          <option value="B213">B213 — Lab. TIC</option>
-          <option value="B217">B217 — Comunicación</option>
-          <option value="B211">B211 — Comunicación 02</option>
-          <option value="B219">B219 — Programación</option>
-          </optgroup>
-          <optgroup label="🏛️ Edificio C">
-          <option value="C001">C001 — Máq. y Herram.</option>
-          <option value="C1002">C1002 — Taller Bancos</option>
-          <option value="C101">C101 — Lab. Industrial</option>
-          <option value="C102">C102 — Automatización</option>
-          <option value="C103">C103 — Lab. Industrial 02</option>
-          <option value="C104">C104 — Lab. CAD CAM</option>
-          <option value="C105">C105 — Ing. Térmica</option>
-          <option value="C106">C106 — Lab. Neumática</option>
-          <option value="C107">C107 — Inst. Eléctricas</option>
-          <option value="C201">C201 — Lab. Informática</option>
-          <option value="C202">C202 — Lab. Inf. 02</option>
-          <option value="C203">C203 — Lab. Inf. 03</option>
-          <option value="C204">C204 — Lab. Inf. 04</option>
-          <option value="C205">C205 — Lab. AutoCAD</option>
-          <option value="C206">C206 — Lab. Inf. 06</option>
-          <option value="C207">C207 — Lab. Inf. 07</option>
-          <option value="C208">C208 — Lab. Mecatrónica</option>
-          <option value="C413">C413 — Lab. Comunicación</option>
-          <option value="C414A">C414A — Lab. Electrónica</option>
-          <option value="C414B">C414B — Lab. Electrónica 02</option>
-          <option value="C415">C415 — Lab. Electricidad</option>
-          </optgroup>
-        </select>
-      </div>
-      <div>
-        <span class="fs-label">Horario</span>
-        <select class="fs-select" id="fs-hora">
-          <option value="">Todo el día</option>
-          <option value="manana">🌅 Mañana</option>
-          <option value="mediodia">☀️ Mediodía</option>
-          <option value="tarde">🌇 Tarde</option>
-          <option value="noche">🌙 Noche</option>
-        </select>
-      </div>
-      <div>
-        <span class="fs-label">Estado</span>
-        <select class="fs-select" id="fs-estado">
-          <option value="">Todos</option>
-          <option value="active">🟢 En curso</option>
-          <option value="imminent">⚡ Inminente</option>
-          <option value="upcoming">⏳ Próxima</option>
-          
-          <option value="past">✓ Finalizada</option>
-        </select>
-      </div>
-      <div>
-        <span class="fs-label">Código</span>
-        <input class="fs-input" id="fs-materia" placeholder="INF113...">
-      </div>
+      <div><span class="fs-label">Edificio</span><select class="fs-select" id="fs-edificio"><option value="">Todos</option><option value="B">🏢 Edificio B</option><option value="C">🏛️ Edificio C</option></select></div>
+      <div><span class="fs-label">Día</span><select class="fs-select" id="fs-dia"><option value="">Todos los días</option><option value="Lunes">Lunes</option><option value="Martes">Martes</option><option value="Miércoles">Miércoles</option><option value="Jueves">Jueves</option><option value="Viernes">Viernes</option><option value="Sábado">Sábado</option></select></div>
+      <div class="fs-full"><span class="fs-label">Laboratorio</span><select class="fs-select" id="fs-lab"><option value="">Todos los labs</option><optgroup label="🏢 Edificio B"><option value="B120">B120</option><option value="B121">B121</option><option value="B123">B123</option><option value="B213">B213</option><option value="B217">B217</option><option value="B211">B211</option><option value="B219">B219</option></optgroup><optgroup label="🏛️ Edificio C"><option value="C001">C001</option><option value="C1002">C1002</option><option value="C101">C101</option><option value="C102">C102</option><option value="C103">C103</option><option value="C104">C104</option><option value="C105">C105</option><option value="C106">C106</option><option value="C107">C107</option><option value="C201">C201</option><option value="C202">C202</option><option value="C203">C203</option><option value="C204">C204</option><option value="C205">C205</option><option value="C206">C206</option><option value="C207">C207</option><option value="C208">C208</option><option value="C413">C413</option><option value="C414A">C414A</option><option value="C414B">C414B</option><option value="C415">C415</option></optgroup></select></div>
+      <div><span class="fs-label">Horario</span><select class="fs-select" id="fs-hora"><option value="">Todo el día</option><option value="manana">🌅 Mañana</option><option value="mediodia">☀️ Mediodía</option><option value="tarde">🌇 Tarde</option><option value="noche">🌙 Noche</option></select></div>
+      <div><span class="fs-label">Estado</span><select class="fs-select" id="fs-estado"><option value="">Todos</option><option value="active">🟢 En curso</option><option value="imminent">⚡ Inminente</option><option value="upcoming">⏳ Próxima</option><option value="past">✓ Finalizada</option></select></div>
+      <div><span class="fs-label">Código</span><input class="fs-input" id="fs-materia" placeholder="INF113..."></div>
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-top:1px solid var(--border);margin-bottom:.4rem">
-      <div>
-        <div style="font-size:.85rem;color:var(--text)">⭐ Solo favoritos</div>
-        <div style="font-size:.72rem;color:var(--muted)">Ver solo labs marcados</div>
-      </div>
+      <div><div style="font-size:.85rem;color:var(--text)">⭐ Solo favoritos</div><div style="font-size:.72rem;color:var(--muted)">Ver solo labs marcados</div></div>
       <label class="toggle"><input type="checkbox" id="fs-favonly" onchange="toggleFavOnly(this)"><span class="toggle-slider"></span></label>
     </div>
     <div class="fs-actions">
@@ -2552,10 +2064,7 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
 <!-- ══ WEEK VIEW MODAL ══ -->
 <div id="week-modal">
   <div class="wm-box">
-    <div class="wm-header">
-      <div class="wm-title" id="wm-title">Semana del lab</div>
-      <button class="wm-close" onclick="closeWeekModal()">✕</button>
-    </div>
+    <div class="wm-header"><div class="wm-title" id="wm-title">Semana del lab</div><button class="wm-close" onclick="closeWeekModal()">✕</button></div>
     <button class="wm-copy-btn" onclick="copyLabSchedule()">📋 Copiar horario al portapapeles</button>
     <div class="wm-body" id="wm-body"></div>
   </div>
@@ -2582,252 +2091,62 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
   <div class="as-box">
     <div class="as-handle"></div>
     <div class="as-title">⏰ Configurar alertas</div>
-    <div class="as-row">
-      <div>
-        <div class="as-row-label">Alertas activas</div>
-        <div class="as-row-sub">Notificar antes de cada clase</div>
-      </div>
-      <label class="toggle"><input type="checkbox" id="as-enabled" checked onchange="syncAlertEnabled(this)"><span class="toggle-slider"></span></label>
-    </div>
-    <div class="as-row">
-      <div>
-        <div class="as-row-label">Anticipación</div>
-        <div class="as-row-sub">Minutos antes de la clase</div>
-      </div>
-      <input type="number" class="as-input" id="as-minutes" value="15" min="1" max="60" onchange="syncAlertMinutes(this)">
-    </div>
-    <div class="as-row">
-      <div>
-        <div class="as-row-label">Sonido</div>
-        <div class="as-row-sub">Tono al alertar clase</div>
-      </div>
-      <label class="toggle"><input type="checkbox" id="as-sound" checked onchange="syncAlertSound(this)"><span class="toggle-slider"></span></label>
-    </div>
-    <div class="as-row">
-      <div>
-        <div class="as-row-label">📲 Push en background</div>
-        <div class="as-row-sub" id="push-status-text">Verificando...</div>
-      </div>
-      <span id="push-status-icon" style="font-size:.85rem">⏳</span>
-    </div>
-    <div class="as-row" style="flex-direction:column;align-items:flex-start;gap:.5rem">
-      <button onclick="showPushJson()" style="background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--accent);padding:.4rem .8rem;border-radius:8px;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif">
-        📋 Ver mi suscripción JSON
-      </button>
-      <div id="push-json-box" style="display:none;background:#0a0c10;border:1px solid #3a4258;border-radius:8px;padding:.6rem;width:100%;box-sizing:border-box">
-        <div style="font-size:.65rem;color:var(--muted);margin-bottom:.4rem;font-family:'Space Mono',monospace">COPIA ESTE JSON → GitHub Secret PUSH_SUBSCRIPTIONS</div>
-        <textarea id="push-json-text" readonly style="width:100%;background:transparent;border:none;color:#a0a8bf;font-size:.62rem;font-family:'Space Mono',monospace;resize:none;outline:none;height:80px;box-sizing:border-box"></textarea>
-        <button onclick="copyPushJson()" style="margin-top:.3rem;background:var(--accent);color:#000;border:none;padding:.35rem .7rem;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif" id="copy-json-btn">
-          Copiar
-        </button>
-      </div>
-    </div>
-    <div class="as-row">
-      <div>
-        <div class="as-row-label">🔁 Repetir alerta</div>
-        <div class="as-row-sub">Volver a notificar cada 5 min si no tocas</div>
-      </div>
-      <label class="toggle"><input type="checkbox" id="as-repeat" onchange="syncRepeatAlert(this)"><span class="toggle-slider"></span></label>
-    </div>
-    <div class="as-row">
-      <div>
-        <div class="as-row-label">Alerta clase finalizada</div>
-        <div class="as-row-sub">Avisar cuando termine una clase</div>
-      </div>
-      <label class="toggle"><input type="checkbox" id="as-end-enabled" checked onchange="syncEndAlert(this)"><span class="toggle-slider"></span></label>
-    </div>
-    <div class="as-row">
-      <div>
-        <div class="as-row-label">🌙 No molestar</div>
-        <div class="as-row-sub">Silenciar fuera del horario de clases</div>
-      </div>
-      <label class="toggle"><input type="checkbox" id="as-nomolestar" onchange="syncNoMolestar(this)"><span class="toggle-slider"></span></label>
-    </div>
-    <div class="as-row" id="as-nomolestar-horario" style="display:none">
-      <div style="width:100%">
-        <div class="as-row-label" style="margin-bottom:.5rem">Horario de silencio</div>
-        <div style="display:flex;align-items:center;gap:.5rem">
-          <input type="number" class="as-input" id="as-nm-end" value="7" min="0" max="23" onchange="syncNoMolestarHours()" style="width:52px">
-          <span style="font-size:.78rem;color:var(--muted)">AM hasta</span>
-          <input type="number" class="as-input" id="as-nm-start" value="22" min="0" max="23" onchange="syncNoMolestarHours()" style="width:52px">
-          <span style="font-size:.78rem;color:var(--muted)">PM</span>
-        </div>
-      </div>
-    </div>
-    <div class="as-row" id="as-pending-row" style="display:none">
-      <div>
-        <div class="as-row-label">Próximas ahora</div>
-        <div class="as-row-sub" id="as-pending-text">—</div>
-      </div>
-      <button class="fs-btn fs-btn-apply" style="flex:0;padding:.4rem .8rem;font-size:.78rem" onclick="openAlertModal();closeAlertSheet()">Ver</button>
-    </div>
+    <!-- Estado del permiso de notificaciones -->
+    <div id="as-notif-status" style="margin-bottom:.75rem;padding:.65rem .85rem;border-radius:10px;font-size:.82rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem"></div>
+    <div class="as-row"><div><div class="as-row-label">Alertas activas</div><div class="as-row-sub">Notificar antes de cada clase</div></div><label class="toggle"><input type="checkbox" id="as-enabled" checked onchange="syncAlertEnabled(this)"><span class="toggle-slider"></span></label></div>
+    <div class="as-row"><div><div class="as-row-label">Anticipación</div><div class="as-row-sub">Minutos antes de la clase</div></div><input type="number" class="as-input" id="as-minutes" value="15" min="1" max="60" onchange="syncAlertMinutes(this)"></div>
+    <div class="as-row"><div><div class="as-row-label">Sonido</div><div class="as-row-sub">Tono al alertar clase</div></div><label class="toggle"><input type="checkbox" id="as-sound" checked onchange="syncAlertSound(this)"><span class="toggle-slider"></span></label></div>
+    <div class="as-row"><div><div class="as-row-label">🔁 Repetir alerta</div><div class="as-row-sub">Volver a notificar cada 5 min</div></div><label class="toggle"><input type="checkbox" id="as-repeat" onchange="syncRepeatAlert(this)"><span class="toggle-slider"></span></label></div>
+    <div class="as-row"><div><div class="as-row-label">Alerta clase finalizada</div><div class="as-row-sub">Avisar cuando termine una clase</div></div><label class="toggle"><input type="checkbox" id="as-end-enabled" checked onchange="syncEndAlert(this)"><span class="toggle-slider"></span></label></div>
+    <div class="as-row"><div><div class="as-row-label">🌙 No molestar</div><div class="as-row-sub">Silenciar fuera de horario</div></div><label class="toggle"><input type="checkbox" id="as-nomolestar" onchange="syncNoMolestar(this)"><span class="toggle-slider"></span></label></div>
+    <div class="as-row" id="as-nomolestar-horario" style="display:none"><div style="width:100%"><div class="as-row-label" style="margin-bottom:.5rem">Horario de silencio</div><div style="display:flex;align-items:center;gap:.5rem"><input type="number" class="as-input" id="as-nm-end" value="7" min="0" max="23" onchange="syncNoMolestarHours()" style="width:52px"><span style="font-size:.78rem;color:var(--muted)">AM hasta</span><input type="number" class="as-input" id="as-nm-start" value="22" min="0" max="23" onchange="syncNoMolestarHours()" style="width:52px"><span style="font-size:.78rem;color:var(--muted)">PM</span></div></div></div>
+    <div class="as-row" id="as-pending-row" style="display:none"><div><div class="as-row-label">Próximas ahora</div><div class="as-row-sub" id="as-pending-text">—</div></div><button class="fs-btn fs-btn-apply" style="flex:0;padding:.4rem .8rem;font-size:.78rem" onclick="openAlertModal();closeAlertSheet()">Ver</button></div>
   </div>
 </div>
 
 <!-- ══ SIDEBAR ══ -->
 <div id="sidebar-overlay" onclick="closeSidebar()"></div>
 <div id="sidebar">
-  <div class="sb-header">
-    <span class="sb-title">⚙️ Menú</span>
-    <button class="sb-close" onclick="closeSidebar()">✕</button>
-  </div>
+  <div class="sb-header"><span class="sb-title">⚙️ Menú</span><button class="sb-close" onclick="closeSidebar()">✕</button></div>
   <div class="sb-body">
-
-    <!-- Vista -->
+    <button class="sb-btn" onclick="showLabsFreeSidebar()"><span class="sb-btn-icon">🟢</span><span class="sb-btn-label">Labs libres ahora</span></button>
     <div class="sb-section">
       <div class="sb-section-title">Vista</div>
-      <button class="sb-btn active" id="sb-vt-list" onclick="switchView('list');updateSbViewBtns()">
-        <span class="sb-btn-icon">📋</span><span class="sb-btn-label">Lista</span>
-      </button>
-      <button class="sb-btn" id="sb-vt-grid" onclick="switchView('grid');updateSbViewBtns()">
-        <span class="sb-btn-icon">📊</span><span class="sb-btn-label">Cuadrícula</span>
-      </button>
-      <button class="sb-btn" id="sb-vt-group" onclick="toggleGroupEdificio();updateSbGroupBtn()">
-        <span class="sb-btn-icon">🏷️</span><span class="sb-btn-label" id="sb-group-label">Agrupar por edificio</span>
-      </button>
+      <button class="sb-btn active" id="sb-vt-list" onclick="switchView('list');updateSbViewBtns()"><span class="sb-btn-icon">📋</span><span class="sb-btn-label">Lista</span></button>
+      <button class="sb-btn" id="sb-vt-grid" onclick="switchView('grid');updateSbViewBtns()"><span class="sb-btn-icon">📊</span><span class="sb-btn-label">Cuadrícula</span></button>
+      <button class="sb-btn" id="sb-vt-group" onclick="toggleGroupEdificio()"><span class="sb-btn-icon">🏷️</span><span class="sb-btn-label" id="sb-group-label">Agrupar por edificio</span></button>
     </div>
-
     <div class="sb-divider"></div>
-
-    <!-- Favoritos -->
     <div class="sb-section">
       <div class="sb-section-title">Favoritos</div>
-      <button class="sb-btn" id="sb-fav-toggle" onclick="toggleFavOnlySidebar()">
-        <span class="sb-btn-icon">⭐</span>
-        <span class="sb-btn-label" id="sb-fav-label">Solo favoritos</span>
-        <span class="sb-btn-badge" id="sb-fav-count" style="display:none">0</span>
-      </button>
-      <button class="sb-btn" onclick="clearAllFavs()">
-        <span class="sb-btn-icon">🗑️</span><span class="sb-btn-label">Limpiar favoritos</span>
-      </button>
+      <button class="sb-btn" id="sb-fav-toggle" onclick="toggleFavOnlySidebar()"><span class="sb-btn-icon">⭐</span><span class="sb-btn-label">Solo favoritos</span><span class="sb-btn-badge" id="sb-fav-count" style="display:none">0</span></button>
+      <button class="sb-btn" onclick="clearAllFavs()"><span class="sb-btn-icon">🗑️</span><span class="sb-btn-label">Limpiar favoritos</span></button>
     </div>
-
     <div class="sb-divider"></div>
-
-    <!-- Compartir -->
     <div class="sb-section">
       <div class="sb-section-title">Compartir</div>
-      <button class="sb-btn" onclick="shareWhatsApp();closeSidebar()">
-        <span class="sb-btn-icon">💬</span><span class="sb-btn-label">Compartir por WhatsApp</span>
-      </button>
-      <button class="sb-btn" onclick="copyShareLink()">
-        <span class="sb-btn-icon">🔗</span><span class="sb-btn-label">Copiar enlace</span>
-      </button>
+      <button class="sb-btn" onclick="shareWhatsApp();closeSidebar()"><span class="sb-btn-icon">💬</span><span class="sb-btn-label">Compartir por WhatsApp</span></button>
+      <button class="sb-btn" onclick="copyShareLink()"><span class="sb-btn-icon">🔗</span><span class="sb-btn-label">Copiar enlace</span></button>
     </div>
-
     <div class="sb-divider"></div>
-
-    <!-- Herramientas -->
     <div class="sb-section">
       <div class="sb-section-title">Herramientas</div>
-      <button class="sb-btn" onclick="openCompareSheet();closeSidebar()">
-        <span class="sb-btn-icon">📅</span><span class="sb-btn-label">Comparar cuatrimestres</span>
-      </button>
-      <button class="sb-btn" onclick="toggleThemePicker();closeSidebar()">
-        <span class="sb-btn-icon">🎨</span><span class="sb-btn-label">Cambiar tema</span>
-      </button>
-      <button class="sb-btn" onclick="exportCSV()">
-        <span class="sb-btn-icon">📥</span><span class="sb-btn-label">Exportar como CSV</span>
-      </button>
-      <button class="sb-btn" onclick="printSchedule()">
-        <span class="sb-btn-icon">🖨️</span><span class="sb-btn-label">Imprimir horario</span>
-      </button>
+      <button class="sb-btn" onclick="openCompareSheet();closeSidebar()"><span class="sb-btn-icon">📅</span><span class="sb-btn-label">Comparar cuatrimestres</span></button>
+      <button class="sb-btn" onclick="exportCSV()"><span class="sb-btn-icon">📥</span><span class="sb-btn-label">Exportar como CSV</span></button>
+      <button class="sb-btn" onclick="printSchedule()"><span class="sb-btn-icon">🖨️</span><span class="sb-btn-label">Imprimir horario</span></button>
     </div>
-
     <div class="sb-divider"></div>
-
-    <!-- Stats -->
     <div class="sb-section">
       <div class="sb-section-title">Estadísticas</div>
       <div class="sb-stats">
         <div class="sb-stats-row"><span class="sb-stats-label">Total clases</span><span class="sb-stats-val" id="sb-stat-total">—</span></div>
         <div class="sb-stats-row"><span class="sb-stats-label">Labs activos hoy</span><span class="sb-stats-val" id="sb-stat-today">—</span></div>
         <div class="sb-stats-row"><span class="sb-stats-label">Favoritos guardados</span><span class="sb-stats-val" id="sb-stat-favs">—</span></div>
-        <div class="sb-stats-row"><span class="sb-stats-label">Laboratorios totales</span><span class="sb-stats-val">${Object.keys(LABS||{}).length||28}</span></div>
+        <div class="sb-stats-row"><span class="sb-stats-label">Laboratorios totales</span><span class="sb-stats-val">28</span></div>
       </div>
     </div>
-
   </div>
 </div>
 
-<script>
-// ══ SIDEBAR LOGIC ══
-window.openSidebar = function() {
-  document.getElementById('sidebar').classList.add('open');
-  document.getElementById('sidebar-overlay').classList.add('open');
-  // Sync stats
-  const total = document.getElementById('statTotal');
-  if(total) document.getElementById('sb-stat-total').textContent = total.textContent;
-  const today = document.getElementById('statToday');
-  if(today) document.getElementById('sb-stat-today').textContent = today.textContent;
-  document.getElementById('sb-stat-favs').textContent = (JSON.parse(localStorage.getItem('utesa-favs')||'[]')).length;
-  // Sync fav count badge
-  const favs = JSON.parse(localStorage.getItem('utesa-favs')||'[]');
-  const badge = document.getElementById('sb-fav-count');
-  badge.textContent = favs.length;
-  badge.style.display = favs.length ? 'inline' : 'none';
-  updateSbViewBtns();
-};
-
-window.closeSidebar = function() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebar-overlay').classList.remove('open');
-};
-
-window.updateSbViewBtns = function() {
-  const isGrid = document.getElementById('vt-grid').classList.contains('active');
-  document.getElementById('sb-vt-list').classList.toggle('active', !isGrid);
-  document.getElementById('sb-vt-grid').classList.toggle('active', isGrid);
-};
-
-window.updateSbGroupBtn = function() {
-  const active = document.getElementById('vt-group').classList.contains('active');
-  const btn = document.getElementById('sb-vt-group');
-  btn.classList.toggle('active', active);
-  document.getElementById('sb-group-label').textContent = active ? 'Desagrupar edificios' : 'Agrupar por edificio';
-};
-
-window.toggleFavOnlySidebar = function() {
-  const cb = document.getElementById('fs-favonly');
-  if(cb){ cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); }
-  const active = cb && cb.checked;
-  document.getElementById('sb-fav-toggle').classList.toggle('active', active);
-  document.getElementById('sb-fav-label').textContent = active ? 'Mostrando solo favoritos' : 'Solo favoritos';
-};
-
-window.clearAllFavs = function() {
-  if(!confirm('¿Limpiar todos los favoritos?')) return;
-  localStorage.setItem('utesa-favs','[]');
-  location.reload();
-};
-
-window.copyShareLink = function() {
-  navigator.clipboard.writeText(location.href).then(()=>{
-    const btn = [...document.querySelectorAll('.sb-btn')].find(b=>b.textContent.includes('Copiar enlace'));
-    if(btn){ const orig=btn.querySelector('.sb-btn-label').textContent; btn.querySelector('.sb-btn-label').textContent='✅ ¡Copiado!'; setTimeout(()=>btn.querySelector('.sb-btn-label').textContent=orig,2000); }
-  });
-};
-
-window.exportCSV = function() {
-  const rows = [['Laboratorio','Materia','Grupo','Día','Inicio','Fin','Duración (min)']];
-  (window._allClasses||[]).forEach(c=>{
-    rows.push([c.aula,c.mat,c.grp,c.dia,c.inicio,c.fin,c.durMin]);
-  });
-  const csv = rows.map(r=>r.join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
-  a.download = 'horarios-utesa.csv';
-  a.click();
-  closeSidebar();
-};
-
-window.printSchedule = function() {
-  closeSidebar();
-  setTimeout(()=>window.print(), 300);
-};
-
-// close sidebar with ESC
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeSidebar(); });
-</script>
 </body>
 </html>
