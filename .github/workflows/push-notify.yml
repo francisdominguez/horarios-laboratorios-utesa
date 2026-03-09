@@ -2,11 +2,13 @@ name: Push Notifications
 
 on:
   schedule:
-    # Cada minuto de lunes a sábado, 11am–11:59pm UTC (7am–7:59pm RD)
+    # Lunes–Sábado: 11am–11:59pm UTC (7am–7:59pm RD, UTC-4)
     - cron: '* 11-23 * * 1-6'
-    # Cada minuto de martes a sábado, 0am–2:59am UTC (8pm–10:59pm RD del día anterior)
+    # Martes–Sábado: 0am–2:59am UTC (8pm–10:59pm RD del día anterior)
     - cron: '* 0-2 * * 2-6'
-  workflow_dispatch: # también se puede correr manualmente
+    # ✅ FIX: Domingo 0am–2:59am UTC (cubre sábado noche 8pm–10:59pm RD)
+    - cron: '* 0-2 * * 0'
+  workflow_dispatch:
 
 jobs:
   notify:
@@ -20,8 +22,26 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-webpush
+          restore-keys: ${{ runner.os }}-node-
+
       - name: Install dependencies
         run: npm install web-push
+
+      - name: Validate secrets
+        run: |
+          if [ -z "$VAPID_PUBLIC_KEY" ]; then echo "❌ VAPID_PUBLIC_KEY vacío" && exit 1; fi
+          if [ -z "$VAPID_PRIVATE_KEY" ]; then echo "❌ VAPID_PRIVATE_KEY vacío" && exit 1; fi
+          if [ -z "$SUBSCRIPTIONS" ]; then echo "⚠️ PUSH_SUBSCRIPTIONS vacío — sin suscriptores" && exit 0; fi
+          echo "✅ Secrets presentes"
+        env:
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
 
       - name: Send notifications
         env:
