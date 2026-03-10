@@ -37,16 +37,16 @@ jobs:
           if [ -z "$WORKER_AUTH_TOKEN" ]; then echo "WORKER_AUTH_TOKEN vacio" && exit 1; fi
           echo "✅ Secrets presentes"
         env:
-          VAPID_PUBLIC_KEY:    ${{ secrets.VAPID_PUBLIC_KEY }}
-          VAPID_PRIVATE_KEY:   ${{ secrets.VAPID_PRIVATE_KEY }}
-          WORKER_URL:          ${{ secrets.WORKER_URL }}
-          WORKER_AUTH_TOKEN:   ${{ secrets.WORKER_AUTH_TOKEN }}
+          VAPID_PUBLIC_KEY:  ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          WORKER_URL:        ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
 
       - name: Send notifications
         env:
-          VAPID_PUBLIC_KEY:    ${{ secrets.VAPID_PUBLIC_KEY }}
-          VAPID_PRIVATE_KEY:   ${{ secrets.VAPID_PRIVATE_KEY }}
-          VAPID_EMAIL:         ${{ secrets.VAPID_EMAIL }}
-          WORKER_URL:          ${{ secrets.WORKER_URL }}
-          WORKER_AUTH_TOKEN:   ${{ secrets.WORKER_AUTH_TOKEN }}
-        run: node --input-type=module < .github/scripts/send-notifications.js
+          VAPID_PUBLIC_KEY:  ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_EMAIL:       ${{ secrets.VAPID_EMAIL }}
+          WORKER_URL:        ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
+        run: node .github/scripts/send-notifications.js
