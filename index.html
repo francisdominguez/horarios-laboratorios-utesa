@@ -1405,6 +1405,19 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   function showToast(pending){
+    // ── Notificar via Service Worker (funciona con app minimizada) ──
+    if('serviceWorker'in navigator&&navigator.serviceWorker.controller){
+      const label2=pending.length===1?`Clase en ${pending[0].diff} min`:`${pending.length} clases próximas`;
+      const body2=pending.map(({c,diff})=>
+        `📍 ${c.aula} · ${c.mat} grp.${c.grp} · ${c.inicio}→${c.fin} · En ${diff}min`
+      ).join('\n');
+      navigator.serviceWorker.controller.postMessage({
+        type:'SHOW_NOTIFICATION',
+        title:`⏰ ${label2}`,
+        body:body2,
+        tag:`local-${Date.now()}`
+      });
+    }
     lastPending=pending;
     if(soundEnabled)playSound('upcoming');
     if('vibrate'in navigator)navigator.vibrate([100,50,100,50,300,100,300]);
@@ -1541,7 +1554,14 @@ document.addEventListener('DOMContentLoaded', function(){
   };
 
   if('Notification'in window&&Notification.permission==='default'){
-    // Push VAPID se encarga de las notificaciones en background
+    Notification.requestPermission().then(perm=>{
+      console.log('Permiso notificaciones:', perm);
+      if(perm==='granted'){
+        if('serviceWorker'in navigator){
+          navigator.serviceWorker.ready.then(reg=>subscribeToPush(reg));
+        }
+      }
+    });
   }
 
 // ── VAPID PUBLIC KEY ──
