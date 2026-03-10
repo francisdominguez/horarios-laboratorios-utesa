@@ -1574,7 +1574,7 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
     return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
   }
 
-  async function subscribeToPush(reg) {
+  window.subscribeToPush = async function subscribeToPush(reg) {
     if(VAPID_PUBLIC_KEY === 'PLACEHOLDER') return;
     try {
       const existing = await reg.pushManager.getSubscription();
