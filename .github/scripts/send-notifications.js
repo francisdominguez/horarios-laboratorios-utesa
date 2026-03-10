@@ -57,12 +57,14 @@ function nowM() {
   return d.getUTCHours() * 60 + d.getUTCMinutes();
 }
 
-// ── UMBRALES DE ALERTA ──
-// ✅ FIX: Solo notifica en minutos exactos para evitar spam.
-// Sin esto, el cron cada minuto enviaba hasta 15 notificaciones por clase.
-// Rangos pequeños para tolerar el cron que llega 1-2 min tarde
-// 13-15 min = aviso "15 min antes", 8-10 = "10 min antes", 3-5 = "5 min antes"
-const ALERT_RANGES = [{min:13,max:15,label:15},{min:8,max:10,label:10},{min:3,max:5,label:5}];
+// ── RANGOS DE ALERTA ──
+// Usa rangos en vez de minutos exactos para tolerar que el cron llegue 1-2 min tarde.
+// 13-15 min → muestra "15 min antes" | 8-10 → "10 min" | 3-5 → "5 min"
+const ALERT_RANGES = [
+  { min: 13, max: 15, label: 15 },
+  { min:  8, max: 10, label: 10 },
+  { min:  3, max:  5, label:  5 },
+];
 
 // ── CHECK ALERTS ──
 const today = todayName();
@@ -85,14 +87,13 @@ classes.forEach(c => {
   const diff    = c.inicioM - m;
   const diffEnd = c.finM - m;
 
-  // ✅ Solo en umbrales exactos (15, 10, 5 min antes) — no en cada minuto del rango
   const matchedRange = ALERT_RANGES.find(r => diff >= r.min && diff <= r.max);
   if (matchedRange) {
     pending.push({ c, diff: matchedRange.label });
   }
 
-  // ✅ Solo en el minuto exacto en que termina la clase
-  if (diffEnd === 0) {
+  // Ventana de 2 min al finalizar para tolerar el mismo retraso del cron
+  if (diffEnd <= 0 && diffEnd >= -2) {
     ended.push({ c });
   }
 });
@@ -169,9 +170,8 @@ async function sendAll() {
           console.log(`🗑️  Suscripción expirada: ...${sub.endpoint.slice(-30)}`);
           expired++;
         } else if (err.statusCode === 401) {
-          // ⚠️ VAPID key mismatch — suscripción creada con otra clave pública
-          console.error(`🔑 Error 401: La suscripción fue creada con una VAPID_PUBLIC_KEY diferente.`);
-          console.error(`   Solución: el usuario debe volver a suscribirse en la app con la clave actual.`);
+          console.error(`🔑 Error 401: VAPID_PUBLIC_KEY no coincide con la suscripción.`);
+          console.error(`   El usuario debe volver a suscribirse en la app.`);
           expired++;
         } else {
           console.error(`❌ Error ${err.statusCode}: ${err.message}`);
