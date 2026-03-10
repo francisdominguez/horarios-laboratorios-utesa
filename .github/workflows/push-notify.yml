@@ -43,19 +43,7 @@ jobs:
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
 
-      - name: Verificar VAPID_PUBLIC_KEY
-        env:
-          VAPID_PUBLIC: ${{ secrets.VAPID_PUBLIC_KEY }}
-        run: |
-          KEY_INDEX="BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eSzKJr58Mt4f8wE4rsP8_JdCAqx8iPsBp9c"
-          echo "Clave en index.html: $KEY_INDEX"
-          echo "Clave en GitHub:     $VAPID_PUBLIC"
-          if [ "$VAPID_PUBLIC" = "$KEY_INDEX" ]; then
-            echo "COINCIDEN - las keys estan bien"
-          else
-            echo "NO COINCIDEN - este es el problema, las suscripciones fallan con error 401"
-          fi
-
+     
       - name: Send notifications
         env:
           VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
