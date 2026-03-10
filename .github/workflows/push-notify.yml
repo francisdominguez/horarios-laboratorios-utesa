@@ -2,11 +2,8 @@ name: Push Notifications
 
 on:
   schedule:
-    # Lunes–Sábado: 11am–11:59pm UTC (7am–7:59pm RD, UTC-4)
     - cron: '* 11-23 * * 1-6'
-    # Martes–Sábado: 0am–2:59am UTC (8pm–10:59pm RD del día anterior)
     - cron: '* 0-2 * * 2-6'
-    # FIX: Domingo 0am–2:59am UTC (cubre sábado noche 8pm–10:59pm RD)
     - cron: '* 0-2 * * 0'
   workflow_dispatch:
 
@@ -36,18 +33,20 @@ jobs:
         run: |
           if [ -z "$VAPID_PUBLIC_KEY" ]; then echo "VAPID_PUBLIC_KEY vacio" && exit 1; fi
           if [ -z "$VAPID_PRIVATE_KEY" ]; then echo "VAPID_PRIVATE_KEY vacio" && exit 1; fi
-          if [ -z "$SUBSCRIPTIONS" ]; then echo "PUSH_SUBSCRIPTIONS vacio, sin suscriptores" && exit 0; fi
-          echo "Secrets presentes"
+          if [ -z "$WORKER_URL" ]; then echo "WORKER_URL vacio" && exit 1; fi
+          if [ -z "$WORKER_AUTH_TOKEN" ]; then echo "WORKER_AUTH_TOKEN vacio" && exit 1; fi
+          echo "✅ Secrets presentes"
         env:
-          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
-          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
-          SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
+          VAPID_PUBLIC_KEY:    ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY:   ${{ secrets.VAPID_PRIVATE_KEY }}
+          WORKER_URL:          ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN:   ${{ secrets.WORKER_AUTH_TOKEN }}
 
-     
       - name: Send notifications
         env:
-          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
-          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
-          VAPID_EMAIL: ${{ secrets.VAPID_EMAIL }}
-          SUBSCRIPTIONS: ${{ secrets.PUSH_SUBSCRIPTIONS }}
-        run: node .github/scripts/send-notifications.js
+          VAPID_PUBLIC_KEY:    ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY:   ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_EMAIL:         ${{ secrets.VAPID_EMAIL }}
+          WORKER_URL:          ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN:   ${{ secrets.WORKER_AUTH_TOKEN }}
+        run: node --input-type=module < .github/scripts/send-notifications.js
