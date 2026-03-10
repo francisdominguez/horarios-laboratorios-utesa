@@ -1351,7 +1351,7 @@ document.addEventListener('DOMContentLoaded', function(){
           <button class="btn-img" onclick="openModal('${c.aula}','${labName}','${imgFile}')">🗓️ <span>Distribución</span></button>
           <button class="btn-img" style="margin-left:.3rem;background:rgba(0,229,160,.08);border-color:rgba(0,229,160,.2);color:var(--accent)" onclick="openWeekModal('${c.aula}')">📅 <span>Semana</span></button>
           <br>
-          ${marked ? `<button class="btn-control" style="background:#374151;color:#9ca3af" onclick="desmarcar('${rowKey}')">↩ Desmarcar</button>` : `<button class="btn-control btn-finalizada" onclick="marcarFinalizada('${rowKey}')">✔ Finalizada</button> <button class="btn-control btn-ausente" onclick="marcarAusente('${rowKey}')">🚫 Ausente</button>`}
+          ${marked ? `<button class="btn-control" style="background:#374151;color:#9ca3af" onclick="desmarcar('${rowKey}')">↩ Desmarcar</button>` : s==='past' ? '' : `<button class="btn-control btn-finalizada" onclick="marcarFinalizada('${rowKey}')">✔ Finalizada</button> <button class="btn-control btn-ausente" onclick="marcarAusente('${rowKey}')">🚫 Ausente</button>`}
         </td>`;
       tbody.appendChild(tr);
     });
@@ -1641,8 +1641,10 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
               txt.textContent='Pendiente configurar (ver manual)';
               ico.textContent='⚙️';
             } else {
-              txt.textContent='Inactivo — toca para activar';
-              ico.textContent='❌';
+              txt.textContent='❌ Inactivo — toca aquí para activar';
+              ico.textContent='🔔';
+              const row=document.getElementById('push-status-row');
+              if(row){row.style.background='rgba(255,107,53,.06)';row.style.borderRadius='8px';}
             }
           }
         });
@@ -1955,7 +1957,7 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
 
   updateClock(); render();
   setInterval(()=>{updateClock();checkAlerts();},1000);
-  setInterval(render,60000);
+  setInterval(render,10000);
 });
 
 // ══════════════════════════════════════════════
@@ -2013,6 +2015,51 @@ window.showLabsFreeSidebar = function(){
 
 window.closeLabsModal = function(){
   document.getElementById('labsModal').style.display = 'none';
+};
+
+
+// ── Activar Push manualmente desde el botón ──
+window.activarPush = async function(){
+  const txt=document.getElementById('push-status-text');
+  const ico=document.getElementById('push-status-icon');
+  const row=document.getElementById('push-status-row');
+  if(!('serviceWorker'in navigator)||!('PushManager'in window)){
+    if(txt)txt.textContent='Tu navegador no soporta push';
+    return;
+  }
+  // Pedir permiso si no está dado
+  if(Notification.permission==='default'){
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted'){
+      if(txt)txt.textContent='Permiso denegado — actívalo en ajustes del navegador';
+      if(ico)ico.textContent='🚫';
+      return;
+    }
+  }
+  if(Notification.permission==='denied'){
+    if(txt)txt.textContent='Bloqueado — actívalo en ajustes del navegador';
+    if(ico)ico.textContent='🚫';
+    return;
+  }
+  if(txt)txt.textContent='Activando...';
+  if(ico)ico.textContent='⏳';
+  try{
+    const reg=await navigator.serviceWorker.ready;
+    // Cancelar suscripción vieja si existe
+    const existing=await reg.pushManager.getSubscription();
+    if(existing)await existing.unsubscribe();
+    // Nueva suscripción
+    await subscribeToPush(reg);
+    if(txt)txt.textContent='✅ Activo — notifica con pantalla bloqueada';
+    if(ico)ico.textContent='✅';
+    if(row){row.style.background='rgba(0,229,160,.06)';row.style.cursor='default';row.onclick=null;}
+    // Mostrar el JSON automáticamente para que lo copien
+    showPushJson();
+  }catch(e){
+    console.error('Error activando push:',e);
+    if(txt)txt.textContent='Error al activar — intenta de nuevo';
+    if(ico)ico.textContent='❌';
+  }
 };
 
 // ── SIDEBAR ──
@@ -2174,7 +2221,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
       </div>
       <label class="toggle"><input type="checkbox" id="as-sound" checked onchange="syncAlertSound(this)"><span class="toggle-slider"></span></label>
     </div>
-    <div class="as-row">
+    <div class="as-row" id="push-status-row" style="cursor:pointer" onclick="activarPush()">
       <div>
         <div class="as-row-label">📲 Push en background</div>
         <div class="as-row-sub" id="push-status-text">Verificando...</div>
