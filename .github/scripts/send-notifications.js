@@ -10,12 +10,10 @@ const { SLOTS, raw } = require(path.join(__dirname, 'schedule-data.js'));
 const VAPID_PUBLIC  = process.env.VAPID_PUBLIC_KEY;
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY;
 const VAPID_EMAIL   = process.env.VAPID_EMAIL || 'mailto:admin@utesa.edu';
-const ALERT_MINUTES = parseInt(process.env.ALERT_MINUTES || '15');
 
 webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE);
 
 // ── SUBSCRIPTIONS ──
-// Stored as JSON array in GitHub Secret PUSH_SUBSCRIPTIONS
 let subscriptions = [];
 try {
   subscriptions = JSON.parse(process.env.SUBSCRIPTIONS || '[]');
@@ -46,27 +44,30 @@ const classes = raw.map(c => ({
 const DIAS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
 function nowRD() {
-  // República Dominicana = UTC-4
-  const utc = Date.now() + (new Date().getTimezoneOffset() * 60000);
-  return new Date(utc - (4 * 3600000));
+  // República Dominicana = UTC-4 (fijo, sin DST)
+  return new Date(Date.now() - 4 * 3600000);
 }
 
 function todayName() {
-  return DIAS[nowRD().getDay()];
+  return DIAS[nowRD().getUTCDay()];
 }
 
 function nowM() {
   const d = nowRD();
-  return d.getHours() * 60 + d.getMinutes();
+  return d.getUTCHours() * 60 + d.getUTCMinutes();
 }
+
+// ── UMBRALES DE ALERTA ──
+// ✅ FIX: Solo notifica en minutos exactos para evitar spam.
+// Sin esto, el cron cada minuto enviaba hasta 15 notificaciones por clase.
+const ALERT_THRESHOLDS = [15, 10, 5]; // avisar a los 15, 10 y 5 min antes
 
 // ── CHECK ALERTS ──
 const today = todayName();
 const m     = nowM();
 
-console.log(`🕐 Hora RD: ${nowRD().toLocaleTimeString()} | Día: ${today} | Minuto: ${m}`);
+console.log(`🕐 Hora RD: ${nowRD().toUTCString()} | Día: ${today} | Minuto: ${m}`);
 
-// Skip if today has no classes
 const todayHasClasses = classes.some(c => c.dia === today);
 if (!todayHasClasses) {
   console.log(`No hay clases programadas hoy (${today}).`);
@@ -82,13 +83,13 @@ classes.forEach(c => {
   const diff    = c.inicioM - m;
   const diffEnd = c.finM - m;
 
-  // Clase próxima
-  if (diff > 0 && diff <= ALERT_MINUTES) {
+  // ✅ Solo en umbrales exactos (15, 10, 5 min antes) — no en cada minuto del rango
+  if (ALERT_THRESHOLDS.includes(diff)) {
     pending.push({ c, diff });
   }
 
-  // Clase finalizada (ventana de 2 min)
-  if (diffEnd <= 0 && diffEnd >= -2) {
+  // ✅ Solo en el minuto exacto en que termina la clase
+  if (diffEnd === 0) {
     ended.push({ c });
   }
 });
@@ -104,23 +105,32 @@ console.log(`📬 Enviando: ${pending.length} próximas, ${ended.length} finaliz
 const notifications = [];
 
 if (pending.length > 0) {
-  const label = pending.length === 1
-    ? `Clase en ${pending[0].diff} min`
-    : `${pending.length} clases próximas`;
+  // Agrupa por umbral de tiempo para un mensaje más limpio
+  const byDiff = {};
+  pending.forEach(({ c, diff }) => {
+    if (!byDiff[diff]) byDiff[diff] = [];
+    byDiff[diff].push(c);
+  });
 
-  const body = pending.map(({ c, diff }) =>
-    `📍 ${c.aula} · ${c.mat} grp.${c.grp}\n⏰ ${c.inicio} → ${c.fin} · En ${diff} min`
-  ).join('\n\n');
+  Object.entries(byDiff).forEach(([diff, cs]) => {
+    const label = cs.length === 1
+      ? `Clase en ${diff} min`
+      : `${cs.length} clases en ${diff} min`;
 
-  notifications.push({
-    title: `⏰ ${label}`,
-    body,
-    tag:  `upcoming-${m}`,
-    icon: '/horarios-laboratorios-utesa/icon-192.png',
-    badge:'/horarios-laboratorios-utesa/icon-192.png',
-    url:  'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
-    vibrate: [100, 50, 100, 50, 300, 100, 300],
-    requireInteraction: true,
+    const body = cs.map(c =>
+      `📍 ${c.aula} · ${c.mat} grp.${c.grp}\n⏰ ${c.inicio} → ${c.fin}`
+    ).join('\n\n');
+
+    notifications.push({
+      title:   `⏰ ${label}`,
+      body,
+      tag:     `upcoming-${diff}min-${m}`,
+      icon:    '/horarios-laboratorios-utesa/icon-192.png',
+      badge:   '/horarios-laboratorios-utesa/icon-192.png',
+      url:     'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
+      vibrate: [100, 50, 100, 50, 300, 100, 300],
+      requireInteraction: true,
+    });
   });
 }
 
@@ -131,12 +141,12 @@ if (ended.length > 0) {
   ).join('\n');
 
   notifications.push({
-    title: `✅ ${label}`,
+    title:   `✅ ${label}`,
     body,
-    tag:  `ended-${m}`,
-    icon: '/horarios-laboratorios-utesa/icon-192.png',
-    badge:'/horarios-laboratorios-utesa/icon-192.png',
-    url:  'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
+    tag:     `ended-${m}`,
+    icon:    '/horarios-laboratorios-utesa/icon-192.png',
+    badge:   '/horarios-laboratorios-utesa/icon-192.png',
+    url:     'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
     vibrate: [200, 100, 200],
   });
 }
@@ -145,20 +155,28 @@ if (ended.length > 0) {
 async function sendAll() {
   for (const notif of notifications) {
     const payload = JSON.stringify(notif);
+    let ok = 0, expired = 0, failed = 0;
 
     for (const sub of subscriptions) {
       try {
         await webpush.sendNotification(sub, payload);
-        console.log(`✅ Enviado a ${sub.endpoint.slice(-20)}`);
+        ok++;
       } catch (err) {
         if (err.statusCode === 410 || err.statusCode === 404) {
-          console.log(`🗑️  Suscripción expirada: ${sub.endpoint.slice(-20)}`);
-          // TODO: remove expired subscriptions
+          console.log(`🗑️  Suscripción expirada: ...${sub.endpoint.slice(-30)}`);
+          expired++;
+        } else if (err.statusCode === 401) {
+          // ⚠️ VAPID key mismatch — suscripción creada con otra clave pública
+          console.error(`🔑 Error 401: La suscripción fue creada con una VAPID_PUBLIC_KEY diferente.`);
+          console.error(`   Solución: el usuario debe volver a suscribirse en la app con la clave actual.`);
+          expired++;
         } else {
-          console.error(`❌ Error enviando: ${err.message}`);
+          console.error(`❌ Error ${err.statusCode}: ${err.message}`);
+          failed++;
         }
       }
     }
+    console.log(`"${notif.title}" → ✅ ${ok} enviadas | 🗑️ ${expired} expiradas | ❌ ${failed} errores`);
   }
 }
 
