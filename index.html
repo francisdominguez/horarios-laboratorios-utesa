@@ -20,6 +20,7 @@
   [data-theme="ocean"]{--bg:#050d1a;--surface:#0a1628;--surface2:#0f1f38;--border:#1a2f50;--accent:#00b4d8;--accent2:#f77f00;--accent3:#7b2fff;--text:#e0f4ff;--muted:#5b8fa8;--header-bg:rgba(5,13,26,.93)}
   [data-theme="purple"]{--bg:#0d0a1a;--surface:#130f24;--surface2:#1a1530;--border:#2a2040;--accent:#a855f7;--accent2:#f472b6;--accent3:#60a5fa;--text:#f3e8ff;--muted:#7c6a9a;--header-bg:rgba(13,10,26,.93)}
   [data-theme="red"]{--bg:#120a0a;--surface:#1e0f0f;--surface2:#261414;--border:#3d1c1c;--accent:#ef4444;--accent2:#f59e0b;--accent3:#fb923c;--text:#fff1f1;--muted:#9a6b6b;--header-bg:rgba(18,10,10,.93)}
+  [data-theme="utesa-oficial"]{--bg:#0b1628;--surface:#112040;--surface2:#162b55;--border:#1e3a6e;--accent:#f5c200;--accent2:#ff8c42;--accent3:#5b9bd5;--text:#e8f0ff;--muted:#7a9cc4;--header-bg:rgba(11,22,40,.95)}
   html[data-font="sm"]{font-size:13px}
   html[data-font="md"]{font-size:15px}
   html[data-font="lg"]{font-size:17px}
@@ -36,6 +37,7 @@
   .theme-btn[data-t="light"]{background:radial-gradient(circle at 30% 30%,#ffffff,#d1d5db)}
   .theme-btn[data-t="sepia"]{background:radial-gradient(circle at 30% 30%,#fdf8f0,#c4a882)}
   .theme-btn[data-t="utesa"]{background:radial-gradient(circle at 30% 30%,#6db33f,#f5c200)}
+  .theme-btn[data-t="utesa-oficial"]{background:radial-gradient(circle at 30% 30%,#f5c200,#0b1628)}
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
   body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");opacity:.4}
@@ -485,6 +487,7 @@
       <button class="theme-btn" data-t="light" title="Claro" onclick="setTheme('light')"></button>
       <button class="theme-btn" data-t="sepia" title="Sepia" onclick="setTheme('sepia')"></button>
       <button class="theme-btn" data-t="utesa" title="UTESA" onclick="setTheme('utesa')"></button>
+      <button class="theme-btn" data-t="utesa-oficial" title="UTESA Oficial" onclick="setTheme('utesa-oficial')"></button>
     </div>
     <div class="alert-badge" id="alertBadge"><div class="alert-dot"></div><span id="alertBadgeText">Clase próxima</span></div>
     <button class="sb-trigger" onclick="openSidebar()" title="Menú">☰</button>
@@ -1185,9 +1188,10 @@ document.addEventListener('DOMContentLoaded', function(){
   let repeatAlert=localStorage.getItem('utesa-repeat-alert')==='1';
   const notifiedRepeat={};
   let favorites=new Set(JSON.parse(localStorage.getItem('utesa-favs')||'[]')), favOnly=false;
-  // ✅ FIX: Persistir marcas de ausente/finalizado entre re-renders
-  const markedRows = {}; // key: `${aula}-${mat}-${grp}-${dia}-${inicio}` => 'ausente'|'finalizada'
-  window.markedRows = markedRows; // Exponer globalmente para las funciones window.*
+  // Persistir marcas de ausente/finalizado — sobreviven al refrescar
+  const markedRows = JSON.parse(localStorage.getItem('utesa-marked') || '{}');
+  window.markedRows = markedRows;
+  window.saveMarked=function(){ localStorage.setItem('utesa-marked', JSON.stringify(markedRows)); }
 
   function saveFavs(){localStorage.setItem('utesa-favs',JSON.stringify([...favorites]));}
   window.toggleFav = function(aula){
@@ -1363,7 +1367,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   // ── TEMAS ──
-  const THEMES=['dark','light','sepia','utesa','ocean','purple','red'];
+  const THEMES=['dark','light','sepia','utesa','ocean','purple','red','utesa-oficial'];
   let currentBg=localStorage.getItem('utesa-bg')||'none';
   let currentFont=localStorage.getItem('utesa-font')||'md';
   (function(){
@@ -1664,6 +1668,10 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
   window.applyUpdate=function(){if(window._pendingSW){window._pendingSW.postMessage({type:'SKIP_WAITING'});}else{window.location.reload();}};
 
   // Init filters
+  // Limpiar marcas de días anteriores al abrir la app
+  const todayForClean = todayName();
+  Object.keys(markedRows).forEach(k=>{ if(!k.endsWith("_time") && !k.includes("-"+todayForClean+"-")){ delete markedRows[k]; delete markedRows[k+"_time"]; } });
+  saveMarked();
   filterDia=todayName();
   document.getElementById('filterDia').value=todayName();
   const autoFranja=getCurrentFranja();
@@ -1970,18 +1978,18 @@ window.marcarFinalizada = function(rowKey){
   const n = new Date(), h = n.getHours(), mn = n.getMinutes();
   const ampm = h >= 12 ? 'PM' : 'AM', h12 = h % 12 || 12;
   window.markedRows[rowKey + '_time'] = `· ${h12}:${String(mn).padStart(2,'0')} ${ampm}`;
-  render();
+  saveMarked(); render();
 };
 
 window.marcarAusente = function(rowKey){
   window.markedRows[rowKey] = 'ausente';
-  render();
+  saveMarked(); render();
 };
 
 window.desmarcar = function(rowKey){
   delete window.markedRows[rowKey];
   delete window.markedRows[rowKey + '_time'];
-  render();
+  saveMarked(); render();
 };
 
 // ✅ FIX: showLabsFreeSidebar usa window.classes (scope global)
@@ -2122,6 +2130,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
         <button class="tp-opt" data-t="light" onclick="setTheme('light')"><span class="tp-dot" data-t="light"></span><span class="tp-label">Claro</span><span class="tp-check">✓</span></button>
         <button class="tp-opt" data-t="sepia" onclick="setTheme('sepia')"><span class="tp-dot" data-t="sepia"></span><span class="tp-label">Sepia</span><span class="tp-check">✓</span></button>
         <button class="tp-opt" data-t="utesa" onclick="setTheme('utesa')"><span class="tp-dot" data-t="utesa"></span><span class="tp-label">UTESA</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="utesa-oficial" onclick="setTheme('utesa-oficial')"><span class="tp-dot" data-t="utesa-oficial"></span><span class="tp-label">UTESA Oficial</span><span class="tp-check">✓</span></button>
         <button class="tp-opt" data-t="ocean" onclick="setTheme('ocean')"><span class="tp-dot" data-t="ocean"></span><span class="tp-label">Océano</span><span class="tp-check">✓</span></button>
         <button class="tp-opt" data-t="purple" onclick="setTheme('purple')"><span class="tp-dot" data-t="purple"></span><span class="tp-label">Púrpura</span><span class="tp-check">✓</span></button>
         <button class="tp-opt" data-t="red" onclick="setTheme('red')"><span class="tp-dot" data-t="red"></span><span class="tp-label">Rojo</span><span class="tp-check">✓</span></button>
