@@ -60,7 +60,9 @@ function nowM() {
 // ── UMBRALES DE ALERTA ──
 // ✅ FIX: Solo notifica en minutos exactos para evitar spam.
 // Sin esto, el cron cada minuto enviaba hasta 15 notificaciones por clase.
-const ALERT_THRESHOLDS = [15, 10, 5]; // avisar a los 15, 10 y 5 min antes
+// Rangos pequeños para tolerar el cron que llega 1-2 min tarde
+// 13-15 min = aviso "15 min antes", 8-10 = "10 min antes", 3-5 = "5 min antes"
+const ALERT_RANGES = [{min:13,max:15,label:15},{min:8,max:10,label:10},{min:3,max:5,label:5}];
 
 // ── CHECK ALERTS ──
 const today = todayName();
@@ -84,8 +86,9 @@ classes.forEach(c => {
   const diffEnd = c.finM - m;
 
   // ✅ Solo en umbrales exactos (15, 10, 5 min antes) — no en cada minuto del rango
-  if (ALERT_THRESHOLDS.includes(diff)) {
-    pending.push({ c, diff });
+  const matchedRange = ALERT_RANGES.find(r => diff >= r.min && diff <= r.max);
+  if (matchedRange) {
+    pending.push({ c, diff: matchedRange.label });
   }
 
   // ✅ Solo en el minuto exacto en que termina la clase
