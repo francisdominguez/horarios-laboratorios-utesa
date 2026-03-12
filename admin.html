@@ -1,1 +1,631 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — UTESA Labs</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#080a0e;--surface:#0e1117;--surface2:#151920;--border:#1c2030;--accent:#00e5a0;--danger:#ef4444;--blue:#5b8cff;--text:#e2e4ec;--muted:#6b7280}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+
+  /* ── LOGIN ── */
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+  .login-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2.5rem;width:100%;max-width:340px;text-align:center}
+  .login-icon{font-size:2.5rem;margin-bottom:1.25rem;filter:drop-shadow(0 0 14px #00e5a050)}
+  .login-tag{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.12em;margin-bottom:.35rem}
+  .login-sub{color:var(--muted);font-size:.75rem;margin-bottom:1.75rem}
+  .login-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.65rem;border-radius:10px;font-size:1rem;text-align:center;letter-spacing:.2em;outline:none;margin-bottom:.75rem;transition:border-color .2s}
+  .login-input:focus{border-color:var(--accent)}
+  .login-input.err{border-color:var(--danger)}
+  .login-err{color:var(--danger);font-size:.72rem;margin-bottom:.5rem}
+  .login-btn{width:100%;background:var(--accent);color:#000;border:none;padding:.75rem;border-radius:10px;font-weight:700;font-size:.9rem;cursor:pointer;transition:filter .15s}
+  .login-btn:hover{filter:brightness(1.08)}
+  .login-btn:disabled{opacity:.6;cursor:not-allowed}
+  .login-hint{color:#1c2030;font-size:.62rem;margin-top:1rem}
+
+  /* ── LAYOUT ── */
+  .app{display:none;flex-direction:column;min-height:100vh}
+  .app.show{display:flex}
+
+  /* ── HEADER ── */
+  .header{background:var(--surface);border-bottom:1px solid var(--border);padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+  .header-left .tag{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);letter-spacing:.1em}
+  .header-left .sub{font-size:.6rem;color:#374151;margin-top:.1rem}
+  .header-right{display:flex;align-items:center;gap:.75rem}
+  .flash{font-size:.72rem;padding:.25rem .65rem;border-radius:20px;transition:opacity .3s}
+  .flash.ok{color:var(--accent);background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3)}
+  .flash.err{color:var(--danger);background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3)}
+  .flash.hidden{opacity:0;pointer-events:none}
+  .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.3rem .65rem;border-radius:8px;cursor:pointer;font-size:.72rem;font-family:'DM Sans',sans-serif;transition:all .15s}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ── STATS ── */
+  .stats{display:flex;gap:.75rem;padding:1rem 1.5rem;flex-wrap:wrap}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.65rem 1.1rem;display:flex;gap:.6rem;align-items:center}
+  .stat-val{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:700}
+  .stat-lbl{font-size:.65rem;color:var(--muted)}
+
+  /* ── TABS ── */
+  .tabs{display:flex;gap:.5rem;padding:0 1.5rem;margin-bottom:1rem}
+  .tab{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.45rem 1.1rem;border-radius:10px;cursor:pointer;font-size:.78rem;font-weight:600;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:.35rem;transition:all .15s}
+  .tab.active{background:rgba(0,229,160,.08);border-color:rgba(0,229,160,.35);color:var(--accent)}
+
+  /* ── CONTENT ── */
+  .content{padding:0 1.5rem 2rem}
+
+  /* ── SEARCH + ADD ── */
+  .toolbar{display:flex;gap:.75rem;margin-bottom:1rem;align-items:center}
+  .search{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:.55rem .9rem;border-radius:10px;font-size:.85rem;outline:none;font-family:'DM Sans',sans-serif;transition:border-color .2s}
+  .search:focus{border-color:var(--accent)}
+  .search::placeholder{color:var(--muted)}
+  .btn-primary{background:var(--accent);color:#000;border:none;padding:.55rem 1.1rem;border-radius:10px;font-weight:700;cursor:pointer;font-size:.82rem;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:filter .15s}
+  .btn-primary:hover{filter:brightness(1.08)}
+  .btn-primary:disabled{opacity:.6;cursor:not-allowed}
+
+  /* ── ADD FORM ── */
+  .add-form{background:var(--surface);border:1px solid rgba(0,229,160,.25);border-radius:14px;padding:1.25rem;margin-bottom:1rem}
+  .form-label{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.85rem}
+  .fg label{font-size:.6rem;color:var(--muted);text-transform:uppercase;font-family:'DM Mono',monospace;display:block;margin-bottom:.25rem}
+  .fg input,.fg select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.5rem .75rem;border-radius:8px;font-size:.82rem;outline:none;font-family:'DM Sans',sans-serif;transition:border-color .2s}
+  .fg input:focus,.fg select:focus{border-color:var(--accent)}
+  .fg select option{background:var(--surface)}
+  .form-actions{display:flex;gap:.5rem}
+  .btn-save{flex:1;background:var(--accent);color:#000;border:none;padding:.6rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:filter .15s}
+  .btn-save:hover{filter:brightness(1.08)}
+  .btn-cancel{flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:.6rem;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+  /* ── CLASS ROW ── */
+  .class-list{display:flex;flex-direction:column;gap:.45rem}
+  .class-row{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.8rem 1rem;display:flex;align-items:center;gap:.75rem;transition:opacity .2s}
+  .class-row.off{opacity:.5;border-left:3px solid #374151}
+  .class-row.on{border-left:3px solid var(--accent)}
+  .class-row.admin-class{border-left:3px solid var(--blue)}
+  .class-info{flex:1;min-width:0}
+  .class-aula{font-family:'DM Mono',monospace;font-size:.82rem;font-weight:700;color:var(--accent)}
+  .class-labname{font-size:.68rem;color:var(--muted);margin-left:.4rem}
+  .class-mat{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--text);margin-top:.15rem}
+  .class-grp{font-size:.7rem;color:var(--muted);margin-left:.4rem}
+  .class-meta{font-size:.67rem;color:var(--blue);margin-top:.1rem}
+  .badge-admin{display:inline-block;background:rgba(91,140,255,.15);border:1px solid rgba(91,140,255,.3);color:var(--blue);font-size:.58rem;padding:.1rem .4rem;border-radius:6px;margin-left:.35rem;font-family:'DM Mono',monospace}
+  .toggle-switch{width:42px;height:22px;border-radius:11px;cursor:pointer;position:relative;flex-shrink:0;transition:background .2s}
+  .toggle-switch.on{background:var(--accent)}
+  .toggle-switch.off{background:#374151}
+  .toggle-knob{position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;transition:left .2s}
+  .toggle-switch.on .toggle-knob{left:23px}
+  .toggle-switch.off .toggle-knob{left:3px}
+  .btn-del{background:transparent;border:1px solid #3d1c1c;color:var(--danger);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+  .btn-del:hover{background:rgba(239,68,68,.1)}
+  .empty{text-align:center;padding:2.5rem;color:var(--muted);font-size:.82rem}
+
+  /* ── IMAGES TAB ── */
+  .img-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.25rem}
+  .img-section-label{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem}
+  .drop-zone{border:2px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:.75rem}
+  .drop-zone:hover,.drop-zone.has-img{border-color:rgba(0,229,160,.5);background:rgba(0,229,160,.04)}
+  .drop-zone img{max-height:160px;max-width:100%;border-radius:8px;object-fit:contain}
+  .drop-icon{font-size:2rem;margin-bottom:.5rem}
+  .drop-text{color:var(--muted);font-size:.82rem}
+  .drop-hint{color:#374151;font-size:.68rem;margin-top:.25rem}
+  .upload-success{text-align:center;padding:.75rem;background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.3);border-radius:10px;color:var(--accent);font-size:.82rem}
+
+  /* ── LOADING ── */
+  .loading{text-align:center;padding:3rem;color:var(--muted);font-size:.85rem}
+  .spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:.5rem;vertical-align:middle}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  @media(max-width:500px){
+    .form-grid{grid-template-columns:1fr}
+    .stats{gap:.5rem}
+    .stat{padding:.5rem .75rem}
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="login-icon">🔐</div>
+    <div class="login-tag">UTESA LABS // ADMIN</div>
+    <div class="login-sub">Ingresa tu token de acceso</div>
+    <input class="login-input" type="password" id="tokenInput" placeholder="Token secreto"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="login-err" id="loginErr" style="display:none">Token incorrecto</div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Entrar →</button>
+    <div class="login-hint">Token configurado en ADMIN_SECRET del Worker</div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div class="app" id="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="tag">UTESA LABS // ADMIN</div>
+      <div class="sub">Panel de administración</div>
+    </div>
+    <div class="header-right">
+      <span class="flash hidden" id="flash"></span>
+      <button class="btn-ghost" onclick="loadClases()" id="refreshBtn">↺ Recargar</button>
+      <button class="btn-ghost" onclick="doLogout()">Salir</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats" id="stats">
+    <div class="stat"><span class="stat-val" id="stTotal" style="color:var(--text)">—</span><span class="stat-lbl">Total clases</span></div>
+    <div class="stat"><span class="stat-val" id="stActivas" style="color:var(--accent)">—</span><span class="stat-lbl">Activas</span></div>
+    <div class="stat"><span class="stat-val" id="stInactivas" style="color:var(--muted)">—</span><span class="stat-lbl">Inactivas</span></div>
+    <div class="stat"><span class="stat-val" id="stAdmin" style="color:var(--blue)">—</span><span class="stat-lbl">Del admin</span></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" id="tabClases" onclick="showTab('clases')">📋 Clases</button>
+    <button class="tab" id="tabImagenes" onclick="showTab('imagenes')">🖼️ Imágenes</button>
+  </div>
+
+  <!-- ── TAB CLASES ── -->
+  <div class="content" id="panelClases">
+    <div class="toolbar">
+      <input class="search" type="text" id="searchInput" placeholder="Buscar aula, materia, grupo..."
+        oninput="renderClases()">
+      <button class="btn-primary" onclick="toggleAddForm()">+ Agregar clase</button>
+    </div>
+
+    <!-- Add form -->
+    <div class="add-form" id="addForm" style="display:none">
+      <div class="form-label">Nueva clase</div>
+      <div class="form-grid">
+        <div class="fg">
+          <label>Aula</label>
+          <select id="fAula">
+            <optgroup label="Edificio B">
+              <option>B120</option><option>B121</option><option>B123</option>
+              <option>B213</option><option>B217</option><option>B211</option><option>B219</option>
+            </optgroup>
+            <optgroup label="Edificio C">
+              <option>C001</option><option>C1002</option><option>C101</option><option>C102</option>
+              <option>C103</option><option>C104</option><option>C105</option><option>C106</option>
+              <option>C107</option><option>C201</option><option>C202</option><option>C203</option>
+              <option>C204</option><option>C205</option><option>C206</option><option>C207</option>
+              <option>C208</option><option>C413</option><option>C414A</option><option>C414B</option>
+              <option>C415</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Materia (código)</label>
+          <input type="text" id="fMat" placeholder="INF113">
+        </div>
+        <div class="fg">
+          <label>Grupo</label>
+          <input type="text" id="fGrp" placeholder="001">
+        </div>
+        <div class="fg">
+          <label>Día</label>
+          <select id="fDia">
+            <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+            <option>Jueves</option><option>Viernes</option><option>Sábado</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Hora inicio</label>
+          <select id="fHoraI" onchange="updateHoraFin()"></select>
+        </div>
+        <div class="fg">
+          <label>Hora fin</label>
+          <select id="fHoraF"></select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-save" id="saveBtn" onclick="guardarClase()">✓ Guardar clase</button>
+        <button class="btn-cancel" onclick="toggleAddForm()">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- Class list -->
+    <div class="class-list" id="clasesList">
+      <div class="loading"><span class="spinner"></span> Cargando clases...</div>
+    </div>
+  </div>
+
+  <!-- ── TAB IMÁGENES ── -->
+  <div class="content" id="panelImagenes" style="display:none">
+    <div class="img-card">
+      <div class="img-section-label">Actualizar imagen de laboratorio</div>
+      <div class="fg" style="margin-bottom:.75rem">
+        <label>Laboratorio</label>
+        <select id="imgLab" onchange="resetImgUpload()">
+          <optgroup label="Edificio B">
+            <option value="B120">B120 — Geol. y Topografía</option>
+            <option value="B121">B121 — Materiales</option>
+            <option value="B123">B123 — Hidráulica</option>
+            <option value="B213">B213 — Lab. TIC</option>
+            <option value="B217">B217 — Comunicación</option>
+            <option value="B211">B211 — Comunicación 02</option>
+            <option value="B219">B219 — Programación</option>
+          </optgroup>
+          <optgroup label="Edificio C">
+            <option value="C001">C001 — Máquinas y Herram.</option>
+            <option value="C101">C101 — Lab. Industrial</option>
+            <option value="C102">C102 — Automatización</option>
+            <option value="C103">C103 — Lab. Industrial 02</option>
+            <option value="C104">C104 — Lab. CAD CAM</option>
+            <option value="C105">C105 — Ing. Térmica</option>
+            <option value="C201">C201 — Lab. Informática</option>
+            <option value="C202">C202 — Lab. Informática 02</option>
+            <option value="C205">C205 — Lab. AutoCAD</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <label for="imgFile">
+        <div class="drop-zone" id="dropZone">
+          <div id="dropContent">
+            <div class="drop-icon">📷</div>
+            <div class="drop-text">Toca para seleccionar imagen</div>
+            <div class="drop-hint">JPG · PNG · Máx 5MB</div>
+          </div>
+        </div>
+      </label>
+      <input type="file" id="imgFile" accept="image/*" style="display:none" onchange="previewImg(this)">
+
+      <button class="btn-primary" id="uploadBtn" style="width:100%;padding:.75rem;display:none"
+        onclick="subirImagen()">
+        📤 Subir imagen
+      </button>
+      <div class="upload-success" id="uploadSuccess" style="display:none"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+const WORKER = 'https://sweet-sun-577c.utesamonitores.workers.dev';
+
+const LABS = {
+  B120:'Geol. y Topografía', B121:'Materiales', B123:'Hidráulica',
+  B213:'Lab. TIC', B217:'Comunicación', B211:'Comunicación 02', B219:'Programación',
+  C001:'Máquinas y Herram.', C1002:'Taller de Bancos', C101:'Lab. Industrial',
+  C102:'Automatización', C103:'Lab. Industrial 02', C104:'Lab. CAD CAM',
+  C105:'Ing. Térmica', C106:'Lab. Neumática', C107:'Inst. Eléctricas',
+  C201:'Lab. Informática', C202:'Lab. Informática 02', C203:'Lab. Informática 03',
+  C204:'Lab. Informática 04', C205:'Lab. AutoCAD', C206:'Lab. Informática 06',
+  C207:'Lab. Informática 07', C208:'Lab. Mecatrónica', C413:'Lab. Comunicación',
+  C414A:'Lab. Electrónica', C414B:'Lab. Electrónica 02', C415:'Lab. Electricidad',
+};
+
+const HORAS = [
+  '07:00','07:45','08:30','09:15','10:00','10:45','11:30','12:15',
+  '01:00 PM','01:45 PM','02:30 PM','03:15 PM','04:00 PM','04:45 PM',
+  '05:30 PM','06:15 PM','07:00 PM','07:45 PM','08:30 PM','09:15 PM','10:00 PM'
+];
+
+// ── State ────────────────────────────────────────────────────────────────────
+let token = sessionStorage.getItem('admin_token') || '';
+let allClases = [];
+let imgPreviewData = null;
+
+// ── Boot ─────────────────────────────────────────────────────────────────────
+window.onload = () => {
+  fillHoraSelects();
+  if (token) verifyAndEnter();
+};
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const inp = document.getElementById('tokenInput');
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginErr');
+  const t = inp.value.trim();
+  if (!t) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Verificando…';
+  err.style.display = 'none';
+  inp.classList.remove('err');
+
+  try {
+    const res = await fetch(`${WORKER}/admin/clases`, {
+      headers: { 'X-Admin-Token': t }
+    });
+    if (res.status === 401) {
+      inp.classList.add('err');
+      err.style.display = 'block';
+      inp.value = '';
+    } else {
+      token = t;
+      sessionStorage.setItem('admin_token', t);
+      enterApp();
+    }
+  } catch {
+    err.textContent = 'No se pudo conectar al Worker';
+    err.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Entrar →';
+  }
+}
+
+async function verifyAndEnter() {
+  try {
+    const res = await fetch(`${WORKER}/admin/clases`, {
+      headers: { 'X-Admin-Token': token }
+    });
+    if (res.ok) { enterApp(); }
+    else { sessionStorage.removeItem('admin_token'); token = ''; }
+  } catch { /* show login */ }
+}
+
+function enterApp() {
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  loadClases();
+}
+
+function doLogout() {
+  sessionStorage.removeItem('admin_token');
+  token = '';
+  location.reload();
+}
+
+// ── API helper ────────────────────────────────────────────────────────────────
+async function api(method, path, body) {
+  const res = await fetch(`${WORKER}${path}`, {
+    method,
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Token': token },
+    ...(body ? { body: JSON.stringify(body) } : {})
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error del servidor');
+  return data;
+}
+
+// ── Flash ─────────────────────────────────────────────────────────────────────
+let flashTimer;
+function showFlash(msg, type = 'ok') {
+  const el = document.getElementById('flash');
+  el.textContent = msg;
+  el.className = `flash ${type}`;
+  clearTimeout(flashTimer);
+  flashTimer = setTimeout(() => el.classList.add('hidden'), 2500);
+}
+
+// ── Load schedule ─────────────────────────────────────────────────────────────
+async function loadClases() {
+  document.getElementById('clasesList').innerHTML =
+    '<div class="loading"><span class="spinner"></span> Cargando...</div>';
+  document.getElementById('refreshBtn').textContent = '⏳';
+
+  try {
+    const data = await fetch(`${WORKER}/schedule`).then(r => r.json());
+    allClases = data.clases || [];
+    updateStats();
+    renderClases();
+  } catch (e) {
+    showFlash('❌ Error cargando clases', 'err');
+    document.getElementById('clasesList').innerHTML =
+      '<div class="empty">No se pudo cargar. Verifica la URL del Worker.</div>';
+  } finally {
+    document.getElementById('refreshBtn').textContent = '↺ Recargar';
+  }
+}
+
+function updateStats() {
+  document.getElementById('stTotal').textContent = allClases.length;
+  document.getElementById('stActivas').textContent = allClases.filter(c => c.activa).length;
+  document.getElementById('stInactivas').textContent = allClases.filter(c => !c.activa).length;
+  document.getElementById('stAdmin').textContent = allClases.filter(c => c._source === 'admin').length;
+}
+
+// ── Render list ───────────────────────────────────────────────────────────────
+function renderClases() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const list = document.getElementById('clasesList');
+
+  const filtered = allClases.filter(c =>
+    !q || (c.aula + c.mat + c.grp + c.dia).toLowerCase().includes(q)
+  );
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty">Sin resultados</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(c => {
+    const labName = LABS[c.aula] || '';
+    const isAdmin = c._source === 'admin';
+    const on = c.activa;
+    const hora = c._h || `${c.hora_inicio || ''}→${c.hora_fin || ''}`;
+
+    return `
+      <div class="class-row ${on ? (isAdmin ? 'admin-class' : 'on') : 'off'}">
+        <div class="class-info">
+          <div>
+            <span class="class-aula">${c.aula}</span>
+            <span class="class-labname">— ${labName}</span>
+            ${isAdmin ? '<span class="badge-admin">admin</span>' : ''}
+          </div>
+          <div>
+            <span class="class-mat">${c.mat}</span>
+            <span class="class-grp">grp. ${c.grp}</span>
+          </div>
+          <div class="class-meta">${c.dia} · ${hora}</div>
+        </div>
+        <div class="toggle-switch ${on ? 'on' : 'off'}" onclick="toggleClase('${c.id}', ${on})">
+          <div class="toggle-knob"></div>
+        </div>
+        <button class="btn-del" onclick="eliminarClase('${c.id}')">✕</button>
+      </div>`;
+  }).join('');
+}
+
+// ── Toggle active ─────────────────────────────────────────────────────────────
+async function toggleClase(id, currentActiva) {
+  // Optimistic UI
+  allClases = allClases.map(c =>
+    String(c.id) === String(id) ? { ...c, activa: !currentActiva } : c
+  );
+  updateStats();
+  renderClases();
+
+  try {
+    await api('POST', '/admin/toggle-clase', { id, activa: !currentActiva });
+    showFlash(`✅ ${!currentActiva ? 'Activada' : 'Desactivada'}`);
+  } catch (e) {
+    // Revert
+    allClases = allClases.map(c =>
+      String(c.id) === String(id) ? { ...c, activa: currentActiva } : c
+    );
+    updateStats();
+    renderClases();
+    showFlash(`❌ ${e.message}`, 'err');
+  }
+}
+
+// ── Delete ────────────────────────────────────────────────────────────────────
+async function eliminarClase(id) {
+  if (!confirm('¿Eliminar esta clase?')) return;
+  try {
+    await api('DELETE', '/admin/delete-clase', { id });
+    allClases = allClases.filter(c => String(c.id) !== String(id));
+    updateStats();
+    renderClases();
+    showFlash('✅ Clase eliminada');
+  } catch (e) {
+    showFlash(`❌ ${e.message}`, 'err');
+  }
+}
+
+// ── Add form ──────────────────────────────────────────────────────────────────
+function toggleAddForm() {
+  const f = document.getElementById('addForm');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+function fillHoraSelects() {
+  ['fHoraI', 'fHoraF'].forEach(id => {
+    const sel = document.getElementById(id);
+    HORAS.forEach(h => {
+      const o = document.createElement('option');
+      o.value = h; o.textContent = h;
+      sel.appendChild(o);
+    });
+  });
+  document.getElementById('fHoraF').selectedIndex = 2; // default fin = 08:30
+}
+
+function updateHoraFin() {
+  const iIdx = document.getElementById('fHoraI').selectedIndex;
+  const fSel = document.getElementById('fHoraF');
+  if (fSel.selectedIndex <= iIdx) fSel.selectedIndex = iIdx + 2;
+}
+
+async function guardarClase() {
+  const mat = document.getElementById('fMat').value.trim();
+  const grp = document.getElementById('fGrp').value.trim();
+  if (!mat || !grp) { showFlash('❌ Completa materia y grupo', 'err'); return; }
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+
+  const hi = document.getElementById('fHoraI').value;
+  const hf = document.getElementById('fHoraF').value;
+
+  try {
+    const data = await api('POST', '/admin/add-clase', {
+      aula: document.getElementById('fAula').value,
+      mat, grp,
+      dia: document.getElementById('fDia').value,
+      hora_inicio: hi,
+      hora_fin: hf,
+    });
+    allClases.push({ ...data.clase, _source: 'admin' });
+    updateStats();
+    renderClases();
+    toggleAddForm();
+    document.getElementById('fMat').value = '';
+    document.getElementById('fGrp').value = '';
+    showFlash('✅ Clase agregada');
+  } catch (e) {
+    showFlash(`❌ ${e.message}`, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✓ Guardar clase';
+  }
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function showTab(tab) {
+  document.getElementById('panelClases').style.display = tab === 'clases' ? 'block' : 'none';
+  document.getElementById('panelImagenes').style.display = tab === 'imagenes' ? 'block' : 'none';
+  document.getElementById('tabClases').classList.toggle('active', tab === 'clases');
+  document.getElementById('tabImagenes').classList.toggle('active', tab === 'imagenes');
+}
+
+// ── Images ────────────────────────────────────────────────────────────────────
+function resetImgUpload() {
+  imgPreviewData = null;
+  document.getElementById('uploadBtn').style.display = 'none';
+  document.getElementById('uploadSuccess').style.display = 'none';
+  document.getElementById('dropContent').innerHTML = `
+    <div class="drop-icon">📷</div>
+    <div class="drop-text">Toca para seleccionar imagen</div>
+    <div class="drop-hint">JPG · PNG · Máx 5MB</div>`;
+  document.getElementById('dropZone').classList.remove('has-img');
+  document.getElementById('imgFile').value = '';
+}
+
+function previewImg(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5_000_000) {
+    showFlash('❌ Imagen demasiado grande (máx 5MB)', 'err');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    imgPreviewData = e.target.result;
+    const dz = document.getElementById('dropZone');
+    dz.classList.add('has-img');
+    document.getElementById('dropContent').innerHTML =
+      `<img src="${imgPreviewData}" alt="preview">`;
+    document.getElementById('uploadBtn').style.display = 'block';
+    document.getElementById('uploadBtn').textContent =
+      `📤 Subir imagen para ${document.getElementById('imgLab').value}`;
+    document.getElementById('uploadSuccess').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function subirImagen() {
+  if (!imgPreviewData) return;
+  const lab = document.getElementById('imgLab').value;
+  const btn = document.getElementById('uploadBtn');
+  btn.disabled = true;
+  btn.textContent = 'Subiendo…';
+
+  try {
+    await api('POST', '/admin/upload-image', { lab, image: imgPreviewData });
+    document.getElementById('uploadSuccess').textContent =
+      `✅ Imagen de ${lab} guardada correctamente`;
+    document.getElementById('uploadSuccess').style.display = 'block';
+    btn.style.display = 'none';
+    showFlash(`✅ Imagen de ${lab} actualizada`);
+  } catch (e) {
+    showFlash(`❌ ${e.message}`, 'err');
+    btn.disabled = false;
+    btn.textContent = `📤 Subir imagen para ${lab}`;
+  }
+}
+</script>
+</body>
+</html>
