@@ -164,6 +164,7 @@
     <div class="header-right">
       <span class="flash hidden" id="flash"></span>
       <button class="btn-ghost" onclick="loadClases()" id="refreshBtn">↺ Recargar</button>
+      <button class="btn-ghost" onclick="openHistorial()" style="color:#5b8cff">📋 Historial</button>
       <button class="btn-ghost" onclick="doLogout()">Salir</button>
     </div>
   </div>
@@ -181,6 +182,9 @@
     </div>
     <div class="stat" id="statAdmin" onclick="setFilter('admin')">
       <span class="stat-val" id="stAdmin" style="color:var(--blue)">—</span><span class="stat-lbl">Del admin</span>
+    </div>
+    <div class="stat" id="statSubs" title="Dispositivos con push activo">
+      <span class="stat-val" id="stSubs" style="color:#a855f7">—</span><span class="stat-lbl">📲 Push subs</span>
     </div>
   </div>
   <div class="filter-hint" id="filterHint" style="display:none">Filtrando: <span id="filterLabel"></span> — <a href="#" onclick="setFilter('all');return false;" style="color:var(--muted)">ver todas</a></div>
@@ -435,6 +439,7 @@ function enterApp() {
   document.getElementById('loginWrap').style.display = 'none';
   document.getElementById('app').classList.add('show');
   loadClases();
+  fetchSubsCount();
 }
 
 function doLogout() {
@@ -490,6 +495,52 @@ function updateStats() {
   document.getElementById('stActivas').textContent = allClases.filter(c => c.activa).length;
   document.getElementById('stInactivas').textContent = allClases.filter(c => !c.activa).length;
   document.getElementById('stAdmin').textContent = allClases.filter(c => c._source === 'admin').length;
+}
+
+async function fetchSubsCount(){
+  try {
+    const res = await fetch(`${WORKER}/count`);
+    const data = await res.json();
+    document.getElementById('stSubs').textContent = data.count ?? '?';
+  } catch(_){
+    document.getElementById('stSubs').textContent = '?';
+  }
+}
+
+// ── Historial de cambios ──
+function getHistorial(){ return JSON.parse(localStorage.getItem('utesa-admin-historial')||'[]'); }
+function saveHistorial(h){ localStorage.setItem('utesa-admin-historial', JSON.stringify(h.slice(0,50))); }
+
+function logCambio(accion, detalle){
+  const h = getHistorial();
+  const ahora = new Date();
+  const fecha = ahora.toLocaleDateString('es-DO',{day:'2-digit',month:'2-digit',year:'2-digit'});
+  const hora  = ahora.toLocaleTimeString('es-DO',{hour:'2-digit',minute:'2-digit'});
+  h.unshift({ accion, detalle, fecha, hora, ts: Date.now() });
+  saveHistorial(h);
+}
+
+function openHistorial(){
+  const h = getHistorial();
+  const list = document.getElementById('historialList');
+  if(!h.length){
+    list.innerHTML = '<div style="text-align:center;padding:2rem;color:#6b7280;font-size:.85rem">Sin cambios registrados aún</div>';
+  } else {
+    list.innerHTML = h.map(e=>`
+      <div style="display:flex;gap:.75rem;padding:.6rem 0;border-bottom:1px solid #222733;align-items:flex-start">
+        <div style="font-family:'DM Mono',monospace;font-size:.62rem;color:#6b7280;white-space:nowrap;padding-top:.1rem">${e.fecha}<br>${e.hora}</div>
+        <div>
+          <div style="font-size:.8rem;font-weight:600;color:#e8eaf0">${e.accion}</div>
+          <div style="font-size:.72rem;color:#6b7280;margin-top:.1rem">${e.detalle}</div>
+        </div>
+      </div>`).join('');
+  }
+  const sheet = document.getElementById('historialSheet');
+  sheet.style.display = 'flex';
+}
+
+function closeHistorial(){
+  document.getElementById('historialSheet').style.display = 'none';
 }
 
 // ── Filter ────────────────────────────────────────────────────────────────────
@@ -674,6 +725,9 @@ async function toggleClase(id, currentActiva) {
 
   try {
     await api('POST', '/admin/toggle-clase', { id, activa: !currentActiva });
+    const clase = allClases.find(c => String(c.id) === String(id));
+    const label = clase ? `${clase.aula} · ${clase.mat} grp.${clase.grp} · ${clase.dia}` : id;
+    logCambio(!currentActiva ? '✅ Clase activada' : '🚫 Clase desactivada', label);
     showFlash(`✅ ${!currentActiva ? 'Activada' : 'Desactivada'}`);
   } catch (e) {
     // Revert
@@ -882,5 +936,16 @@ async function subirImagen() {
   }
 }
 </script>
+
+<!-- ── Historial ── -->
+<div id="historialSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center">
+  <div style="background:#1a1f2e;border-radius:20px 20px 0 0;border-top:2px solid #5b8cff;width:100%;max-width:640px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid #222733;flex-shrink:0">
+      <span style="font-family:'DM Mono',monospace;font-size:.85rem;color:#5b8cff;font-weight:700">📋 Historial de cambios</span>
+      <button onclick="closeHistorial()" style="background:transparent;border:none;color:#6b7280;font-size:1.1rem;cursor:pointer">✕</button>
+    </div>
+    <div id="historialList" style="overflow-y:auto;flex:1;padding:.75rem 1rem"></div>
+  </div>
+</div>
 </body>
 </html>
