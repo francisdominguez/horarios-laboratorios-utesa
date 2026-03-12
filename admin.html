@@ -300,14 +300,12 @@
 
       <!-- Imagen actual -->
       <div id="currentImgWrap" style="margin-bottom:.75rem;display:none">
-        <div style="font-size:.6rem;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem">Imagen actual</div>
-        <div style="display:flex;gap:.75rem;align-items:flex-start">
-          <img id="currentImg" src="" alt="actual" style="max-height:100px;max-width:140px;border-radius:8px;object-fit:cover;border:1px solid var(--border)">
-          <div>
-            <div id="currentImgSource" style="font-size:.68rem;color:var(--muted);margin-bottom:.3rem"></div>
-            <div style="font-size:.65rem;color:#374151">Sube una nueva imagen abajo para reemplazarla</div>
-          </div>
-        </div>
+        <div style="font-size:.6rem;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem">Imagen actual</div>
+        <div id="currentImgSource" style="font-size:.68rem;color:var(--muted);margin-bottom:.5rem"></div>
+        <img id="currentImg" src="" alt="actual"
+          style="width:100%;max-height:260px;border-radius:12px;object-fit:cover;border:1px solid var(--border);cursor:zoom-in"
+          onclick="openLightbox(this.src)">
+        <div style="font-size:.62rem;color:#374151;margin-top:.35rem;text-align:center">Toca la imagen para verla en grande · Sube una nueva imagen abajo para reemplazarla</div>
       </div>
       <div id="currentImgLoading" style="font-size:.72rem;color:var(--muted);margin-bottom:.75rem;display:none"><span class="spinner"></span> Cargando imagen actual...</div>
 
@@ -332,7 +330,28 @@
 
 </div>
 
+<!-- ── LIGHTBOX ── -->
+<div id="lightbox" onclick="closeLightbox()"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:999;align-items:center;justify-content:center;padding:1rem;cursor:zoom-out">
+  <img id="lightboxImg" src="" alt=""
+    style="max-width:100%;max-height:90vh;border-radius:12px;object-fit:contain;box-shadow:0 0 60px #00000080">
+  <div style="position:absolute;top:1rem;right:1rem;color:#fff;font-size:1.5rem;cursor:pointer;opacity:.6" onclick="closeLightbox()">✕</div>
+</div>
+
 <script>
+// ── Lightbox ──────────────────────────────────────────────────────────────────
+function openLightbox(src) {
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lightboxImg').src = src;
+  lb.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').style.display = 'none';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
 // ── Config ──────────────────────────────────────────────────────────────────
 const WORKER = 'https://sweet-sun-577c.utesamonitores.workers.dev';
 
@@ -476,6 +495,8 @@ function updateStats() {
 // ── Filter ────────────────────────────────────────────────────────────────────
 function setFilter(f) {
   activeFilter = f;
+  // Siempre ir a la tab de clases
+  showTab('clases');
   // Update stat card styles
   ['all','activas','inactivas','admin'].forEach(k => {
     const map = {all:'statTotal',activas:'statActivas',inactivas:'statInactivas',admin:'statAdmin'};
