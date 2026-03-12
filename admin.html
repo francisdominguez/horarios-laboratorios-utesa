@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -44,9 +43,13 @@
 
   /* ── STATS ── */
   .stats{display:flex;gap:.75rem;padding:1rem 1.5rem;flex-wrap:wrap}
-  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.65rem 1.1rem;display:flex;gap:.6rem;align-items:center}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.65rem 1.1rem;display:flex;gap:.6rem;align-items:center;cursor:pointer;transition:all .15s;user-select:none}
+  .stat:hover{border-color:rgba(255,255,255,.15)}
+  .stat.active-filter{border-color:var(--accent);background:rgba(0,229,160,.06)}
   .stat-val{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:700}
   .stat-lbl{font-size:.65rem;color:var(--muted)}
+  .filter-hint{font-size:.58rem;color:var(--muted);padding:0 1.5rem .25rem;font-family:'DM Mono',monospace}
+  .filter-hint span{color:var(--accent)}
 
   /* ── TABS ── */
   .tabs{display:flex;gap:.5rem;padding:0 1.5rem;margin-bottom:1rem}
@@ -158,11 +161,20 @@
 
   <!-- Stats -->
   <div class="stats" id="stats">
-    <div class="stat"><span class="stat-val" id="stTotal" style="color:var(--text)">—</span><span class="stat-lbl">Total clases</span></div>
-    <div class="stat"><span class="stat-val" id="stActivas" style="color:var(--accent)">—</span><span class="stat-lbl">Activas</span></div>
-    <div class="stat"><span class="stat-val" id="stInactivas" style="color:var(--muted)">—</span><span class="stat-lbl">Inactivas</span></div>
-    <div class="stat"><span class="stat-val" id="stAdmin" style="color:var(--blue)">—</span><span class="stat-lbl">Del admin</span></div>
+    <div class="stat" id="statTotal" onclick="setFilter('all')">
+      <span class="stat-val" id="stTotal" style="color:var(--text)">—</span><span class="stat-lbl">Total clases</span>
+    </div>
+    <div class="stat" id="statActivas" onclick="setFilter('activas')">
+      <span class="stat-val" id="stActivas" style="color:var(--accent)">—</span><span class="stat-lbl">Activas</span>
+    </div>
+    <div class="stat" id="statInactivas" onclick="setFilter('inactivas')">
+      <span class="stat-val" id="stInactivas" style="color:var(--muted)">—</span><span class="stat-lbl">Inactivas</span>
+    </div>
+    <div class="stat" id="statAdmin" onclick="setFilter('admin')">
+      <span class="stat-val" id="stAdmin" style="color:var(--blue)">—</span><span class="stat-lbl">Del admin</span>
+    </div>
   </div>
+  <div class="filter-hint" id="filterHint" style="display:none">Filtrando: <span id="filterLabel"></span> — <a href="#" onclick="setFilter('all');return false;" style="color:var(--muted)">ver todas</a></div>
 
   <!-- Tabs -->
   <div class="tabs">
@@ -312,6 +324,7 @@ const HORAS = [
 let token = sessionStorage.getItem('admin_token') || '';
 let allClases = [];
 let imgPreviewData = null;
+let activeFilter = 'all'; // 'all' | 'activas' | 'inactivas' | 'admin'
 
 // ── Boot ─────────────────────────────────────────────────────────────────────
 window.onload = () => {
@@ -425,14 +438,38 @@ function updateStats() {
   document.getElementById('stAdmin').textContent = allClases.filter(c => c._source === 'admin').length;
 }
 
+// ── Filter ────────────────────────────────────────────────────────────────────
+function setFilter(f) {
+  activeFilter = f;
+  // Update stat card styles
+  ['all','activas','inactivas','admin'].forEach(k => {
+    const map = {all:'statTotal',activas:'statActivas',inactivas:'statInactivas',admin:'statAdmin'};
+    document.getElementById(map[k]).classList.toggle('active-filter', k === f);
+  });
+  // Show/hide hint
+  const hint = document.getElementById('filterHint');
+  const labels = {all:'',activas:'Activas',inactivas:'Inactivas',admin:'Del admin'};
+  if (f === 'all') {
+    hint.style.display = 'none';
+  } else {
+    hint.style.display = 'block';
+    document.getElementById('filterLabel').textContent = labels[f];
+  }
+  renderClases();
+}
+
 // ── Render list ───────────────────────────────────────────────────────────────
 function renderClases() {
   const q = document.getElementById('searchInput').value.toLowerCase();
   const list = document.getElementById('clasesList');
 
-  const filtered = allClases.filter(c =>
+  let filtered = allClases.filter(c =>
     !q || (c.aula + c.mat + c.grp + c.dia).toLowerCase().includes(q)
   );
+
+  if (activeFilter === 'activas') filtered = filtered.filter(c => c.activa);
+  if (activeFilter === 'inactivas') filtered = filtered.filter(c => !c.activa);
+  if (activeFilter === 'admin') filtered = filtered.filter(c => c._source === 'admin');
 
   if (!filtered.length) {
     list.innerHTML = '<div class="empty">Sin resultados</div>';
