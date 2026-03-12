@@ -102,6 +102,15 @@
   .toggle-switch.off .toggle-knob{left:3px}
   .btn-del{background:transparent;border:1px solid #3d1c1c;color:var(--danger);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
   .btn-del:hover{background:rgba(239,68,68,.1)}
+  .btn-edit{background:transparent;border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+  .btn-edit:hover{border-color:var(--blue);color:var(--blue)}
+  /* ── INLINE EDIT FORM ── */
+  .edit-row{background:var(--surface2);border:1px solid rgba(91,140,255,.3);border-radius:12px;padding:.9rem 1rem;margin-top:-.3rem}
+  .edit-row .form-grid{margin-bottom:.65rem}
+  .edit-actions{display:flex;gap:.5rem}
+  .btn-update{flex:1;background:var(--blue);color:#fff;border:none;padding:.55rem;border-radius:8px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.82rem;transition:filter .15s}
+  .btn-update:hover{filter:brightness(1.1)}
+  .btn-update:disabled{opacity:.6;cursor:not-allowed}
   .empty{text-align:center;padding:2.5rem;color:var(--muted);font-size:.82rem}
 
   /* ── IMAGES TAB ── */
@@ -253,7 +262,7 @@
       <div class="img-section-label">Actualizar imagen de laboratorio</div>
       <div class="fg" style="margin-bottom:.75rem">
         <label>Laboratorio</label>
-        <select id="imgLab" onchange="resetImgUpload()">
+        <select id="imgLab" onchange="onLabChange()">
           <optgroup label="Edificio B">
             <option value="B120">B120 — Geol. y Topografía</option>
             <option value="B121">B121 — Materiales</option>
@@ -265,23 +274,48 @@
           </optgroup>
           <optgroup label="Edificio C">
             <option value="C001">C001 — Máquinas y Herram.</option>
+            <option value="C1002">C1002 — Taller de Bancos</option>
             <option value="C101">C101 — Lab. Industrial</option>
             <option value="C102">C102 — Automatización</option>
             <option value="C103">C103 — Lab. Industrial 02</option>
             <option value="C104">C104 — Lab. CAD CAM</option>
             <option value="C105">C105 — Ing. Térmica</option>
+            <option value="C106">C106 — Lab. Neumática</option>
+            <option value="C107">C107 — Inst. Eléctricas</option>
             <option value="C201">C201 — Lab. Informática</option>
             <option value="C202">C202 — Lab. Informática 02</option>
+            <option value="C203">C203 — Lab. Informática 03</option>
+            <option value="C204">C204 — Lab. Informática 04</option>
             <option value="C205">C205 — Lab. AutoCAD</option>
+            <option value="C206">C206 — Lab. Informática 06</option>
+            <option value="C207">C207 — Lab. Informática 07</option>
+            <option value="C208">C208 — Lab. Mecatrónica</option>
+            <option value="C413">C413 — Lab. Comunicación</option>
+            <option value="C414A">C414A — Lab. Electrónica</option>
+            <option value="C414B">C414B — Lab. Electrónica 02</option>
+            <option value="C415">C415 — Lab. Electricidad</option>
           </optgroup>
         </select>
       </div>
+
+      <!-- Imagen actual -->
+      <div id="currentImgWrap" style="margin-bottom:.75rem;display:none">
+        <div style="font-size:.6rem;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem">Imagen actual</div>
+        <div style="display:flex;gap:.75rem;align-items:flex-start">
+          <img id="currentImg" src="" alt="actual" style="max-height:100px;max-width:140px;border-radius:8px;object-fit:cover;border:1px solid var(--border)">
+          <div>
+            <div id="currentImgSource" style="font-size:.68rem;color:var(--muted);margin-bottom:.3rem"></div>
+            <div style="font-size:.65rem;color:#374151">Sube una nueva imagen abajo para reemplazarla</div>
+          </div>
+        </div>
+      </div>
+      <div id="currentImgLoading" style="font-size:.72rem;color:var(--muted);margin-bottom:.75rem;display:none"><span class="spinner"></span> Cargando imagen actual...</div>
 
       <label for="imgFile">
         <div class="drop-zone" id="dropZone">
           <div id="dropContent">
             <div class="drop-icon">📷</div>
-            <div class="drop-text">Toca para seleccionar imagen</div>
+            <div class="drop-text">Toca para seleccionar imagen nueva</div>
             <div class="drop-hint">JPG · PNG · Máx 5MB</div>
           </div>
         </div>
@@ -324,7 +358,8 @@ const HORAS = [
 let token = sessionStorage.getItem('admin_token') || '';
 let allClases = [];
 let imgPreviewData = null;
-let activeFilter = 'all'; // 'all' | 'activas' | 'inactivas' | 'admin'
+let activeFilter = 'all';
+let editingId = null; // id de la clase que se está editando
 
 // ── Boot ─────────────────────────────────────────────────────────────────────
 window.onload = () => {
@@ -476,14 +511,22 @@ function renderClases() {
     return;
   }
 
+  const aulaOpts = Object.keys(LABS).map(k =>
+    `<option value="${k}" ${''} >${k} — ${LABS[k]}</option>`
+  ).join('');
+  const diaOpts = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado']
+    .map(d => `<option>${d}</option>`).join('');
+  const horaOpts = HORAS.map(h => `<option>${h}</option>`).join('');
+
   list.innerHTML = filtered.map(c => {
     const labName = LABS[c.aula] || '';
     const isAdmin = c._source === 'admin';
     const on = c.activa;
     const hora = c._h || `${c.hora_inicio || ''}→${c.hora_fin || ''}`;
+    const isEditing = editingId === String(c.id);
 
-    return `
-      <div class="class-row ${on ? (isAdmin ? 'admin-class' : 'on') : 'off'}">
+    const row = `
+      <div class="class-row ${on ? (isAdmin ? 'admin-class' : 'on') : 'off'}" id="row_${c.id}">
         <div class="class-info">
           <div>
             <span class="class-aula">${c.aula}</span>
@@ -496,15 +539,110 @@ function renderClases() {
           </div>
           <div class="class-meta">${c.dia} · ${hora}</div>
         </div>
+        <button class="btn-edit ${isEditing ? 'btn-edit-active' : ''}"
+          onclick="toggleEdit('${c.id}')" title="Editar" style="${isEditing ? 'border-color:var(--blue);color:var(--blue)' : ''}">✏️</button>
         <div class="toggle-switch ${on ? 'on' : 'off'}" onclick="toggleClase('${c.id}', ${on})">
           <div class="toggle-knob"></div>
         </div>
         <button class="btn-del" onclick="eliminarClase('${c.id}')">✕</button>
       </div>`;
+
+    const editForm = isEditing ? `
+      <div class="edit-row" id="edit_${c.id}">
+        <div class="form-grid">
+          <div class="fg">
+            <label>Aula</label>
+            <select id="eAula_${c.id}">${aulaOpts.replace(`value="${c.aula}"`, `value="${c.aula}" selected`)}</select>
+          </div>
+          <div class="fg">
+            <label>Materia</label>
+            <input type="text" id="eMat_${c.id}" value="${c.mat}">
+          </div>
+          <div class="fg">
+            <label>Grupo</label>
+            <input type="text" id="eGrp_${c.id}" value="${c.grp}">
+          </div>
+          <div class="fg">
+            <label>Día</label>
+            <select id="eDia_${c.id}">${diaOpts.replace(`>${c.dia}<`, ` selected>${c.dia}<`)}</select>
+          </div>
+          <div class="fg">
+            <label>Hora inicio</label>
+            <select id="eHoraI_${c.id}">${horaOpts}</select>
+          </div>
+          <div class="fg">
+            <label>Hora fin</label>
+            <select id="eHoraF_${c.id}">${horaOpts}</select>
+          </div>
+        </div>
+        <div class="edit-actions">
+          <button class="btn-update" id="eBtn_${c.id}" onclick="guardarEdicion('${c.id}')">✓ Guardar cambios</button>
+          <button class="btn-cancel" onclick="toggleEdit('${c.id}')">Cancelar</button>
+        </div>
+      </div>` : '';
+
+    return row + editForm;
   }).join('');
+
+  // Set hora selects for open edit forms
+  filtered.forEach(c => {
+    if (editingId === String(c.id)) {
+      const hi = c.hora_inicio || HORAS[0];
+      const hf = c.hora_fin || HORAS[2];
+      setSelectValue(`eHoraI_${c.id}`, hi);
+      setSelectValue(`eHoraF_${c.id}`, hf);
+    }
+  });
 }
 
-// ── Toggle active ─────────────────────────────────────────────────────────────
+function setSelectValue(id, val) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  for (let o of sel.options) { if (o.value === val || o.text === val) { o.selected = true; break; } }
+}
+
+function toggleEdit(id) {
+  editingId = editingId === String(id) ? null : String(id);
+  renderClases();
+  if (editingId) {
+    setTimeout(() => {
+      const el = document.getElementById(`edit_${id}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
+}
+
+async function guardarEdicion(id) {
+  const mat = document.getElementById(`eMat_${id}`)?.value.trim();
+  const grp = document.getElementById(`eGrp_${id}`)?.value.trim();
+  if (!mat || !grp) { showFlash('❌ Completa materia y grupo', 'err'); return; }
+
+  const btn = document.getElementById(`eBtn_${id}`);
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+
+  const aula = document.getElementById(`eAula_${id}`).value;
+  const dia  = document.getElementById(`eDia_${id}`).value;
+  const hi   = document.getElementById(`eHoraI_${id}`).value;
+  const hf   = document.getElementById(`eHoraF_${id}`).value;
+
+  try {
+    await api('POST', '/admin/edit-clase', { id, aula, mat, grp, dia, hora_inicio: hi, hora_fin: hf });
+    // Update local state
+    allClases = allClases.map(c => String(c.id) === String(id)
+      ? { ...c, aula, mat, grp, dia, hora_inicio: hi, hora_fin: hf, _h: `${hi}→${hf}` }
+      : c
+    );
+    editingId = null;
+    updateStats();
+    renderClases();
+    showFlash('✅ Clase actualizada');
+  } catch (e) {
+    showFlash(`❌ ${e.message}`, 'err');
+    btn.disabled = false;
+    btn.textContent = '✓ Guardar cambios';
+  }
+}
 async function toggleClase(id, currentActiva) {
   // Optimistic UI
   allClases = allClases.map(c =>
@@ -606,16 +744,73 @@ function showTab(tab) {
   document.getElementById('panelImagenes').style.display = tab === 'imagenes' ? 'block' : 'none';
   document.getElementById('tabClases').classList.toggle('active', tab === 'clases');
   document.getElementById('tabImagenes').classList.toggle('active', tab === 'imagenes');
+  if (tab === 'imagenes') onLabChange();
 }
 
 // ── Images ────────────────────────────────────────────────────────────────────
+
+// Mapa de imágenes base en GitHub
+const BASE_IMGS = {
+  B120:'img0.jpeg', B121:'img1.jpeg', B123:'img2.jpeg', B213:'img3.jpeg',
+  B217:'img4.jpeg', B211:'img5.jpeg', B219:'img6.jpeg', C001:'img7.jpeg',
+  C1002:'img8.jpeg', C101:'img9.jpeg', C102:'img10.jpeg', C103:'img11.jpeg',
+  C104:'img12.jpeg', C105:'img13.jpeg', C106:'img14.jpeg', C107:'img15.jpeg',
+  C201:'img16.jpeg', C202:'img17.jpeg', C203:'img18.jpeg', C204:'img19.jpeg',
+  C205:'img20.jpeg', C206:'img21.jpeg', C207:'img22.jpeg', C208:'img23.jpeg',
+  C413:'img24.jpeg', C414A:'img25.jpeg', C414B:'img27.jpeg', C415:'img26.jpeg',
+};
+const GITHUB_BASE = 'https://francisdominguez.github.io/horarios-laboratorios-utesa/';
+
+async function onLabChange() {
+  resetImgUpload();
+  const lab = document.getElementById('imgLab').value;
+  const loading = document.getElementById('currentImgLoading');
+  const wrap = document.getElementById('currentImgWrap');
+  const src = document.getElementById('currentImgSource');
+  const img = document.getElementById('currentImg');
+
+  wrap.style.display = 'none';
+  loading.style.display = 'block';
+
+  // 1. Intentar cargar desde el Worker (KV) primero
+  try {
+    const res = await fetch(`${WORKER}/admin/imagen/${lab}`);
+    if (res.ok) {
+      const data = await res.json();
+      img.src = data.image;
+      src.textContent = '📦 Imagen del Worker (subida por admin)';
+      wrap.style.display = 'block';
+      loading.style.display = 'none';
+      return;
+    }
+  } catch (_) {}
+
+  // 2. Intentar cargar desde GitHub (imagen original)
+  const baseFile = BASE_IMGS[lab];
+  if (baseFile) {
+    const url = GITHUB_BASE + baseFile;
+    img.onerror = () => {
+      wrap.style.display = 'none';
+      loading.style.display = 'none';
+    };
+    img.onload = () => {
+      src.textContent = '🗂️ Imagen original (GitHub)';
+      wrap.style.display = 'block';
+      loading.style.display = 'none';
+    };
+    img.src = url;
+  } else {
+    loading.style.display = 'none';
+  }
+}
+
 function resetImgUpload() {
   imgPreviewData = null;
   document.getElementById('uploadBtn').style.display = 'none';
   document.getElementById('uploadSuccess').style.display = 'none';
   document.getElementById('dropContent').innerHTML = `
     <div class="drop-icon">📷</div>
-    <div class="drop-text">Toca para seleccionar imagen</div>
+    <div class="drop-text">Toca para seleccionar imagen nueva</div>
     <div class="drop-hint">JPG · PNG · Máx 5MB</div>`;
   document.getElementById('dropZone').classList.remove('has-img');
   document.getElementById('imgFile').value = '';
@@ -657,6 +852,8 @@ async function subirImagen() {
     document.getElementById('uploadSuccess').style.display = 'block';
     btn.style.display = 'none';
     showFlash(`✅ Imagen de ${lab} actualizada`);
+    // Recargar preview con la nueva imagen
+    onLabChange();
   } catch (e) {
     showFlash(`❌ ${e.message}`, 'err');
     btn.disabled = false;
