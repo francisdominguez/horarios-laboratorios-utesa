@@ -438,26 +438,56 @@
       <div class="ob-dot" id="ob-dot-1"></div>
       <div class="ob-dot" id="ob-dot-2"></div>
       <div class="ob-dot" id="ob-dot-3"></div>
+      <div class="ob-dot" id="ob-dot-4"></div>
+      <div class="ob-dot" id="ob-dot-5"></div>
+      <div class="ob-dot" id="ob-dot-6"></div>
+      <div class="ob-dot" id="ob-dot-7"></div>
+      <div class="ob-dot" id="ob-dot-8"></div>
     </div>
     <div class="ob-slide active" id="ob-slide-0">
       <div class="ob-icon">🎓</div>
       <div class="ob-title">Bienvenido a UTESA Labs</div>
-      <div class="ob-desc">Consulta los horarios de los 28 laboratorios de los edificios B y C en tiempo real.</div>
+      <div class="ob-desc">Consulta los horarios de los <strong>28 laboratorios</strong> de los edificios B y C en tiempo real. Te mostramos todo lo que puedes hacer.</div>
     </div>
     <div class="ob-slide" id="ob-slide-1">
-      <div class="ob-icon">🔍</div>
-      <div class="ob-title">Filtra lo que necesitas</div>
-      <div class="ob-desc">Usa la búsqueda rápida o toca <strong>🔍 Filtrar por</strong> en la barra inferior.</div>
+      <div class="ob-icon">🔔</div>
+      <div class="ob-title">Clases próximas arriba</div>
+      <div class="ob-desc">El banner superior te muestra las clases que están por comenzar en los próximos minutos — sin necesidad de buscar nada.</div>
     </div>
     <div class="ob-slide" id="ob-slide-2">
-      <div class="ob-icon">⏰</div>
-      <div class="ob-title">Activa las alertas</div>
-      <div class="ob-desc">Toca <strong>⏰ Alertas</strong> para recibir notificaciones antes de que empiece una clase.</div>
+      <div class="ob-icon">🔍</div>
+      <div class="ob-title">Filtra lo que necesitas</div>
+      <div class="ob-desc">Usa la <strong>barra de búsqueda</strong> o los filtros de <strong>Edificio, Laboratorio, Día y Hora</strong> para encontrar cualquier clase al instante.</div>
     </div>
     <div class="ob-slide" id="ob-slide-3">
+      <div class="ob-icon">📋</div>
+      <div class="ob-title">Vista Lista y Cuadrícula</div>
+      <div class="ob-desc">Cambia entre <strong>Vista Lista</strong> para ver todos los detalles, o <strong>Vista Cuadrícula</strong> para un mapa visual de los laboratorios por hora.</div>
+    </div>
+    <div class="ob-slide" id="ob-slide-4">
       <div class="ob-icon">⭐</div>
-      <div class="ob-title">Marca tus favoritos</div>
-      <div class="ob-desc">Toca la <strong>☆</strong> junto a cualquier laboratorio para marcarlo como favorito.</div>
+      <div class="ob-title">Guarda tus favoritos</div>
+      <div class="ob-desc">Toca la <strong>☆</strong> junto a cualquier laboratorio para marcarlo. Luego filtra para ver solo tus favoritos desde el menú lateral.</div>
+    </div>
+    <div class="ob-slide" id="ob-slide-5">
+      <div class="ob-icon">⏰</div>
+      <div class="ob-title">Alertas de clases</div>
+      <div class="ob-desc">Configura alertas para recibir avisos <strong>5, 10 o 15 minutos antes</strong> de que empiece una clase. También te avisa cuando finaliza.</div>
+    </div>
+    <div class="ob-slide" id="ob-slide-6">
+      <div class="ob-icon">📲</div>
+      <div class="ob-title">Notificaciones push</div>
+      <div class="ob-desc">Activa las <strong>notificaciones push</strong> para recibir alertas aunque tengas el teléfono bloqueado o la app cerrada.</div>
+    </div>
+    <div class="ob-slide" id="ob-slide-7">
+      <div class="ob-icon">🎨</div>
+      <div class="ob-title">Menú lateral y temas</div>
+      <div class="ob-desc">Abre el <strong>menú ⚙️</strong> para cambiar el tema visual (oscuro, claro, sepia, UTESA), compartir horarios y ver estadísticas.</div>
+    </div>
+    <div class="ob-slide" id="ob-slide-8">
+      <div class="ob-icon">✅</div>
+      <div class="ob-title">¡Todo listo!</div>
+      <div class="ob-desc">Ya conoces UTESA Labs. Si eres del personal, accede al <strong>🔐 Panel Admin</strong> desde el menú lateral para gestionar horarios.</div>
     </div>
     <div class="ob-actions">
       <button class="ob-skip" onclick="closeOnboarding()">Saltar</button>
@@ -1952,15 +1982,16 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
 
   // ── ONBOARDING ──
   let obStep=0;
+  const OB_TOTAL=9;
   window.obNext=function(){
     obStep++;
-    if(obStep>=4){closeOnboarding();return;}
+    if(obStep>=OB_TOTAL){closeOnboarding();return;}
     document.querySelectorAll('.ob-slide').forEach((s,i)=>s.classList.toggle('active',i===obStep));
     document.querySelectorAll('.ob-dot').forEach((d,i)=>d.classList.toggle('active',i===obStep));
-    document.getElementById('ob-next-btn').textContent=obStep===3?'¡Entendido! ✓':'Siguiente →';
+    document.getElementById('ob-next-btn').textContent=obStep===OB_TOTAL-1?'¡Entendido! ✓':'Siguiente →';
   };
-  window.closeOnboarding=function(){document.getElementById('onboarding').classList.remove('show');localStorage.setItem('utesa-onboarded','1');};
-  setTimeout(()=>{if(!localStorage.getItem('utesa-onboarded'))document.getElementById('onboarding').classList.add('show');},800);
+  window.closeOnboarding=function(){document.getElementById('onboarding').classList.remove('show');localStorage.setItem('utesa-onboarded','2');};
+  setTimeout(()=>{if(!localStorage.getItem('utesa-onboarded')||localStorage.getItem('utesa-onboarded')==='1')document.getElementById('onboarding').classList.add('show');},800);
 
   function updateMobileStats(){
     const total=document.getElementById('statTotal'), today=document.getElementById('statToday');
