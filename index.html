@@ -1207,36 +1207,52 @@ async function loadScheduleData(){
   const WORKER = 'https://sweet-sun-577c.utesamonitores.workers.dev';
   const SLOT_END_M=1320, SLOT_END_LBL='10:00 PM';
 
-  // 1. Intentar Worker (fuente principal — refleja cambios al instante)
+  function applyClases(rawClases, fromCache){
+    SLOTS  = _SLOTS_FB;
+    LABS   = _LABS_FB;
+    raw    = rawClases.filter(c => c.activa !== false);
+    classes = raw.map(c=>({
+      ...c,
+      inicio:  SLOTS[c.si]?.l || '7:00 AM',
+      fin:     SLOTS[c.ei]?.l || SLOT_END_LBL,
+      inicioM: SLOTS[c.si]?.m || 420,
+      finM:    SLOTS[c.ei]?.m || SLOT_END_M,
+      durMin:  (c.ei-c.si)*45,
+    })).filter(Boolean);
+    window.classes     = classes;
+    window._allClasses = classes;
+    if(!fromCache && 'serviceWorker' in navigator && navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({ type:'UPDATE_CLASSES', data:{slots:SLOTS,labs:LABS,clases:raw} });
+    }
+  }
+
+  // 1. Worker (fuente principal)
   try {
     const res = await fetch(WORKER + '/schedule?v=' + Date.now());
     if(!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     if(data.clases && data.clases.length){
-      SLOTS  = _SLOTS_FB;
-      LABS   = _LABS_FB;
-      raw    = data.clases.filter(c => c.activa !== false);
-      classes = raw.map(c=>({
-        ...c,
-        inicio:  SLOTS[c.si]?.l || '7:00 AM',
-        fin:     SLOTS[c.ei]?.l || SLOT_END_LBL,
-        inicioM: SLOTS[c.si]?.m || 420,
-        finM:    SLOTS[c.ei]?.m || SLOT_END_M,
-        durMin:  (c.ei-c.si)*45,
-      })).filter(Boolean);
-      window.classes     = classes;
-      window._allClasses = classes;
+      try{ localStorage.setItem('utesa-clases-cache', JSON.stringify({ts:Date.now(), clases:data.clases})); }catch(_){}
+      applyClases(data.clases, false);
       console.log('✅ Clases del Worker:', classes.length);
-      if('serviceWorker' in navigator && navigator.serviceWorker.controller){
-        navigator.serviceWorker.controller.postMessage({ type:'UPDATE_CLASSES', data:{slots:SLOTS,labs:LABS,clases:raw} });
-      }
       return;
     }
   } catch(e) {
-    console.warn('Worker no disponible, usando fallback:', e.message);
+    console.warn('Worker no disponible:', e.message);
   }
 
-  // 2. Fallback: schedule-data.json del repo
+  // 2. Cache localStorage (última respuesta del Worker)
+  try {
+    const cached = JSON.parse(localStorage.getItem('utesa-clases-cache') || 'null');
+    if(cached && cached.clases && cached.clases.length){
+      applyClases(cached.clases, true);
+      const mins = Math.round((Date.now()-cached.ts)/60000);
+      console.log(`✅ Clases del cache (hace ${mins} min):`, classes.length);
+      return;
+    }
+  } catch(_){}
+
+  // 3. schedule-data.json del repo
   let schedData = null;
   try {
     const base = document.querySelector('base')?.href || location.href.replace(/[^\/]*$/, '');
@@ -1264,6 +1280,36 @@ async function loadScheduleData(){
   if('serviceWorker' in navigator && navigator.serviceWorker.controller){
     navigator.serviceWorker.controller.postMessage({ type:'UPDATE_CLASSES', data:schedData });
   }
+}
+
+// Sync silencioso cada 30s
+async function syncClasesBackground(){
+  const WORKER = 'https://sweet-sun-577c.utesamonitores.workers.dev';
+  const SLOT_END_M=1320, SLOT_END_LBL='10:00 PM';
+  try {
+    const res = await fetch(WORKER + '/schedule?v=' + Date.now());
+    if(!res.ok) return;
+    const data = await res.json();
+    if(!data.clases || !data.clases.length) return;
+    const newRaw = data.clases.filter(c => c.activa !== false);
+    const newClases = newRaw.map(c=>({
+      ...c,
+      inicio:  _SLOTS_FB[c.si]?.l || '7:00 AM',
+      fin:     _SLOTS_FB[c.ei]?.l || SLOT_END_LBL,
+      inicioM: _SLOTS_FB[c.si]?.m || 420,
+      finM:    _SLOTS_FB[c.ei]?.m || SLOT_END_M,
+      durMin:  (c.ei-c.si)*45,
+    })).filter(Boolean);
+    const oldKey = classes.map(c=>c.aula+c.mat+c.grp+c.dia+c.activa).join();
+    const newKey = newClases.map(c=>c.aula+c.mat+c.grp+c.dia+c.activa).join();
+    if(oldKey !== newKey){
+      raw = newRaw; classes = newClases;
+      window.classes = classes; window._allClasses = classes;
+      try{ localStorage.setItem('utesa-clases-cache', JSON.stringify({ts:Date.now(), clases:data.clases})); }catch(_){}
+      if(window.render) window.render();
+      console.log('🔄 Clases actualizadas en background');
+    }
+  } catch(_){}
 }
 
 // ══════════════════════════════════════════════
@@ -2053,6 +2099,7 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
   updateClock(); render();
   setInterval(()=>{updateClock();checkAlerts();},1000);
   setInterval(render,10000);
+  setInterval(syncClasesBackground,30000);
 });
 
 // ══════════════════════════════════════════════
