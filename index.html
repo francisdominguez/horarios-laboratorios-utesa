@@ -1204,12 +1204,46 @@ function todayName(){const DIAS={0:'Domingo',1:'Lunes',2:'Martes',3:'Miércoles'
 
 
 async function loadScheduleData(){
+  const WORKER = 'https://sweet-sun-577c.utesamonitores.workers.dev';
+  const SLOT_END_M=1320, SLOT_END_LBL='10:00 PM';
+
+  // 1. Intentar Worker (fuente principal — refleja cambios al instante)
+  try {
+    const res = await fetch(WORKER + '/schedule?v=' + Date.now());
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if(data.clases && data.clases.length){
+      SLOTS  = _SLOTS_FB;
+      LABS   = _LABS_FB;
+      raw    = data.clases.filter(c => c.activa !== false);
+      classes = raw.map(c=>({
+        ...c,
+        inicio:  SLOTS[c.si]?.l || '7:00 AM',
+        fin:     SLOTS[c.ei]?.l || SLOT_END_LBL,
+        inicioM: SLOTS[c.si]?.m || 420,
+        finM:    SLOTS[c.ei]?.m || SLOT_END_M,
+        durMin:  (c.ei-c.si)*45,
+      })).filter(Boolean);
+      window.classes     = classes;
+      window._allClasses = classes;
+      console.log('✅ Clases del Worker:', classes.length);
+      if('serviceWorker' in navigator && navigator.serviceWorker.controller){
+        navigator.serviceWorker.controller.postMessage({ type:'UPDATE_CLASSES', data:{slots:SLOTS,labs:LABS,clases:raw} });
+      }
+      return;
+    }
+  } catch(e) {
+    console.warn('Worker no disponible, usando fallback:', e.message);
+  }
+
+  // 2. Fallback: schedule-data.json del repo
   let schedData = null;
   try {
     const base = document.querySelector('base')?.href || location.href.replace(/[^\/]*$/, '');
     const res  = await fetch(base + 'schedule-data.json?v=' + Date.now());
     if(!res.ok) throw new Error('HTTP ' + res.status);
     schedData = await res.json();
+    console.log('✅ Clases del JSON local');
   } catch(e) {
     console.warn('schedule-data.json no disponible, usando datos locales:', e.message);
     schedData = { slots: _SLOTS_FB, labs: _LABS_FB, clases: _RAW_FB };
@@ -1217,7 +1251,6 @@ async function loadScheduleData(){
   SLOTS  = schedData.slots;
   LABS   = schedData.labs;
   raw    = schedData.clases;
-  const SLOT_END_M=1320, SLOT_END_LBL='10:00 PM';
   classes = raw.map(c=>({
     ...c,
     inicio:  SLOTS[c.si].l,
