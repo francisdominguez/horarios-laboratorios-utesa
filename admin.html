@@ -23,7 +23,7 @@
   .login-btn{width:100%;background:var(--accent);color:#000;border:none;padding:.75rem;border-radius:10px;font-weight:700;font-size:.9rem;cursor:pointer;transition:filter .15s}
   .login-btn:hover{filter:brightness(1.08)}
   .login-btn:disabled{opacity:.6;cursor:not-allowed}
-  .login-hint{color:#1c2030;font-size:.62rem;margin-top:1rem}
+  .login-hint{color:var(--muted);font-size:.62rem;margin-top:1rem}
 
   /* ── LAYOUT ── */
   .app{display:none;flex-direction:column;height:100vh;overflow:hidden}
@@ -143,12 +143,16 @@
   <div class="login-box">
     <div class="login-icon">🔐</div>
     <div class="login-tag">UTESA LABS // ADMIN</div>
-    <div class="login-sub">Ingresa tus credenciales</div>
+    <div class="login-sub">Ingresa tu usuario para continuar</div>
     <input class="login-input" type="text" id="userInput" placeholder="Usuario"
       onkeydown="if(event.key==='Enter')document.getElementById('passInput').focus()"
       autocomplete="username" style="margin-bottom:.5rem">
-    <input class="login-input" type="password" id="passInput" placeholder="Contraseña (vacío si es tu primer acceso)"
-      onkeydown="if(event.key==='Enter')doLogin()" autocomplete="current-password">
+    <input class="login-input" type="password" id="passInput" placeholder="Contraseña"
+      onkeydown="if(event.key==='Enter')doLogin()" autocomplete="current-password"
+      style="margin-bottom:.35rem">
+    <div style="font-size:.65rem;color:var(--muted);margin-bottom:.85rem;line-height:1.4">
+      🆕 ¿Primera vez? <span style="color:var(--accent)">Deja la contraseña vacía</span> y presiona Entrar
+    </div>
     <div class="login-err" id="loginErr" style="display:none"></div>
     <button class="login-btn" id="loginBtn" onclick="doLogin()">Entrar →</button>
   </div>
