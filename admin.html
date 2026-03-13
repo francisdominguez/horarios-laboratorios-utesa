@@ -8,7 +8,7 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   :root{--bg:#080a0e;--surface:#0e1117;--surface2:#151920;--border:#1c2030;--accent:#00e5a0;--danger:#ef4444;--blue:#5b8cff;--text:#e2e4ec;--muted:#6b7280}
-  html,body{height:100%;overflow:hidden;margin:0}body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
 
   /* ── LOGIN ── */
   .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem}
@@ -26,11 +26,11 @@
   .login-hint{color:#1c2030;font-size:.62rem;margin-top:1rem}
 
   /* ── LAYOUT ── */
-  .app{display:none;flex-direction:column;height:100vh;overflow:hidden}
+  .app{display:none;flex-direction:column;min-height:100vh}
   .app.show{display:flex}
 
   /* ── HEADER ── */
-  .header{background:var(--surface);border-bottom:1px solid var(--border);padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;flex-shrink:0}
+  .header{background:var(--surface);border-bottom:1px solid var(--border);padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
   .header-left .tag{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);letter-spacing:.1em}
   .header-left .sub{font-size:.6rem;color:#374151;margin-top:.1rem}
   .header-right{display:flex;align-items:center;gap:.75rem}
@@ -42,7 +42,7 @@
   .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
 
   /* ── STATS ── */
-  .stats{display:flex;gap:.75rem;padding:1rem 1.5rem;flex-wrap:wrap;flex-shrink:0}
+  .stats{display:flex;gap:.75rem;padding:1rem 1.5rem;flex-wrap:wrap}
   .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.65rem 1.1rem;display:flex;gap:.6rem;align-items:center;cursor:pointer;transition:all .15s;user-select:none}
   .stat:hover{border-color:rgba(255,255,255,.15)}
   .stat.active-filter{border-color:var(--accent);background:rgba(0,229,160,.06)}
@@ -52,15 +52,15 @@
   .filter-hint span{color:var(--accent)}
 
   /* ── TABS ── */
-  .tabs{display:flex;gap:.5rem;padding:.75rem 1.5rem .5rem;background:var(--bg);flex-shrink:0}
+  .tabs{display:flex;gap:.5rem;padding:0 1.5rem;margin-bottom:1rem}
   .tab{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.45rem 1.1rem;border-radius:10px;cursor:pointer;font-size:.78rem;font-weight:600;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:.35rem;transition:all .15s}
   .tab.active{background:rgba(0,229,160,.08);border-color:rgba(0,229,160,.35);color:var(--accent)}
 
   /* ── CONTENT ── */
-  .content{padding:0 1.5rem 2rem;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0}
+  .content{padding:0 1.5rem 2rem}
 
   /* ── SEARCH + ADD ── */
-  .toolbar{display:flex;gap:.75rem;margin-bottom:1rem;align-items:center;position:sticky;top:0;z-index:30;background:var(--bg);padding:.5rem 0}
+  .toolbar{display:flex;gap:.75rem;margin-bottom:1rem;align-items:center}
   .search{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:.55rem .9rem;border-radius:10px;font-size:.85rem;outline:none;font-family:'DM Sans',sans-serif;transition:border-color .2s}
   .search:focus{border-color:var(--accent)}
   .search::placeholder{color:var(--muted)}
@@ -190,7 +190,6 @@
     <div class="stat" id="statSubs">
       <span class="stat-val" id="stSubs" style="color:#a855f7">—</span><span class="stat-lbl">📲 Push</span>
     </div>
-    </div>
   </div>
   <div class="filter-hint" id="filterHint" style="display:none">Filtrando: <span id="filterLabel"></span> — <a href="#" onclick="setFilter('all');return false;" style="color:var(--muted)">ver todas</a></div>
 
@@ -208,7 +207,58 @@
       <button class="btn-primary" onclick="toggleAddForm()">+ Agregar clase</button>
     </div>
 
-        <!-- Class list -->
+    <!-- Add form -->
+    <div class="add-form" id="addForm" style="display:none">
+      <div class="form-label">Nueva clase</div>
+      <div class="form-grid">
+        <div class="fg">
+          <label>Aula</label>
+          <select id="fAula">
+            <optgroup label="Edificio B">
+              <option>B120</option><option>B121</option><option>B123</option>
+              <option>B213</option><option>B217</option><option>B211</option><option>B219</option>
+            </optgroup>
+            <optgroup label="Edificio C">
+              <option>C001</option><option>C1002</option><option>C101</option><option>C102</option>
+              <option>C103</option><option>C104</option><option>C105</option><option>C106</option>
+              <option>C107</option><option>C201</option><option>C202</option><option>C203</option>
+              <option>C204</option><option>C205</option><option>C206</option><option>C207</option>
+              <option>C208</option><option>C413</option><option>C414A</option><option>C414B</option>
+              <option>C415</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Materia (código)</label>
+          <input type="text" id="fMat" placeholder="INF113">
+        </div>
+        <div class="fg">
+          <label>Grupo</label>
+          <input type="text" id="fGrp" placeholder="001">
+        </div>
+        <div class="fg">
+          <label>Día</label>
+          <select id="fDia">
+            <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+            <option>Jueves</option><option>Viernes</option><option>Sábado</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Hora inicio</label>
+          <select id="fHoraI" onchange="updateHoraFin()"></select>
+        </div>
+        <div class="fg">
+          <label>Hora fin</label>
+          <select id="fHoraF"></select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-save" id="saveBtn" onclick="guardarClase()">✓ Guardar clase</button>
+        <button class="btn-cancel" onclick="toggleAddForm()">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- Class list -->
     <div class="class-list" id="clasesList">
       <div class="loading"><span class="spinner"></span> Cargando clases...</div>
     </div>
@@ -555,9 +605,52 @@ function renderClases() {
         <button class="btn-del" onclick="eliminarClase('${c.id}')">✕</button>
       </div>`;
 
-    return row;
+    const editForm = isEditing ? `
+      <div class="edit-row" id="edit_${c.id}">
+        <div class="form-grid">
+          <div class="fg">
+            <label>Aula</label>
+            <select id="eAula_${c.id}">${aulaOpts.replace(`value="${c.aula}"`, `value="${c.aula}" selected`)}</select>
+          </div>
+          <div class="fg">
+            <label>Materia</label>
+            <input type="text" id="eMat_${c.id}" value="${c.mat}">
+          </div>
+          <div class="fg">
+            <label>Grupo</label>
+            <input type="text" id="eGrp_${c.id}" value="${c.grp}">
+          </div>
+          <div class="fg">
+            <label>Día</label>
+            <select id="eDia_${c.id}">${diaOpts.replace(`>${c.dia}<`, ` selected>${c.dia}<`)}</select>
+          </div>
+          <div class="fg">
+            <label>Hora inicio</label>
+            <select id="eHoraI_${c.id}">${horaOpts}</select>
+          </div>
+          <div class="fg">
+            <label>Hora fin</label>
+            <select id="eHoraF_${c.id}">${horaOpts}</select>
+          </div>
+        </div>
+        <div class="edit-actions">
+          <button class="btn-update" id="eBtn_${c.id}" onclick="guardarEdicion('${c.id}')">✓ Guardar cambios</button>
+          <button class="btn-cancel" onclick="toggleEdit('${c.id}')">Cancelar</button>
+        </div>
+      </div>` : '';
+
+    return row + editForm;
   }).join('');
 
+  // Set hora selects for open edit forms
+  filtered.forEach(c => {
+    if (editingId === String(c.id)) {
+      const hi = c.hora_inicio || HORAS[0];
+      const hf = c.hora_fin || HORAS[2];
+      setSelectValue(`eHoraI_${c.id}`, hi);
+      setSelectValue(`eHoraF_${c.id}`, hf);
+    }
+  });
 }
 
 function setSelectValue(id, val) {
@@ -567,45 +660,38 @@ function setSelectValue(id, val) {
 }
 
 function toggleEdit(id) {
-  const c = allClases.find(c => String(c.id) === String(id));
-  if (!c) return;
-  editingId = String(id);
-  document.getElementById('eSheetAula').value = c.aula || '';
-  document.getElementById('eSheetMat').value  = c.mat  || '';
-  document.getElementById('eSheetGrp').value  = c.grp  || '';
-  setSelectValue('eSheetDia',   c.dia         || 'Lunes');
-  setSelectValue('eSheetHoraI', c.hora_inicio || HORAS[0]);
-  setSelectValue('eSheetHoraF', c.hora_fin    || HORAS[2]);
-  document.getElementById('editFormSheet').style.display = 'flex';
-}
-function closeEditForm() {
-  document.getElementById('editFormSheet').style.display = 'none';
-  editingId = null;
+  editingId = editingId === String(id) ? null : String(id);
   renderClases();
+  if (editingId) {
+    setTimeout(() => {
+      const el = document.getElementById(`edit_${id}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+  }
 }
 
-async function guardarEdicion() {
-  const id  = editingId;
-  const mat = document.getElementById('eSheetMat').value.trim();
-  const grp = document.getElementById('eSheetGrp').value.trim();
+async function guardarEdicion(id) {
+  const mat = document.getElementById(`eMat_${id}`)?.value.trim();
+  const grp = document.getElementById(`eGrp_${id}`)?.value.trim();
   if (!mat || !grp) { showFlash('❌ Completa materia y grupo', 'err'); return; }
 
-  const btn = document.getElementById('eBtnSheet');
+  const btn = document.getElementById(`eBtn_${id}`);
   btn.disabled = true;
   btn.textContent = 'Guardando…';
 
-  const aula = document.getElementById('eSheetAula').value;
-  const dia  = document.getElementById('eSheetDia').value;
-  const hi   = document.getElementById('eSheetHoraI').value;
-  const hf   = document.getElementById('eSheetHoraF').value;
+  const aula = document.getElementById(`eAula_${id}`).value;
+  const dia  = document.getElementById(`eDia_${id}`).value;
+  const hi   = document.getElementById(`eHoraI_${id}`).value;
+  const hf   = document.getElementById(`eHoraF_${id}`).value;
 
   try {
     await api('POST', '/admin/edit-clase', { id, aula, mat, grp, dia, hora_inicio: hi, hora_fin: hf });
+    // Update local state
     allClases = allClases.map(c => String(c.id) === String(id)
       ? { ...c, aula, mat, grp, dia, hora_inicio: hi, hora_fin: hf, _h: `${hi}→${hf}` }
       : c
     );
-    closeEditForm();
+    editingId = null;
     updateStats();
     renderClases();
     showFlash('✅ Clase actualizada');
@@ -656,23 +742,20 @@ async function eliminarClase(id) {
 
 // ── Add form ──────────────────────────────────────────────────────────────────
 function toggleAddForm() {
-  document.getElementById('addFormSheet').style.display = 'flex';
-}
-function closeAddForm() {
-  document.getElementById('addFormSheet').style.display = 'none';
+  const f = document.getElementById('addForm');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
 }
 
 function fillHoraSelects() {
-  ['fHoraI', 'fHoraF', 'eSheetHoraI', 'eSheetHoraF'].forEach(id => {
+  ['fHoraI', 'fHoraF'].forEach(id => {
     const sel = document.getElementById(id);
-    if (!sel) return;
     HORAS.forEach(h => {
       const o = document.createElement('option');
       o.value = h; o.textContent = h;
       sel.appendChild(o);
     });
   });
-  document.getElementById('fHoraF').selectedIndex = 2;
+  document.getElementById('fHoraF').selectedIndex = 2; // default fin = 08:30
 }
 
 function updateHoraFin() {
@@ -707,7 +790,6 @@ async function guardarClase() {
     toggleAddForm();
     document.getElementById('fMat').value = '';
     document.getElementById('fGrp').value = '';
-    closeAddForm();
     showFlash('✅ Clase agregada');
   } catch (e) {
     showFlash(`❌ ${e.message}`, 'err');
@@ -1008,117 +1090,6 @@ const _origToggle = window.toggleClase;
       </div>
       <!-- Lista usuarios -->
       <div id="usuariosList"></div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ── Add Clase Modal ────────────────────────────────────────────────────── -->
-<div id="addFormSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem">
-  <div style="background:#1a1f2e;border-radius:16px;width:100%;max-width:500px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);border-top:2px solid var(--accent)">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid #1e2436;flex-shrink:0">
-      <span style="font-family:'DM Mono',monospace;font-size:.85rem;font-weight:700;color:var(--accent)">+ Nueva clase</span>
-      <button onclick="closeAddForm()" style="background:transparent;border:none;color:#6b7280;font-size:1.1rem;cursor:pointer">✕</button>
-    </div>
-    <div style="overflow-y:auto;flex:1;padding:1rem 1.25rem 1.5rem">
-      <div class="form-grid">
-        <div class="fg">
-          <label>Aula</label>
-          <select id="fAula">
-            <optgroup label="Edificio B">
-              <option>B120</option><option>B121</option><option>B123</option>
-              <option>B213</option><option>B217</option><option>B211</option><option>B219</option>
-            </optgroup>
-            <optgroup label="Edificio C">
-              <option>C001</option><option>C1002</option><option>C101</option><option>C102</option>
-              <option>C103</option><option>C104</option><option>C105</option><option>C106</option>
-              <option>C107</option><option>C201</option><option>C202</option><option>C203</option>
-              <option>C204</option><option>C205</option><option>C206</option><option>C207</option>
-              <option>C208</option><option>C413</option><option>C414A</option><option>C414B</option>
-              <option>C415</option>
-            </optgroup>
-          </select>
-        </div>
-        <div class="fg">
-          <label>Materia (código)</label>
-          <input type="text" id="fMat" placeholder="INF113">
-        </div>
-        <div class="fg">
-          <label>Grupo</label>
-          <input type="text" id="fGrp" placeholder="001">
-        </div>
-        <div class="fg">
-          <label>Día</label>
-          <select id="fDia"><option>Lunes</option><option>Martes</option><option>Miércoles</option><option>Jueves</option><option>Viernes</option><option>Sábado</option></select>
-        </div>
-        <div class="fg">
-          <label>Hora inicio</label>
-          <select id="fHoraI" onchange="updateHoraFin()"></select>
-        </div>
-        <div class="fg">
-          <label>Hora fin</label>
-          <select id="fHoraF"></select>
-        </div>
-      </div>
-      <div class="form-actions" style="margin-top:.75rem">
-        <button class="btn-save" id="saveBtn" onclick="guardarClase()">✓ Guardar clase</button>
-        <button class="btn-cancel" onclick="closeAddForm()">Cancelar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── Edit Clase Modal ────────────────────────────────────────────────────── -->
-<div id="editFormSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem">
-  <div style="background:#1a1f2e;border-radius:16px;width:100%;max-width:500px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);border-top:2px solid var(--blue)">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid #1e2436;flex-shrink:0">
-      <span style="font-family:'DM Mono',monospace;font-size:.85rem;font-weight:700;color:var(--blue)">✏️ Editar clase</span>
-      <button onclick="closeEditForm()" style="background:transparent;border:none;color:#6b7280;font-size:1.1rem;cursor:pointer">✕</button>
-    </div>
-    <div style="overflow-y:auto;flex:1;padding:1rem 1.25rem 1.5rem">
-      <div class="form-grid">
-        <div class="fg">
-          <label>Aula</label>
-          <select id="eSheetAula">
-            <optgroup label="Edificio B">
-              <option>B120</option><option>B121</option><option>B123</option>
-              <option>B213</option><option>B217</option><option>B211</option><option>B219</option>
-            </optgroup>
-            <optgroup label="Edificio C">
-              <option>C001</option><option>C1002</option><option>C101</option><option>C102</option>
-              <option>C103</option><option>C104</option><option>C105</option><option>C106</option>
-              <option>C107</option><option>C201</option><option>C202</option><option>C203</option>
-              <option>C204</option><option>C205</option><option>C206</option><option>C207</option>
-              <option>C208</option><option>C413</option><option>C414A</option><option>C414B</option>
-              <option>C415</option>
-            </optgroup>
-          </select>
-        </div>
-        <div class="fg">
-          <label>Materia</label>
-          <input type="text" id="eSheetMat" placeholder="INF113">
-        </div>
-        <div class="fg">
-          <label>Grupo</label>
-          <input type="text" id="eSheetGrp" placeholder="001">
-        </div>
-        <div class="fg">
-          <label>Día</label>
-          <select id="eSheetDia"><option>Lunes</option><option>Martes</option><option>Miércoles</option><option>Jueves</option><option>Viernes</option><option>Sábado</option></select>
-        </div>
-        <div class="fg">
-          <label>Hora inicio</label>
-          <select id="eSheetHoraI"></select>
-        </div>
-        <div class="fg">
-          <label>Hora fin</label>
-          <select id="eSheetHoraF"></select>
-        </div>
-      </div>
-      <div class="edit-actions" style="margin-top:.75rem">
-        <button class="btn-update" id="eBtnSheet" onclick="guardarEdicion()">✓ Guardar cambios</button>
-        <button class="btn-cancel" onclick="closeEditForm()">Cancelar</button>
-      </div>
     </div>
   </div>
 </div>
