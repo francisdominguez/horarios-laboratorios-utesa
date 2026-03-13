@@ -804,7 +804,7 @@ async function subirImagen() {
 }
 </script>
 <style>
-.form-sheet-inner{background:#1a1f2e;border-radius:20px 20px 0 0;width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.form-sheet-inner{background:#1a1f2e;border-radius:16px;width:100%;max-width:500px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .form-sheet-header{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid #1e2436;flex-shrink:0}
 .form-sheet-body{overflow-y:auto;flex:1;padding:1rem 1.25rem 2rem}
 .form-sheet-title{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:700}
@@ -812,7 +812,7 @@ async function subirImagen() {
 </style>
 
 <!-- ── Add Clase Sheet ── -->
-<div id="addFormSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center">
+<div id="addFormSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem">
   <div class="form-sheet-inner" style="border-top:2px solid var(--accent)">
     <div class="form-sheet-header">
       <span class="form-sheet-title" style="color:var(--accent)">+ Nueva clase</span>
@@ -867,7 +867,7 @@ async function subirImagen() {
 </div>
 
 <!-- ── Edit Clase Sheet ── -->
-<div id="editFormSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center">
+<div id="editFormSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem">
   <div class="form-sheet-inner" style="border-top:2px solid var(--blue)">
     <div class="form-sheet-header">
       <span class="form-sheet-title" style="color:var(--blue)">✏️ Editar clase</span>
