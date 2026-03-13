@@ -147,10 +147,26 @@
     <input class="login-input" type="text" id="userInput" placeholder="Usuario"
       onkeydown="if(event.key==='Enter')document.getElementById('passInput').focus()"
       autocomplete="username" style="margin-bottom:.5rem">
-    <input class="login-input" type="password" id="passInput" placeholder="Contraseña"
+    <input class="login-input" type="password" id="passInput" placeholder="Contraseña (vacío si es tu primer acceso)"
       onkeydown="if(event.key==='Enter')doLogin()" autocomplete="current-password">
-    <div class="login-err" id="loginErr" style="display:none">Usuario o contraseña incorrectos</div>
+    <div class="login-err" id="loginErr" style="display:none"></div>
     <button class="login-btn" id="loginBtn" onclick="doLogin()">Entrar →</button>
+  </div>
+</div>
+
+<!-- ══ SET PASSWORD (primer acceso) ══ -->
+<div class="login-wrap" id="setPassWrap" style="display:none">
+  <div class="login-box">
+    <div class="login-icon">🔑</div>
+    <div class="login-tag">UTESA LABS // ADMIN</div>
+    <div class="login-sub" id="setPassSub" style="margin-bottom:1.25rem">Bienvenido — crea tu contraseña</div>
+    <input class="login-input" type="password" id="newPass1" placeholder="Nueva contraseña (mín. 6 caracteres)"
+      onkeydown="if(event.key==='Enter')document.getElementById('newPass2').focus()"
+      autocomplete="new-password" style="margin-bottom:.5rem">
+    <input class="login-input" type="password" id="newPass2" placeholder="Confirmar contraseña"
+      onkeydown="if(event.key==='Enter')doSetPassword()" autocomplete="new-password">
+    <div class="login-err" id="setPassErr" style="display:none"></div>
+    <button class="login-btn" id="setPassBtn" onclick="doSetPassword()">Crear contraseña →</button>
   </div>
 </div>
 
@@ -204,7 +220,7 @@
     <div class="toolbar">
       <input class="search" type="text" id="searchInput" placeholder="Buscar aula, materia, grupo..."
         oninput="renderClases()">
-      <button class="btn-primary" onclick="toggleAddForm()">+ Agregar clase</button>
+      <button class="btn-primary" id="btnAgregarClase" onclick="toggleAddForm()">+ Agregar clase</button>
     </div>
 
     <!-- Class list -->
@@ -338,6 +354,7 @@ let allClases = [];
 let imgPreviewData = null;
 let activeFilter = 'all';
 let editingId = null; // id de la clase que se está editando
+let currentSetupToken = '';
 
 // ── Boot ─────────────────────────────────────────────────────────────────────
 window.onload = () => {
@@ -371,6 +388,14 @@ async function doLogin() {
       err.style.display = 'block';
       passInp.value = '';
     } else {
+      if (data.mustSetPassword) {
+        // Primer acceso: mostrar pantalla para crear contraseña
+        currentSetupToken = data.setupToken;
+        document.getElementById('setPassSub').textContent = `Bienvenido, ${data.username} — crea tu contraseña`;
+        document.getElementById('loginWrap').style.display = 'none';
+        document.getElementById('setPassWrap').style.display = 'flex';
+        return;
+      }
       token       = data.token;
       currentUser = data.username;
       currentRol  = data.rol;
@@ -391,7 +416,7 @@ async function doLogin() {
 async function verifyAndEnter() {
   try {
     const res = await fetch(`${WORKER}/admin/clases`, {
-      headers: { 'X-Admin-Token': token }
+      headers: { 'X-Session-Token': token }
     });
     if (res.ok) { enterApp(); }
     else { sessionStorage.removeItem('admin_token'); token = ''; }
@@ -409,7 +434,7 @@ function enterApp() {
   document.getElementById('app').classList.add('show');
 
   // Mostrar nombre y rol
-  const rolLabel = currentRol === 'superadmin' ? '👑 SuperAdmin' : '🔧 Monitor';
+  const rolLabel = currentRol === 'superadmin' ? '👑 SuperAdmin' : currentRol === 'editor' ? '✏️ Editor' : '🔧 Monitor';
   const el = document.getElementById('adminNombre');
   if (el) el.textContent = `${currentUser}  ${rolLabel}`;
 
@@ -417,8 +442,62 @@ function enterApp() {
   const btnU = document.getElementById('btnUsuarios');
   if (btnU) btnU.style.display = currentRol === 'superadmin' ? '' : 'none';
 
+  // Ocultar botón Agregar para monitores
+  const btnAdd = document.getElementById('btnAgregarClase');
+  if (btnAdd) btnAdd.style.display = (currentRol === 'monitor') ? 'none' : '';
+
   loadClases();
   fetchSubsCount();
+}
+
+
+async function doSetPassword() {
+  const p1  = document.getElementById('newPass1').value;
+  const p2  = document.getElementById('newPass2').value;
+  const err = document.getElementById('setPassErr');
+  const btn = document.getElementById('setPassBtn');
+  err.style.display = 'none';
+
+  if (!p1 || p1.length < 6) {
+    err.textContent = 'La contraseña debe tener al menos 6 caracteres';
+    err.style.display = 'block'; return;
+  }
+  if (p1 !== p2) {
+    err.textContent = 'Las contraseñas no coinciden';
+    err.style.display = 'block'; return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+
+  try {
+    const res = await fetch(`${WORKER}/admin/set-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ setupToken: currentSetupToken, newPassword: p1 })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      err.textContent = data.error || 'Error al guardar';
+      err.style.display = 'block';
+      return;
+    }
+    token       = data.token;
+    currentUser = data.username;
+    currentRol  = data.rol;
+    sessionStorage.setItem('admin_token', token);
+    sessionStorage.setItem('admin_user',  currentUser);
+    sessionStorage.setItem('admin_rol',   currentRol);
+    document.getElementById('setPassWrap').style.display = 'none';
+    enterApp();
+    showFlash('✅ Contraseña creada. ¡Bienvenido!');
+  } catch {
+    err.textContent = 'No se pudo conectar al Worker';
+    err.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Crear contraseña →';
+  }
 }
 
 function doLogout() {
@@ -546,12 +625,12 @@ function renderClases() {
           </div>
           <div class="class-meta">${c.dia} · ${hora}</div>
         </div>
-        <button class="btn-edit ${isEditing ? 'btn-edit-active' : ''}"
-          onclick="toggleEdit('${c.id}')" title="Editar" style="${isEditing ? 'border-color:var(--blue);color:var(--blue)' : ''}">✏️</button>
+        ${currentRol !== 'monitor' ? `<button class="btn-edit ${isEditing ? 'btn-edit-active' : ''}"
+          onclick="toggleEdit('${c.id}')" title="Editar" style="${isEditing ? 'border-color:var(--blue);color:var(--blue)' : ''}">✏️</button>` : ''}
         <div class="toggle-switch ${on ? 'on' : 'off'}" onclick="toggleClase('${c.id}', ${on})">
           <div class="toggle-knob"></div>
         </div>
-        <button class="btn-del" onclick="eliminarClase('${c.id}')">✕</button>
+        ${currentRol !== 'monitor' ? `<button class="btn-del" onclick="eliminarClase('${c.id}')">✕</button>` : ''}
       </div>`;
 
     return row;
@@ -921,24 +1000,32 @@ async function loadUsuarios(){
       list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:#6b7280;font-size:.82rem">Sin usuarios registrados</div>';
       return;
     }
-    list.innerHTML = users.map(u => `
-      <div style="display:flex;align-items:center;gap:.75rem;padding:.65rem 0;border-bottom:1px solid #1e2436">
+    list.innerHTML = users.map(u => {
+      const rolColor = u.rol==='superadmin' ? '#f59e0b' : u.rol==='editor' ? '#00e5a0' : '#6b7280';
+      const rolIcon  = u.rol==='superadmin' ? '👑' : u.rol==='editor' ? '✏️' : '🔧';
+      const rolLabel = u.rol==='superadmin' ? 'SuperAdmin' : u.rol==='editor' ? 'Editor' : 'Monitor';
+      const passStatus = u.hasPassword
+        ? '<span style="font-size:.6rem;color:#374151;margin-left:.3rem">🔒 activa</span>'
+        : '<span style="font-size:.6rem;color:#f59e0b;margin-left:.3rem">⚠️ sin contraseña</span>';
+      return `
+      <div style="display:flex;align-items:center;gap:.6rem;padding:.65rem 0;border-bottom:1px solid #1e2436">
         <div style="flex:1">
-          <div style="font-size:.85rem;font-weight:600;color:#e8eaf0">${u.username}</div>
+          <div style="font-size:.85rem;font-weight:600;color:#e8eaf0">${u.username} ${passStatus}</div>
           <div style="font-size:.68rem;margin-top:.1rem">
-            ${u.rol==='superadmin'
-              ? '<span style="color:#f59e0b">👑 SuperAdmin</span>'
-              : '<span style="color:#6b7280">🔧 Monitor</span>'}
+            <span style="color:${rolColor}">${rolIcon} ${rolLabel}</span>
           </div>
         </div>
         ${u.username !== currentUser ? `
         <select onchange="cambiarRol('${u.username}', this.value)" style="background:#0d1117;border:1px solid #222733;color:#e8eaf0;font-size:.72rem;padding:.3rem .5rem;border-radius:8px;cursor:pointer">
-          <option value="monitor"    ${u.rol==='monitor'    ?'selected':''}>Monitor</option>
-          <option value="superadmin" ${u.rol==='superadmin' ?'selected':''}>SuperAdmin</option>
+          <option value="monitor"    ${u.rol==='monitor'    ?'selected':''}>🔧 Monitor</option>
+          <option value="editor"     ${u.rol==='editor'     ?'selected':''}>✏️ Editor</option>
+          <option value="superadmin" ${u.rol==='superadmin' ?'selected':''}>👑 SuperAdmin</option>
         </select>
+        ${u.hasPassword ? `<button onclick="resetPassword('${u.username}')" title="Forzar nueva contraseña" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#f59e0b;font-size:.72rem;padding:.3rem .5rem;border-radius:8px;cursor:pointer">🔄</button>` : ''}
         <button onclick="eliminarUsuario('${u.username}')" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-size:.72rem;padding:.3rem .6rem;border-radius:8px;cursor:pointer">🗑️</button>
         ` : '<span style="font-size:.68rem;color:#6b7280;padding:.3rem .5rem">(tú)</span>'}
-      </div>`).join('');
+      </div>`;
+    }).join('');
   } catch(e){
     list.innerHTML = `<div style="text-align:center;padding:1.5rem;color:#ef4444;font-size:.82rem">❌ ${e.message}</div>`;
   }
@@ -946,15 +1033,23 @@ async function loadUsuarios(){
 
 async function crearUsuario(){
   const user = document.getElementById('newUsername').value.trim();
-  const pass = document.getElementById('newPassword').value.trim();
   const rol  = document.getElementById('newRol').value;
-  if(!user || !pass){ showFlash('❌ Completa usuario y contraseña','err'); return; }
+  if(!user){ showFlash('❌ Escribe el nombre de usuario','err'); return; }
   try {
-    await api('POST', '/admin/users', { username: user, password: pass, rol });
+    await api('POST', '/admin/users', { username: user, rol });
     logCambio('👤 Usuario creado', `${user} (${rol})`);
-    showFlash(`✅ Usuario ${user} creado`);
+    showFlash(`✅ Usuario ${user} creado — entrará sin contraseña la primera vez`);
     document.getElementById('newUsername').value = '';
-    document.getElementById('newPassword').value = '';
+    await loadUsuarios();
+  } catch(e){ showFlash(`❌ ${e.message}`,'err'); }
+}
+
+async function resetPassword(username){
+  if(!confirm(`¿Forzar nueva contraseña para "${username}"?\nDeberá crearla en su próximo acceso.`)) return;
+  try {
+    await api('POST', '/admin/users/reset-password', { username });
+    logCambio('🔄 Contraseña reseteada', username);
+    showFlash(`✅ ${username} deberá crear nueva contraseña`);
     await loadUsuarios();
   } catch(e){ showFlash(`❌ ${e.message}`,'err'); }
 }
@@ -978,8 +1073,7 @@ async function eliminarUsuario(username){
   } catch(e){ showFlash(`❌ ${e.message}`,'err'); }
 }
 
-// ── logCambio en toggleClase ───────────────────────────────────────────────────
-const _origToggle = window.toggleClase;
+
 </script>
 
 <!-- ── Historial Sheet ─────────────────────────────────────────────────────── -->
@@ -1003,12 +1097,13 @@ const _origToggle = window.toggleClase;
     <div style="overflow-y:auto;flex:1;padding:.75rem 1.1rem">
       <!-- Crear usuario -->
       <div style="background:#0d1117;border:1px solid #1e2436;border-radius:12px;padding:.85rem;margin-bottom:1rem">
-        <div style="font-size:.75rem;font-weight:700;color:#a855f7;margin-bottom:.6rem;font-family:'DM Mono',monospace">+ Nuevo usuario</div>
-        <input id="newUsername" type="text" placeholder="Usuario" style="width:100%;background:#1a1f2e;border:1px solid #222733;color:#e8eaf0;padding:.5rem .75rem;border-radius:8px;font-size:.82rem;margin-bottom:.4rem;box-sizing:border-box">
-        <input id="newPassword" type="password" placeholder="Contraseña" style="width:100%;background:#1a1f2e;border:1px solid #222733;color:#e8eaf0;padding:.5rem .75rem;border-radius:8px;font-size:.82rem;margin-bottom:.4rem;box-sizing:border-box">
+        <div style="font-size:.75rem;font-weight:700;color:#a855f7;margin-bottom:.4rem;font-family:'DM Mono',monospace">+ Nuevo usuario</div>
+        <div style="font-size:.65rem;color:#6b7280;margin-bottom:.6rem">El usuario creará su contraseña en su primer acceso</div>
+        <input id="newUsername" type="text" placeholder="Nombre de usuario" style="width:100%;background:#1a1f2e;border:1px solid #222733;color:#e8eaf0;padding:.5rem .75rem;border-radius:8px;font-size:.82rem;margin-bottom:.4rem;box-sizing:border-box">
         <div style="display:flex;gap:.5rem;align-items:center">
           <select id="newRol" style="flex:1;background:#1a1f2e;border:1px solid #222733;color:#e8eaf0;padding:.5rem .75rem;border-radius:8px;font-size:.82rem">
             <option value="monitor">🔧 Monitor</option>
+            <option value="editor">✏️ Editor</option>
             <option value="superadmin">👑 SuperAdmin</option>
           </select>
           <button onclick="crearUsuario()" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.35);color:#a855f7;padding:.5rem 1rem;border-radius:8px;font-size:.82rem;cursor:pointer;font-weight:600">Crear →</button>
