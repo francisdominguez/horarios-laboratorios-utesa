@@ -370,7 +370,7 @@ async function doLogin() {
   const err     = document.getElementById('loginErr');
   const user    = userInp.value.trim();
   const pass    = passInp.value.trim();
-  if (!user || !pass) return;
+  if (!user) return;
 
   btn.disabled = true;
   btn.textContent = 'Verificando…';
@@ -383,19 +383,21 @@ async function doLogin() {
       body: JSON.stringify({ username: user, password: pass })
     });
     const data = await res.json();
+
+    // Primer acceso: debe crear contraseña
+    if (data.mustSetPassword) {
+      currentSetupToken = data.setupToken;
+      document.getElementById('setPassSub').textContent = `Bienvenido, ${data.username} — crea tu contraseña`;
+      document.getElementById('loginWrap').style.display = 'none';
+      document.getElementById('setPassWrap').style.display = 'flex';
+      return;
+    }
+
     if (!res.ok || !data.token) {
       err.textContent = data.error || 'Usuario o contraseña incorrectos';
       err.style.display = 'block';
       passInp.value = '';
     } else {
-      if (data.mustSetPassword) {
-        // Primer acceso: mostrar pantalla para crear contraseña
-        currentSetupToken = data.setupToken;
-        document.getElementById('setPassSub').textContent = `Bienvenido, ${data.username} — crea tu contraseña`;
-        document.getElementById('loginWrap').style.display = 'none';
-        document.getElementById('setPassWrap').style.display = 'flex';
-        return;
-      }
       token       = data.token;
       currentUser = data.username;
       currentRol  = data.rol;
@@ -415,11 +417,22 @@ async function doLogin() {
 
 async function verifyAndEnter() {
   try {
-    const res = await fetch(`${WORKER}/admin/clases`, {
+    // Verificar sesión obteniendo los datos reales del Worker
+    const res = await fetch(`${WORKER}/admin/verify`, {
       headers: { 'X-Session-Token': token }
     });
-    if (res.ok) { enterApp(); }
-    else { sessionStorage.removeItem('admin_token'); token = ''; }
+    if (res.ok) {
+      const data = await res.json();
+      // Actualizar user/rol desde el Worker, no confiar en sessionStorage
+      currentUser = data.username;
+      currentRol  = data.rol;
+      sessionStorage.setItem('admin_user', currentUser);
+      sessionStorage.setItem('admin_rol',  currentRol);
+      enterApp();
+    } else {
+      sessionStorage.clear();
+      token = '';
+    }
   } catch { /* show login */ }
 }
 
