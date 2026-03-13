@@ -983,8 +983,8 @@ const _origToggle = window.toggleClase;
 </script>
 
 <!-- ── Historial Sheet ─────────────────────────────────────────────────────── -->
-<div id="historialSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center">
-  <div style="background:#1a1f2e;border-radius:20px 20px 0 0;border-top:2px solid #5b8cff;width:100%;max-width:640px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden">
+<div id="historialSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#1a1f2e;border-radius:16px;border-top:2px solid #5b8cff;width:100%;max-width:500px;max-height:90vh;box-shadow:0 20px 60px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid #1e2436;flex-shrink:0">
       <span style="font-family:'DM Mono',monospace;font-size:.85rem;color:#5b8cff;font-weight:700">📋 Historial de cambios</span>
       <button onclick="closeHistorial()" style="background:transparent;border:none;color:#6b7280;font-size:1.1rem;cursor:pointer">✕</button>
@@ -994,8 +994,8 @@ const _origToggle = window.toggleClase;
 </div>
 
 <!-- ── Usuarios Sheet (solo superadmin) ───────────────────────────────────── -->
-<div id="usuariosSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center">
-  <div style="background:#1a1f2e;border-radius:20px 20px 0 0;border-top:2px solid #a855f7;width:100%;max-width:640px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden">
+<div id="usuariosSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#1a1f2e;border-radius:16px;border-top:2px solid #a855f7;width:100%;max-width:500px;max-height:90vh;box-shadow:0 20px 60px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid #1e2436;flex-shrink:0">
       <span style="font-family:'DM Mono',monospace;font-size:.85rem;color:#a855f7;font-weight:700">👥 Gestión de usuarios</span>
       <button onclick="closeUsuarios()" style="background:transparent;border:none;color:#6b7280;font-size:1.1rem;cursor:pointer">✕</button>
