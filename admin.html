@@ -129,6 +129,19 @@
   .spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:.5rem;vertical-align:middle}
   @keyframes spin{to{transform:rotate(360deg)}}
 
+
+  /* ── USER MENU DROPDOWN ── */
+  .user-menu-wrap{position:relative}
+  .user-menu-btn{background:transparent;border:1px solid var(--border);color:#6b7280;padding:.3rem .65rem;border-radius:8px;cursor:pointer;font-size:.72rem;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:.35rem;transition:all .15s}
+  .user-menu-btn:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+  .user-menu-btn .chevron{font-size:.6rem;transition:transform .15s}
+  .user-menu-btn.open .chevron{transform:rotate(180deg)}
+  .user-dropdown{position:absolute;right:0;top:calc(100% + .4rem);background:#1a1f2e;border:1px solid #1e2436;border-radius:10px;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:200;overflow:hidden;display:none}
+  .user-dropdown.show{display:block}
+  .user-dropdown-item{width:100%;background:transparent;border:none;color:#e2e4ec;padding:.6rem 1rem;font-size:.78rem;font-family:'DM Sans',sans-serif;cursor:pointer;text-align:left;display:flex;align-items:center;gap:.5rem;transition:background .12s}
+  .user-dropdown-item:hover{background:rgba(255,255,255,.05)}
+  .user-dropdown-sep{border:none;border-top:1px solid #1e2436;margin:.2rem 0}
+
   @media(max-width:500px){
     .form-grid{grid-template-columns:1fr}
     .stats{gap:.5rem}
@@ -185,11 +198,20 @@
     </div>
     <div class="header-right">
       <span class="flash hidden" id="flash"></span>
-      <span id="adminNombre" style="font-size:.72rem;color:#6b7280;font-family:'DM Mono',monospace"></span>
       <button class="btn-ghost" id="btnUsuarios" onclick="openUsuarios()" style="display:none;color:#a855f7">👥 Usuarios</button>
       <button class="btn-ghost" onclick="openHistorial()" style="color:#5b8cff">📋 Historial</button>
       <button class="btn-ghost" onclick="loadClases()" id="refreshBtn">↺ Recargar</button>
-      <button class="btn-ghost" onclick="doLogout()">Salir</button>
+      <div class="user-menu-wrap" id="userMenuWrap">
+        <button class="user-menu-btn" id="userMenuBtn" onclick="toggleUserMenu()">
+          <span id="adminNombre"></span>
+          <span class="chevron">▾</span>
+        </button>
+        <div class="user-dropdown" id="userDropdown">
+          <button class="user-dropdown-item" onclick="openChangePassword()">🔑 Cambiar contraseña</button>
+          <hr class="user-dropdown-sep">
+          <button class="user-dropdown-item" style="color:#ef4444" onclick="doLogout()">⬅️ Salir</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -514,6 +536,71 @@ async function doSetPassword() {
   } finally {
     btn.disabled = false;
     btn.textContent = 'Crear contraseña →';
+  }
+}
+
+
+// ── User menu dropdown ────────────────────────────────────────────────────────
+function toggleUserMenu() {
+  const btn = document.getElementById('userMenuBtn');
+  const dd  = document.getElementById('userDropdown');
+  btn.classList.toggle('open');
+  dd.classList.toggle('show');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('userMenuWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('userMenuBtn')?.classList.remove('open');
+    document.getElementById('userDropdown')?.classList.remove('show');
+  }
+});
+
+// ── Change password ───────────────────────────────────────────────────────────
+function openChangePassword() {
+  // Close dropdown first
+  document.getElementById('userMenuBtn')?.classList.remove('open');
+  document.getElementById('userDropdown')?.classList.remove('show');
+  // Clear fields
+  ['cpCurrent','cpNew1','cpNew2'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('cpErr').style.display = 'none';
+  document.getElementById('cpBtn').disabled = false;
+  document.getElementById('cpBtn').textContent = '✓ Guardar contraseña';
+  document.getElementById('changePassSheet').style.display = 'flex';
+  setTimeout(() => document.getElementById('cpCurrent').focus(), 100);
+}
+
+function closeChangePassword() {
+  document.getElementById('changePassSheet').style.display = 'none';
+}
+
+async function doChangePassword() {
+  const current = document.getElementById('cpCurrent').value;
+  const p1      = document.getElementById('cpNew1').value;
+  const p2      = document.getElementById('cpNew2').value;
+  const err     = document.getElementById('cpErr');
+  const btn     = document.getElementById('cpBtn');
+  err.style.display = 'none';
+
+  if (!current)        { err.textContent = 'Ingresa tu contraseña actual'; err.style.display = 'block'; return; }
+  if (!p1 || p1.length < 6) { err.textContent = 'La nueva contraseña debe tener al menos 6 caracteres'; err.style.display = 'block'; return; }
+  if (p1 !== p2)       { err.textContent = 'Las contraseñas nuevas no coinciden'; err.style.display = 'block'; return; }
+  if (p1 === current)  { err.textContent = 'La nueva contraseña debe ser diferente a la actual'; err.style.display = 'block'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+
+  try {
+    await api('POST', '/admin/change-password', { currentPassword: current, newPassword: p1 });
+    closeChangePassword();
+    showFlash('✅ Contraseña actualizada');
+    logCambio('🔑 Contraseña cambiada', currentUser);
+  } catch(e) {
+    err.textContent = e.message;
+    err.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = '✓ Guardar contraseña';
   }
 }
 
@@ -1196,6 +1283,41 @@ async function eliminarUsuario(username){
       <div class="edit-actions" style="margin-top:.75rem">
         <button class="btn-update" id="eBtnSheet" onclick="guardarEdicion()">✓ Guardar cambios</button>
         <button class="btn-cancel" onclick="closeEditForm()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Change Password Modal ─────────────────────────────────────────────── -->
+<div id="changePassSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#1a1f2e;border-radius:16px;border-top:2px solid var(--accent);width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid #1e2436">
+      <span style="font-family:'DM Mono',monospace;font-size:.85rem;color:var(--accent);font-weight:700">🔑 Cambiar contraseña</span>
+      <button onclick="closeChangePassword()" style="background:transparent;border:none;color:#6b7280;font-size:1.1rem;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:1rem 1.25rem 1.5rem;display:flex;flex-direction:column;gap:.5rem">
+      <div class="fg">
+        <label>Contraseña actual</label>
+        <input type="password" id="cpCurrent" placeholder="Tu contraseña actual"
+          style="width:100%;background:#0d1117;border:1px solid #222733;color:#e8eaf0;padding:.5rem .75rem;border-radius:8px;font-size:.85rem;outline:none;box-sizing:border-box"
+          onkeydown="if(event.key==='Enter')document.getElementById('cpNew1').focus()">
+      </div>
+      <div class="fg">
+        <label>Nueva contraseña</label>
+        <input type="password" id="cpNew1" placeholder="Mínimo 6 caracteres"
+          style="width:100%;background:#0d1117;border:1px solid #222733;color:#e8eaf0;padding:.5rem .75rem;border-radius:8px;font-size:.85rem;outline:none;box-sizing:border-box"
+          onkeydown="if(event.key==='Enter')document.getElementById('cpNew2').focus()">
+      </div>
+      <div class="fg">
+        <label>Confirmar nueva contraseña</label>
+        <input type="password" id="cpNew2" placeholder="Repite la nueva contraseña"
+          style="width:100%;background:#0d1117;border:1px solid #222733;color:#e8eaf0;padding:.5rem .75rem;border-radius:8px;font-size:.85rem;outline:none;box-sizing:border-box"
+          onkeydown="if(event.key==='Enter')doChangePassword()">
+      </div>
+      <div id="cpErr" style="display:none;color:#ef4444;font-size:.72rem;padding:.25rem 0"></div>
+      <div style="display:flex;gap:.5rem;margin-top:.25rem">
+        <button class="btn-save" id="cpBtn" onclick="doChangePassword()">✓ Guardar contraseña</button>
+        <button class="btn-cancel" onclick="closeChangePassword()">Cancelar</button>
       </div>
     </div>
   </div>
