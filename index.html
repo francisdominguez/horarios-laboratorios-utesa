@@ -2799,8 +2799,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
 
     <!-- Acceso rápido -->
     <div class="sb-quick">
-      <button class="sb-quick-btn" id="sb-fav-toggle" title="Mostrar solo favoritos" title="Mostrar solo favoritos" onclick="toggleFavOnlySidebar()">⭐<span>Favoritos <span id="sb-fav-count" style="display:none;background:var(--accent);color:#000;border-radius:8px;padding:0 .3rem;font-size:.6rem">0</span></span></button>
-      <button class="sb-quick-btn" id="bnav-alert" title="Configurar alertas" title="Configurar alertas" onclick="openAlertSheet();closeSidebar()">⏰<span>Alertas</span></button>
+      <button class="sb-quick-btn" onclick="openNotifHistory()">🔔<span>Notif. <span id="nh-badge" style="display:none;background:var(--accent);color:#000;border-radius:8px;padding:0 .3rem;font-size:.6rem">0</span></span></button>
+      <button class="sb-quick-btn" id="sb-fav-toggle" title="Mostrar solo favoritos" onclick="toggleFavOnlySidebar()">⭐<span>Favoritos <span id="sb-fav-count" style="display:none;background:var(--accent);color:#000;border-radius:8px;padding:0 .3rem;font-size:.6rem">0</span></span></button>
+      <button class="sb-quick-btn" id="bnav-alert" title="Configurar alertas" onclick="openAlertSheet();closeSidebar()">⏰<span>Alertas</span></button>
       <a href="admin.html" style="text-decoration:none;display:contents"><button class="sb-quick-btn" style="color:var(--accent)">🔐<span>Admin</span></button></a>
     </div>
 
