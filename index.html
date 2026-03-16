@@ -28,6 +28,8 @@
   html[data-font="sm"]{font-size:13px}
   html[data-font="md"]{font-size:15px}
   html[data-font="lg"]{font-size:17px}
+  html[data-font="lg"] .logo{font-size:.72rem}
+  html[data-font="lg"] .clock{font-size:.9rem}
   body.bg-gradient-ocean{background:linear-gradient(135deg,#050d1a 0%,#0a1628 50%,#050d1a 100%)!important;background-attachment:fixed!important}
   body.bg-gradient-purple{background:linear-gradient(135deg,#0d0a1a 0%,#1a0d2e 50%,#0d0a1a 100%)!important;background-attachment:fixed!important}
   body.bg-gradient-sunset{background:linear-gradient(135deg,#1a0a05 0%,#2a0f0f 40%,#1a0a1a 100%)!important;background-attachment:fixed!important}
@@ -164,7 +166,7 @@
   .empty-state.show{display:block}
   .empty-state svg{color:var(--border);margin-bottom:1rem}
   .empty-state p{color:var(--muted);font-size:.9rem}
-  #toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.75rem;pointer-events:none}
+  #toast-container{position:fixed;top:1rem;right:.75rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;pointer-events:none;max-width:calc(100vw - 1.5rem)}
   .toast{background:var(--surface);border:1px solid rgba(255,107,53,.4);border-radius:12px;padding:0;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.6);animation:toastIn .4s ease both;pointer-events:auto;overflow:hidden}
   .toast.fade-out{animation:toastOut .4s ease forwards}
   .toast-header{background:rgba(255,107,53,.12);border-bottom:1px solid rgba(255,107,53,.2);padding:.6rem 1rem;display:flex;align-items:center;gap:.5rem}
@@ -196,8 +198,8 @@
   .toast.toast-end .toast-header{background:rgba(100,200,120,.12);border-bottom-color:rgba(100,200,120,.2)}
   .toast.toast-end .toast-header-title{color:#5cb870}
   .toast.toast-end .toast-header-count{background:#5cb870}
-  @keyframes toastIn{from{transform:translateX(100px);opacity:0}to{transform:translateX(0);opacity:1}}
-  @keyframes toastOut{from{opacity:1}to{transform:translateX(100px);opacity:0}}
+  @keyframes toastIn{from{transform:translateY(-16px);opacity:0}to{transform:translateY(0);opacity:1}}
+  @keyframes toastOut{from{opacity:1}to{transform:translateY(-16px);opacity:0}}
   @keyframes fadeUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
   @keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
   ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
@@ -317,8 +319,8 @@
   .sb-tool-btn span{font-size:.62rem;color:var(--muted);font-family:'DM Sans',sans-serif;text-align:center;line-height:1.2}
   .sb-tool-btn:hover{border-color:var(--accent3);background:rgba(91,140,255,.06)}
   .sb-trigger:hover{border-color:var(--accent);color:var(--accent)}
-  .view-toggle{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.15rem;gap:.15rem;margin-bottom:.65rem}
-  .vt-btn{flex:1;padding:.3rem .2rem;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.72rem;border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:.25rem}
+  .view-toggle{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.15rem;gap:.15rem;margin-bottom:.65rem}
+  .vt-btn{padding:.3rem .1rem;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.68rem;border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .vt-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3)}
   #filter-sheet{display:none;position:fixed;inset:0;z-index:500}
   #filter-sheet.open{display:block}
@@ -685,28 +687,28 @@
   </div>
   <div id="occupancy-bar" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.5rem">
     <div style="background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);border-radius:10px;padding:.4rem .5rem;text-align:center">
-      <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">En curso</div>
+      <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">🟢 Activas</div>
       <div style="display:flex;align-items:center;justify-content:center;gap:.3rem">
         <span style="width:7px;height:7px;border-radius:50%;background:#00e5a0;box-shadow:0 0 5px #00e5a0;flex-shrink:0"></span>
         <span id="occ-active" style="font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:#00e5a0">0</span>
       </div>
     </div>
     <div style="background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.2);border-radius:10px;padding:.4rem .5rem;text-align:center">
-      <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Inminentes</div>
+      <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">⚡ Próximas</div>
       <div style="display:flex;align-items:center;justify-content:center;gap:.3rem">
         <span style="width:7px;height:7px;border-radius:50%;background:#ff6b35;animation:pulse-badge 2s infinite;flex-shrink:0"></span>
         <span id="occ-imm" style="font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:#ff6b35">0</span>
       </div>
     </div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.4rem .5rem;text-align:center">
-      <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Disponibles</div>
+      <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">⚪ Libres</div>
       <div style="display:flex;align-items:center;justify-content:center;gap:.3rem">
         <span style="width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0"></span>
         <span id="occ-free" style="font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:var(--text)">0</span>
       </div>
     </div>
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.4rem .5rem;text-align:center">
-      <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Labs</div>
+      <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Labs total</div>
       <div style="font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:var(--muted)"><span id="occ-total">28</span></div>
     </div>
   </div>
@@ -1384,7 +1386,7 @@ document.addEventListener('DOMContentLoaded', async function(){
   let sortCol='', sortDir=1, groupByEdificio=false;
   let filterDia='', filterLab='', filterMateria='', filterHora='', filterEdificio='', filterEstado='', globalSearch='';
   let alertEnabled=true, alertMinutes=15;
-  let notified=new Set(), notifiedEnd=new Set(), soundEnabled=true, endAlertEnabled=true, noMolestar=false, noMolestarStart=22, noMolestarEnd=7;
+  let notified=new Set(), notifiedEnd=new Set(), notifiedStart=new Set(), soundEnabled=true, endAlertEnabled=true, noMolestar=false, noMolestarStart=22, noMolestarEnd=7;
   let repeatAlert=localStorage.getItem('utesa-repeat-alert')==='1';
   const notifiedRepeat={};
   let favorites=new Set(JSON.parse(localStorage.getItem('utesa-favs')||'[]')), favOnly=false;
@@ -1664,7 +1666,7 @@ document.addEventListener('DOMContentLoaded', async function(){
     }).join('');
     const el=document.createElement('div');
     el.className='toast';
-    el.innerHTML=`<div class="toast-header"><span class="toast-header-title">⏰ ${label}</span><span class="toast-header-count">${count}</span></div><div class="toast-classes">${classesHTML}</div>`;
+    el.innerHTML=`<div class="toast-header"><span class="toast-header-title">⏰ ${label}</span><span class="toast-header-count">${count}</span><button onclick="this.closest('.toast').remove()" style="background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:0 0 0 .5rem;line-height:1">✕</button></div><div class="toast-classes">${classesHTML}</div>`;
     el.style.cursor='pointer';
     el.addEventListener('click',openAlertModal);
     const container=document.getElementById('toast-container');
@@ -1685,7 +1687,7 @@ document.addEventListener('DOMContentLoaded', async function(){
     const classesHTML=ended.map(({c})=>{const lab=LABS[c.aula],cred=c.durMin/45;return`<div class="toast-class"><div class="toast-class-lab"><span class="toast-class-lab-code">✅ ${c.aula}</span><span class="toast-class-lab-name">— ${lab?lab.name:''}</span></div><div class="toast-class-mat">${c.mat} <span style="color:var(--muted);font-size:.72rem">grp.${c.grp}</span></div><div class="toast-class-meta"><span class="toast-class-hora">🏁 ${c.inicio}→${c.fin}</span><span class="toast-class-cred">${cred} crédito${cred>1?'s':''}</span><span style="font-size:.68rem;color:#5cb870;font-weight:600">Clase terminada</span></div></div>`;}).join('');
     const el=document.createElement('div');
     el.className='toast toast-end';
-    el.innerHTML=`<div class="toast-header"><span class="toast-header-title">✅ ${label}</span><span class="toast-header-count">${count}</span></div><div class="toast-classes">${classesHTML}</div>`;
+    el.innerHTML=`<div class="toast-header"><span class="toast-header-title">✅ ${label}</span><span class="toast-header-count">${count}</span><button onclick="this.closest('.toast').remove()" style="background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:0 0 0 .5rem;line-height:1">✕</button></div><div class="toast-classes">${classesHTML}</div>`;
     const container=document.getElementById('toast-container');
     container.appendChild(el);
     if(soundEnabled)playSound('ended');
@@ -1707,7 +1709,7 @@ document.addEventListener('DOMContentLoaded', async function(){
       if(silenced)return;
     }
     const today=todayName(),m=nowM();
-    const pending=[], ended=[];
+    const pending=[], ended=[], started=[];
     classes.forEach(c=>{
       if(c.dia!==today)return;
       const diff=c.inicioM-m, diffEnd=c.finM-m;
@@ -1715,6 +1717,9 @@ document.addEventListener('DOMContentLoaded', async function(){
       const keyEnd=`END-${key}`;
       if(diff>0&&diff<=alertMinutes&&!notified.has(key)){notified.add(key);if(repeatAlert)notifiedRepeat[key]=Date.now();pending.push({c,diff});}
       if(endAlertEnabled&&diffEnd<=0&&diffEnd>=-3&&!notifiedEnd.has(keyEnd)){notifiedEnd.add(keyEnd);ended.push({c});}
+      // Alerta de clase iniciada (diff entre 0 y -2 minutos)
+      const keyStart=`START-${key}`;
+      if(diff<=0&&diff>=-2&&!notifiedStart.has(keyStart)){notifiedStart.add(keyStart);started.push({c});}
     });
     if(repeatAlert){
       const rp=[];
@@ -1725,10 +1730,38 @@ document.addEventListener('DOMContentLoaded', async function(){
       });
       if(rp.length>0)showToast(rp);
     }
+    if(started.length>0)showStartToast(started);
     if(pending.length>0)showToast(pending);
     if(ended.length>0)showEndToast(ended);
     if(!classes.some(c=>{if(c.dia!==today)return false;const d=c.inicioM-m;return d>0&&d<=alertMinutes;}))
       document.getElementById('alertBadge').classList.remove('show');
+  }
+
+  function showStartToast(started){
+    const count=started.length;
+    const label=count===1?'Clase iniciada':`${count} clases iniciadas`;
+    const classesHTML=started.map(({c})=>{
+      const lab=LABS[c.aula],cred=c.durMin/45;
+      return`<div class="toast-class"><div class="toast-class-lab"><span class="toast-class-lab-code">🟢 ${c.aula}</span><span class="toast-class-lab-name">— ${lab?lab.name:''}</span></div><div class="toast-class-mat">${c.mat} <span style="color:var(--muted);font-size:.72rem">grp.${c.grp}</span></div><div class="toast-class-meta"><span class="toast-class-hora">⏰ ${c.inicio} → ${c.fin}</span><span class="toast-class-cred">${cred} crédito${cred>1?'s':''}</span><span style="font-size:.68rem;color:#00e5a0;font-weight:600">¡Ahora!</span></div></div>`;
+    }).join('');
+    const el=document.createElement('div');
+    el.className='toast';
+    el.style.borderColor='rgba(0,229,160,.4)';
+    el.innerHTML=`<div class="toast-header" style="background:rgba(0,229,160,.12);border-bottom-color:rgba(0,229,160,.2)"><span class="toast-header-title" style="color:var(--accent)">🟢 ${label}</span><span class="toast-header-count" style="background:var(--accent);color:#000">${count}</span><button onclick="this.closest('.toast').remove()" style="background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:0 0 0 .5rem;line-height:1">✕</button></div><div class="toast-classes">${classesHTML}</div>`;
+    const container=document.getElementById('toast-container');
+    container.appendChild(el);
+    if(soundEnabled)playSound('upcoming');
+    if(navigator.vibrate)navigator.vibrate([200,100,200]);
+    // Push notification via SW
+    if('serviceWorker'in navigator&&navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({
+        type:'SHOW_NOTIFICATION',
+        title:`🟢 ${label}`,
+        body:started.map(({c})=>`${c.aula} · ${c.mat} grp.${c.grp} · ${c.inicio}→${c.fin}`).join('\n'),
+        tag:`start-${Date.now()}`
+      });
+    }
+    setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),400);},9000);
   }
 
   window.openModal=function(aula,labName,imgFile){document.getElementById('modalTitle').textContent=`${aula} — ${labName}`;document.getElementById('modalImg').src=imgFile;document.getElementById('imgModal').classList.add('open');};
