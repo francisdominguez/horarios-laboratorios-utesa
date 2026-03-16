@@ -1707,14 +1707,12 @@ document.addEventListener('DOMContentLoaded', async function(){
       const body2=pending.map(({c,diff})=>
         `📍 ${c.aula} · ${c.mat} grp.${c.grp} · ${c.inicio}→${c.fin} · En ${diff}min`
       ).join('\n');
-      const _notifTag = `local-${Date.now()}`;
       navigator.serviceWorker.controller.postMessage({
         type:'SHOW_NOTIFICATION',
         title:`⏰ ${label2}`,
         body:body2,
-        tag:_notifTag
+        tag:`local-${Date.now()}`
       });
-      if(window._saveLocalNotif) window._saveLocalNotif(`⏰ ${label2}`, body2, _notifTag);
     }
     lastPending=pending;
     if(soundEnabled)playSound('upcoming');
@@ -1815,15 +1813,12 @@ document.addEventListener('DOMContentLoaded', async function(){
     if(navigator.vibrate)navigator.vibrate([200,100,200]);
     // Push notification via SW
     if('serviceWorker'in navigator&&navigator.serviceWorker.controller){
-      const _startTag = `start-${Date.now()}`;
-      const _startBody = started.map(({c})=>`${c.aula} · ${c.mat} grp.${c.grp} · ${c.inicio}→${c.fin}`).join('\n');
       navigator.serviceWorker.controller.postMessage({
         type:'SHOW_NOTIFICATION',
         title:`🟢 ${label}`,
-        body:_startBody,
-        tag:_startTag
+        body:started.map(({c})=>`${c.aula} · ${c.mat} grp.${c.grp} · ${c.inicio}→${c.fin}`).join('\n'),
+        tag:`start-${Date.now()}`
       });
-      if(window._saveLocalNotif) window._saveLocalNotif(`🟢 ${label}`, _startBody, _startTag);
     }
     setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),400);},9000);
   }
