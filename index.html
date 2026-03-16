@@ -371,6 +371,10 @@
   #gs-clear{position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:.2rem;display:none}
   #gs-clear.show{display:block}
   #gs-count{font-size:.7rem;color:var(--muted);margin-top:.3rem;font-family:'Space Mono',monospace;display:none}
+  #day-filter-banner{display:none;align-items:center;justify-content:space-between;gap:.5rem;background:rgba(91,140,255,.08);border:1px solid rgba(91,140,255,.2);border-radius:8px;padding:.4rem .75rem;margin-top:.35rem;font-size:.72rem;color:var(--accent3)}
+  #day-filter-banner.show{display:flex}
+  #day-filter-banner button{background:rgba(91,140,255,.15);border:1px solid rgba(91,140,255,.3);color:var(--accent3);padding:.2rem .55rem;border-radius:6px;font-size:.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s}
+  #day-filter-banner button:hover{background:rgba(91,140,255,.28)}
   #gs-count.show{display:block}
   #update-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,#1a3a5c,#0d2137);border-bottom:2px solid var(--accent);padding:.7rem 1rem;align-items:center;gap:.75rem;animation:slideDown .3s ease}
   #update-banner.show{display:flex}
@@ -731,10 +735,14 @@
     <span id="statTodayLbl"></span>
   </div>
   <div id="global-search-wrap" style="margin-bottom:.4rem">
-    <input id="global-search" type="search" placeholder="🔍 Buscar aula, materia, grupo, día, hora..." oninput="onGlobalSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+    <input id="global-search" type="search" placeholder="🔍 Ej: INF113, INF113001, Lunes, B213, 8:30 AM..." oninput="onGlobalSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
     <button id="gs-clear" onclick="clearGlobalSearch()" title="Limpiar">✕</button>
   </div>
   <div id="gs-count"></div>
+  <div id="day-filter-banner">
+    <span>📅 Mostrando solo <strong id="day-banner-label">hoy</strong></span>
+    <button onclick="mobileNavTab('all');document.getElementById('filterDia').value='';render()">Ver todos los días</button>
+  </div>
   <div class="view-toggle" id="view-toggle" style="margin-bottom:0">
     <button class="vt-btn" id="vt-list" title="Vista lista" title="Vista lista" onclick="switchView('list')">📋 Lista</button>
     <button class="vt-btn active" id="vt-card" title="Vista tarjetas" title="Vista tarjetas" onclick="switchView('card')">🃏 Tarjetas</button>
@@ -1453,7 +1461,9 @@ document.addEventListener('DOMContentLoaded', async function(){
     if(!tbody||!empty)return;
     tbody.innerHTML='';
     let filtered=classes.filter(c=>{
-      if(filterDia&&c.dia!==filterDia)return false;
+      const _dias=['lunes','martes','miércoles','miercoles','jueves','viernes','sábado','sabado','domingo'];
+      const _searchHasDia = globalSearch && _dias.some(d=>globalSearch.toLowerCase().includes(d));
+      if(filterDia&&c.dia!==filterDia&&!_searchHasDia)return false;
       if(filterEdificio&&!c.aula.startsWith(filterEdificio))return false;
       if(filterLab&&c.aula!==filterLab)return false;
       if(filterMateria&&!(c.mat+c.grp).toLowerCase().includes(filterMateria.toLowerCase()))return false;
@@ -1461,8 +1471,8 @@ document.addEventListener('DOMContentLoaded', async function(){
       if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
       if(filterEstado){const s=getStatus(c);if(s!==filterEstado)return false;}
       if(globalSearch){
-        const q=globalSearch.toLowerCase();
-        const h=(c.aula+' '+c.mat+' '+c.grp+' '+c.dia+' '+c.inicio+' '+c.fin).toLowerCase();
+        const q=globalSearch.toLowerCase().replace('miercoles','miércoles').replace('sabado','sábado');
+        const h=(c.aula+' '+c.mat+' '+c.grp+' '+c.mat+c.grp+' '+c.dia+' '+c.inicio).toLowerCase();
         if(!h.includes(q))return false;
       }
       return true;
@@ -1569,6 +1579,18 @@ document.addEventListener('DOMContentLoaded', async function(){
 
     // Sync mobile stats
     updateMobileStats();
+    // Banner de filtro por día
+    const banner = document.getElementById('day-filter-banner');
+    const bannerLabel = document.getElementById('day-banner-label');
+    if(banner && bannerLabel){
+      if(filterDia){
+        const isToday = filterDia === todayName();
+        bannerLabel.textContent = isToday ? `hoy (${filterDia})` : filterDia;
+        banner.classList.add('show');
+      } else {
+        banner.classList.remove('show');
+      }
+    }
     // Sync grid/card if active
     if(currentView==='grid') renderGrid();
     if(currentView==='card') renderCard();
@@ -2012,7 +2034,7 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
       if(favOnly&&!favorites.has(c.aula)) return false;
       if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
       if(filterEstado){const s=getStatus(c);if(s!==filterEstado)return false;}
-      if(globalSearch){const q=globalSearch.toLowerCase();const h=(c.aula+' '+c.mat+' '+c.grp+' '+c.dia+' '+c.inicio+' '+c.fin).toLowerCase();if(!h.includes(q))return false;}
+      if(globalSearch){const q=globalSearch.toLowerCase();const h=(c.aula+' '+c.mat+' '+c.grp+' '+c.mat+c.grp+' '+c.dia+' '+c.inicio).toLowerCase();if(!h.includes(q))return false;}
       return true;
     });
 
@@ -2137,7 +2159,7 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
       if(filterHora){const r=HORA_RANGES[filterHora];if(c.finM<=r.from||c.inicioM>=r.to)return false;}
       if(favOnly&&!favorites.has(c.aula))return false;
       if(filterEstado){const s=getStatus(c);if(s!==filterEstado)return false;}
-      if(globalSearch){const q=globalSearch.toLowerCase();const h=(c.aula+' '+c.mat+' '+c.grp+' '+c.dia+' '+c.inicio+' '+c.fin).toLowerCase();if(!h.includes(q))return false;}
+      if(globalSearch){const q=globalSearch.toLowerCase();const h=(c.aula+' '+c.mat+' '+c.grp+' '+c.mat+c.grp+' '+c.dia+' '+c.inicio).toLowerCase();if(!h.includes(q))return false;}
       return true;
     });
     if(!filtered.length){gv.innerHTML='<div style="text-align:center;padding:3rem;color:var(--muted);font-size:.88rem">No hay clases con los filtros seleccionados</div>';return;}
