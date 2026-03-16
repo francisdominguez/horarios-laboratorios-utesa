@@ -45,6 +45,7 @@
   .theme-btn[data-t="jade2"]{background:radial-gradient(circle at 30% 30%,#00f090,#03100a)}
   .theme-btn[data-t="jade3"]{background:radial-gradient(circle at 30% 30%,#7fff7f,#111)}
   *{margin:0;padding:0;box-sizing:border-box}
+
   body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
   body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");opacity:.4}
   header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,var(--surface2) 0%,var(--surface) 100%);backdrop-filter:blur(16px);border-bottom:2px solid var(--accent);padding:env(safe-area-inset-top,0px) 2rem 0;display:flex;align-items:center;gap:1.5rem;height:calc(64px + env(safe-area-inset-top,0px))}
@@ -82,7 +83,7 @@
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
   @keyframes pulse-badge{0%,100%{box-shadow:0 0 0 0 rgba(255,107,53,0)}50%{box-shadow:0 0 12px 2px rgba(255,107,53,.3)}}
   main{position:relative;z-index:1;padding:2rem;max-width:1440px;margin:0 auto}
-  #info-panel{position:sticky;top:calc(64px + env(safe-area-inset-top,0px));z-index:49;backdrop-filter:blur(12px)}
+
   .page-title{margin-bottom:2rem;animation:fadeUp .6s ease both}
   .page-title h1{font-family:'Space Mono',monospace;font-size:clamp(1.4rem,3vw,2rem);font-weight:700;letter-spacing:-.02em;line-height:1.2}
   .page-title h1 em{font-style:normal;color:var(--accent)}
@@ -188,8 +189,8 @@
   .modal-sub{font-size:.72rem;color:var(--muted);margin-top:.2rem}
   .modal-close{background:transparent;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1}
   .modal-close:hover{border-color:var(--accent2);color:var(--accent2)}
-  .modal-body{overflow:auto;display:flex;align-items:center;justify-content:center;padding:1rem;flex:1;touch-action:pan-x pan-y pinch-zoom;-webkit-overflow-scrolling:touch;cursor:grab}
-  .modal-body img{max-width:100%;max-height:75vh;object-fit:contain;border-radius:8px;border:1px solid var(--border);touch-action:pan-x pan-y pinch-zoom;cursor:zoom-in}
+  .modal-body{overflow:scroll;display:flex;align-items:center;justify-content:center;padding:1rem;flex:1;touch-action:pan-x pan-y pinch-zoom;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  .modal-body img{width:100%;max-width:100%;max-height:75vh;object-fit:contain;border-radius:8px;border:1px solid var(--border);touch-action:pan-x pan-y pinch-zoom;user-select:none;-webkit-user-select:none}
   .modal-foot{padding:.7rem 1.5rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted);font-family:'Space Mono',monospace;flex-shrink:0}
   .toast.toast-end{border-color:rgba(100,200,120,.4)}
   .toast.toast-end .toast-header{background:rgba(100,200,120,.12);border-bottom-color:rgba(100,200,120,.2)}
@@ -465,7 +466,7 @@
     main{padding:.75rem .75rem 1rem;width:100%;max-width:100vw;overflow-x:hidden}
     header{padding:env(safe-area-inset-top,0px) .75rem 0;height:calc(56px + env(safe-area-inset-top,0px));align-items:flex-end;padding-bottom:.5rem}
     :root{--header-h:56px}
-    #info-panel{top:calc(56px + env(safe-area-inset-top,0px))}
+
     .logo{font-size:.75rem}
     .clock{font-size:.95rem}
     .clock-date{font-size:.62rem}
@@ -480,6 +481,8 @@
     td{padding:.55rem .65rem;font-size:.78rem}
     thead th{padding:.55rem .65rem;font-size:.62rem}
     .btn-img{padding:.2rem .45rem;font-size:.62rem}
+    .modal-body{padding:.5rem;overflow:scroll;min-height:60vw}
+    .modal-body img{width:100%;max-height:80vh;touch-action:pan-x pan-y pinch-zoom}
     #bottom-nav{display:flex}
     #mobile-stats{display:flex;gap:.75rem;margin-bottom:.6rem;flex-wrap:wrap}
   }
@@ -2319,6 +2322,9 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
   }
 
   updateClock(); render(); loadCuatri();
+
+
+
   setInterval(()=>{updateClock();checkAlerts();},1000);
   setInterval(render,10000);
   setInterval(syncClasesBackground,30000);
