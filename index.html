@@ -1430,6 +1430,16 @@ document.addEventListener('DOMContentLoaded', async function(){
   window.markedRows = markedRows; // Exponer globalmente para las funciones window.*
 
   function saveFavs(){localStorage.setItem('utesa-favs',JSON.stringify([...favorites]));}
+  window.clearAllFavs=function(){
+    favorites.clear();
+    saveFavs();
+    favOnly=false;
+    const btn=document.getElementById('sb-fav-toggle');
+    if(btn) btn.classList.remove('active');
+    render();
+
+    closeSidebar();
+  };
   window.toggleFav = function(aula){
     if(favorites.has(aula)){favorites.delete(aula);}else{favorites.add(aula);}
     saveFavs(); render();
@@ -2298,6 +2308,15 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
   window.syncNoMolestar=function(el){noMolestar=el.checked;document.getElementById('as-nomolestar-horario').style.display=el.checked?'':'none';};
   window.syncNoMolestarHours=function(){noMolestarStart=parseInt(document.getElementById('as-nm-start').value)||22;noMolestarEnd=parseInt(document.getElementById('as-nm-end').value)||7;};
   window.toggleFavOnly=function(el){favOnly=el.checked;render();};
+  window.toggleFavOnlySidebar=function(){
+    favOnly=!favOnly;
+    const btn=document.getElementById('sb-fav-toggle');
+    if(btn) btn.classList.toggle('active', favOnly);
+    const cb=document.getElementById('fs-favonly');
+    if(cb) cb.checked=favOnly;
+    closeSidebar();
+    render();
+  };
 
   window.toggleThemePicker=function(){
     const p=document.getElementById('theme-picker');
@@ -2411,7 +2430,7 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
   updateClock(); render(); loadCuatri();
   // ── Historial de notificaciones ──────────────────────────────────────────────
   function getNotifHistory(){ return JSON.parse(localStorage.getItem('utesa-notif-history')||'[]'); }
-  function saveNotifToHistory(notif){
+  window.saveNotifToHistory = function saveNotifToHistory(notif){
     const h = getNotifHistory();
     h.unshift({ ...notif, ts: notif.ts || Date.now() });
     if(h.length > 50) h.length = 50; // máximo 50
@@ -2419,7 +2438,7 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
     updateNotifBadge();
   }
 
-  function updateNotifBadge(){
+  window.updateNotifBadge = function updateNotifBadge(){
     const h = getNotifHistory();
     const lastSeen = parseInt(localStorage.getItem('utesa-notif-last-seen')||'0');
     const unseen = h.filter(n => n.ts > lastSeen).length;
@@ -2430,7 +2449,7 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
     }
   }
 
-  function openNotifHistory(){
+  window.openNotifHistory = function openNotifHistory(){
     const h = getNotifHistory();
     const list = document.getElementById('nh-list');
     localStorage.setItem('utesa-notif-last-seen', Date.now().toString());
@@ -2461,11 +2480,11 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
     document.getElementById('notif-history-modal').classList.add('open');
   }
 
-  function closeNotifHistory(){
+  window.closeNotifHistory = function closeNotifHistory(){
     document.getElementById('notif-history-modal').classList.remove('open');
   }
 
-  function clearNotifHistory(){
+  window.clearNotifHistory = function clearNotifHistory(){
     localStorage.removeItem('utesa-notif-history');
     localStorage.removeItem('utesa-notif-last-seen');
     updateNotifBadge();
@@ -2616,8 +2635,8 @@ window.openSidebar=function(){
 };
 window.closeSidebar=function(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');};
 window.updateSbViewBtns=function(){const isGrid=document.getElementById('vt-grid').classList.contains('active');document.getElementById('sb-vt-list').classList.toggle('active',!isGrid);document.getElementById('sb-vt-grid').classList.toggle('active',isGrid);};
-window.toggleFavOnlySidebar=function(){const cb=document.getElementById('fs-favonly');if(cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));}};
-window.clearAllFavs=function(){if(!confirm('¿Limpiar todos los favoritos?'))return;localStorage.setItem('utesa-favs','[]');location.reload();};
+
+
 window.copyShareLink=function(){navigator.clipboard.writeText(location.href).then(()=>{const btns=[...document.querySelectorAll('.sb-btn')].find(b=>b.textContent.includes('Copiar enlace'));if(btns){const lbl=btns.querySelector('.sb-btn-label');const orig=lbl.textContent;lbl.textContent='✅ ¡Copiado!';setTimeout(()=>lbl.textContent=orig,2000);}});};
 window.exportCSV=function(){
   const rows=[['Laboratorio','Materia','Grupo','Día','Inicio','Fin','Duración (min)']];
