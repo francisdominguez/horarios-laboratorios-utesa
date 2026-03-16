@@ -207,9 +207,9 @@
   .bnav-btn.active{color:var(--accent);background:rgba(0,229,160,.1)}
   .bnav-btn.active .bnav-icon{filter:drop-shadow(0 0 6px var(--accent))}
   .bnav-btn:active{transform:scale(.92)}
-  #theme-picker{position:fixed;inset:0;z-index:600}
-  .tp-overlay{position:absolute;inset:0}
-  .tp-box{position:absolute;bottom:68px;right:.75rem;background:#1a1f2e;border:1px solid var(--accent);border-radius:16px;padding:.75rem;min-width:210px;max-height:80vh;overflow-y:auto;box-shadow:0 -4px 24px rgba(0,0,0,.7);animation:tpIn .2s cubic-bezier(.32,.72,0,1)}
+  #theme-picker{position:fixed;inset:0;z-index:900}
+  .tp-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
+  .tp-box{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1f2e;border:1px solid var(--accent);border-radius:16px;padding:.75rem;min-width:240px;max-height:85vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.8);animation:tpIn .2s cubic-bezier(.32,.72,0,1);z-index:901}
   .tp-title{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.6rem;padding:0 .25rem}
   .tp-options{display:flex;flex-direction:column;gap:.25rem}
   .tp-opt{display:flex;align-items:center;gap:.6rem;background:transparent;border:1px solid transparent;border-radius:10px;padding:.5rem .6rem;cursor:pointer;width:100%;transition:all .15s}
@@ -240,7 +240,7 @@
   .tp-label{font-family:'DM Sans',sans-serif;font-size:.82rem;color:#e8eaf0;flex:1;text-align:left}
   .tp-check{font-size:.75rem;color:var(--accent);opacity:0;transition:opacity .15s}
   .tp-opt.active .tp-check{opacity:1}
-  @keyframes tpIn{from{transform:translateY(8px) scale(.95);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+  @keyframes tpIn{from{opacity:0;transform:translate(-50%,-50%) scale(.96)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
   /* ✅ FIX 3: grid-view scroll corregido */
   #grid-view{display:none;overflow-x:auto;width:100%}
   #grid-view.active{display:block}
@@ -2216,7 +2216,7 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
     const p=document.getElementById('theme-picker');
     if(p.style.display==='none'||!p.style.display){
       p.style.display='block';
-      document.getElementById('bnav-theme-btn').classList.add('active');
+      const btn=document.getElementById('bnav-theme-btn');if(btn)btn.classList.add('active');
       document.querySelectorAll('.tp-font-btn').forEach(b=>b.classList.toggle('active',b.id===`tp-font-${currentFont}`));
       document.querySelectorAll('.tp-bg-opt').forEach(b=>b.classList.toggle('active',b.id===`tp-bg-${currentBg}`));
     }else{closeThemePicker();}
@@ -2479,42 +2479,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
   </button>
 
 
-  <div id="theme-picker" style="display:none">
-    <div class="tp-overlay" onclick="closeThemePicker()"></div>
-    <div class="tp-box">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
-        <div class="tp-title" style="margin-bottom:0">Apariencia</div>
-        <button onclick="closeThemePicker()" style="background:transparent;border:1px solid var(--border);color:var(--muted);width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center">✕</button>
-      </div>
-      <div class="tp-options">
-        <button class="tp-opt active" data-t="dark" onclick="setTheme('dark')"><span class="tp-dot" data-t="dark"></span><span class="tp-label">Oscuro</span><span class="tp-check">✓</span></button>
-        <button class="tp-opt" data-t="light" onclick="setTheme('light')"><span class="tp-dot" data-t="light"></span><span class="tp-label">Claro</span><span class="tp-check">✓</span></button>
-        <button class="tp-opt" data-t="sepia" onclick="setTheme('sepia')"><span class="tp-dot" data-t="sepia"></span><span class="tp-label">Sepia</span><span class="tp-check">✓</span></button>
-        <button class="tp-opt" data-t="utesa" onclick="setTheme('utesa')"><span class="tp-dot" data-t="utesa"></span><span class="tp-label">UTESA</span><span class="tp-check">✓</span></button>
-        <button class="tp-opt" data-t="ocean" onclick="setTheme('ocean')"><span class="tp-dot" data-t="ocean"></span><span class="tp-label">Océano</span><span class="tp-check">✓</span></button>
-        <button class="tp-opt" data-t="purple" onclick="setTheme('purple')"><span class="tp-dot" data-t="purple"></span><span class="tp-label">Púrpura</span><span class="tp-check">✓</span></button>
-        <button class="tp-opt" data-t="red" onclick="setTheme('red')"><span class="tp-dot" data-t="red"></span><span class="tp-label">Rojo</span><span class="tp-check">✓</span></button>
-        <button class="tp-opt" data-t="emerald" onclick="setTheme('emerald')"><span class="tp-dot" data-t="emerald"></span><span class="tp-label">Jade Negro ✦</span><span class="tp-check">✓</span></button>
-        <button class="tp-opt" data-t="jade2" onclick="setTheme('jade2')"><span class="tp-dot" data-t="jade2"></span><span class="tp-label">Jade Bosque ✦</span><span class="tp-check">✓</span></button>
-        <button class="tp-opt" data-t="jade3" onclick="setTheme('jade3')"><span class="tp-dot" data-t="jade3"></span><span class="tp-label">Jade Carbón ✦</span><span class="tp-check">✓</span></button>
-      </div>
-      <div class="tp-section">Tamaño de texto</div>
-      <div class="tp-font-row">
-        <button class="tp-font-btn" id="tp-font-sm" onclick="setFontSize('sm')">A pequeño</button>
-        <button class="tp-font-btn active" id="tp-font-md" onclick="setFontSize('md')">A normal</button>
-        <button class="tp-font-btn" id="tp-font-lg" onclick="setFontSize('lg')">A grande</button>
-      </div>
-      <div class="tp-section">Fondo</div>
-      <div class="tp-bg-row">
-        <button class="tp-bg-opt active" id="tp-bg-none" onclick="setBg('none')"><span class="tp-bg-swatch" style="background:#0a0c10;border:1px solid #333"></span><span class="tp-bg-label">Por defecto</span></button>
-        <button class="tp-bg-opt" id="tp-bg-ocean" onclick="setBg('ocean')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#050d1a,#0a1628)"></span><span class="tp-bg-label">Océano profundo</span></button>
-        <button class="tp-bg-opt" id="tp-bg-purple" onclick="setBg('purple')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#0d0a1a,#1a0d2e)"></span><span class="tp-bg-label">Noche púrpura</span></button>
-        <button class="tp-bg-opt" id="tp-bg-sunset" onclick="setBg('sunset')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#1a0a05,#2a0f0f)"></span><span class="tp-bg-label">Atardecer</span></button>
-        <button class="tp-bg-opt" id="tp-bg-forest" onclick="setBg('forest')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#0a1a0a,#0f2410)"></span><span class="tp-bg-label">Bosque</span></button>
-        <button class="tp-bg-opt" id="tp-bg-midnight" onclick="setBg('midnight')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#000005,#050520)"></span><span class="tp-bg-label">Medianoche</span></button>
-      </div>
-    </div>
-  </div>
+  
 </nav>
 
 <!-- ══ FILTER SHEET ══ -->
@@ -2723,5 +2688,42 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
   </div>
 </div>
 
+
+<div id="theme-picker" style="display:none">
+    <div class="tp-overlay" onclick="closeThemePicker()"></div>
+    <div class="tp-box">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
+        <div class="tp-title" style="margin-bottom:0">Apariencia</div>
+        <button onclick="closeThemePicker()" style="background:transparent;border:1px solid var(--border);color:var(--muted);width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center">✕</button>
+      </div>
+      <div class="tp-options">
+        <button class="tp-opt active" data-t="dark" onclick="setTheme('dark')"><span class="tp-dot" data-t="dark"></span><span class="tp-label">Oscuro</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="light" onclick="setTheme('light')"><span class="tp-dot" data-t="light"></span><span class="tp-label">Claro</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="sepia" onclick="setTheme('sepia')"><span class="tp-dot" data-t="sepia"></span><span class="tp-label">Sepia</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="utesa" onclick="setTheme('utesa')"><span class="tp-dot" data-t="utesa"></span><span class="tp-label">UTESA</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="ocean" onclick="setTheme('ocean')"><span class="tp-dot" data-t="ocean"></span><span class="tp-label">Océano</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="purple" onclick="setTheme('purple')"><span class="tp-dot" data-t="purple"></span><span class="tp-label">Púrpura</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="red" onclick="setTheme('red')"><span class="tp-dot" data-t="red"></span><span class="tp-label">Rojo</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="emerald" onclick="setTheme('emerald')"><span class="tp-dot" data-t="emerald"></span><span class="tp-label">Jade Negro ✦</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="jade2" onclick="setTheme('jade2')"><span class="tp-dot" data-t="jade2"></span><span class="tp-label">Jade Bosque ✦</span><span class="tp-check">✓</span></button>
+        <button class="tp-opt" data-t="jade3" onclick="setTheme('jade3')"><span class="tp-dot" data-t="jade3"></span><span class="tp-label">Jade Carbón ✦</span><span class="tp-check">✓</span></button>
+      </div>
+      <div class="tp-section">Tamaño de texto</div>
+      <div class="tp-font-row">
+        <button class="tp-font-btn" id="tp-font-sm" onclick="setFontSize('sm')">A pequeño</button>
+        <button class="tp-font-btn active" id="tp-font-md" onclick="setFontSize('md')">A normal</button>
+        <button class="tp-font-btn" id="tp-font-lg" onclick="setFontSize('lg')">A grande</button>
+      </div>
+      <div class="tp-section">Fondo</div>
+      <div class="tp-bg-row">
+        <button class="tp-bg-opt active" id="tp-bg-none" onclick="setBg('none')"><span class="tp-bg-swatch" style="background:#0a0c10;border:1px solid #333"></span><span class="tp-bg-label">Por defecto</span></button>
+        <button class="tp-bg-opt" id="tp-bg-ocean" onclick="setBg('ocean')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#050d1a,#0a1628)"></span><span class="tp-bg-label">Océano profundo</span></button>
+        <button class="tp-bg-opt" id="tp-bg-purple" onclick="setBg('purple')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#0d0a1a,#1a0d2e)"></span><span class="tp-bg-label">Noche púrpura</span></button>
+        <button class="tp-bg-opt" id="tp-bg-sunset" onclick="setBg('sunset')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#1a0a05,#2a0f0f)"></span><span class="tp-bg-label">Atardecer</span></button>
+        <button class="tp-bg-opt" id="tp-bg-forest" onclick="setBg('forest')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#0a1a0a,#0f2410)"></span><span class="tp-bg-label">Bosque</span></button>
+        <button class="tp-bg-opt" id="tp-bg-midnight" onclick="setBg('midnight')"><span class="tp-bg-swatch" style="background:linear-gradient(135deg,#000005,#050520)"></span><span class="tp-bg-label">Medianoche</span></button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
