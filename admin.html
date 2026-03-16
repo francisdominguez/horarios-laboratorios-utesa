@@ -199,6 +199,7 @@
     <div class="header-right">
       <span class="flash hidden" id="flash"></span>
       <button class="btn-ghost" id="btnUsuarios" onclick="openUsuarios()" style="display:none;color:#a855f7">👥 Usuarios</button>
+      <button class="btn-ghost" id="btnNotificar" onclick="openNotificar()" style="display:none;color:#f59e0b">📢 Notificar</button>
       <button class="btn-ghost" onclick="openHistorial()" style="color:#5b8cff">📋 Historial</button>
       <button class="btn-ghost" onclick="loadClases()" id="refreshBtn">↺ Recargar</button>
       <div class="user-menu-wrap" id="userMenuWrap">
@@ -480,6 +481,8 @@ function enterApp() {
   // Mostrar botón Usuarios solo a superadmin
   const btnU = document.getElementById('btnUsuarios');
   if (btnU) btnU.style.display = currentRol === 'superadmin' ? '' : 'none';
+  const btnN = document.getElementById('btnNotificar');
+  if (btnN) btnN.style.display = (currentRol === 'superadmin' || currentRol === 'editor') ? '' : 'none';
 
   // Ocultar botón Agregar para monitores
   const btnAdd = document.getElementById('btnAgregarClase');
@@ -1178,6 +1181,82 @@ async function eliminarUsuario(username){
 }
 
 
+
+// ── Notificación Manual ───────────────────────────────────────────────────────
+function openNotificar(){
+  document.getElementById('notifTitulo').value = '';
+  document.getElementById('notifMensaje').value = '';
+  document.getElementById('notifLab').value = '';
+  document.getElementById('notifUrl').value = 'https://francisdominguez.github.io/horarios-laboratorios-utesa/';
+  document.getElementById('notifPreview').style.display = 'none';
+  document.getElementById('notifCharCount').textContent = '0';
+  document.getElementById('notifEnviarBtn').disabled = false;
+  document.getElementById('notifEnviarBtn').textContent = '📢 Enviar a todos';
+  document.getElementById('notificarSheet').style.display = 'flex';
+}
+
+function closeNotificar(){
+  document.getElementById('notificarSheet').style.display = 'none';
+}
+
+function updateNotifPreview(){
+  const titulo  = document.getElementById('notifTitulo').value.trim();
+  const mensaje = document.getElementById('notifMensaje').value.trim();
+  const lab     = document.getElementById('notifLab').value;
+  const labText = document.getElementById('notifLab').options[document.getElementById('notifLab').selectedIndex]?.text;
+
+  // Contador de caracteres
+  document.getElementById('notifCharCount').textContent = document.getElementById('notifMensaje').value.length;
+
+  // Mostrar preview si hay algo escrito
+  const preview = document.getElementById('notifPreview');
+  if(titulo || mensaje){
+    preview.style.display = 'block';
+    document.getElementById('prev-titulo').textContent = titulo || '(sin título)';
+    document.getElementById('prev-mensaje').textContent = mensaje || '(sin mensaje)';
+    const labEl = document.getElementById('prev-lab');
+    if(lab){ labEl.textContent = '📍 ' + labText; labEl.style.display = 'block'; }
+    else { labEl.style.display = 'none'; }
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+async function enviarNotificacion(){
+  const titulo  = document.getElementById('notifTitulo').value.trim();
+  const mensaje = document.getElementById('notifMensaje').value.trim();
+  const lab     = document.getElementById('notifLab').value;
+  const url     = document.getElementById('notifUrl').value.trim();
+  const btn     = document.getElementById('notifEnviarBtn');
+
+  if(!titulo || !mensaje){ showFlash('❌ Escribe título y mensaje','err'); return; }
+
+  const labText = lab ? document.getElementById('notifLab').options[document.getElementById('notifLab').selectedIndex]?.text : '';
+  const bodyFinal = lab ? `📍 ${labText}
+${mensaje}` : mensaje;
+
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+
+  try {
+    await api('POST', '/admin/notify', {
+      title: titulo,
+      body:  bodyFinal,
+      url:   url || 'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
+      icon:  '/horarios-laboratorios-utesa/icon-192.png',
+      badge: '/horarios-laboratorios-utesa/icon-192.png',
+      tag:   'manual-' + Date.now(),
+    });
+    logCambio('📢 Notificación enviada', titulo);
+    showFlash('✅ Notificación enviada a todos los suscriptores');
+    closeNotificar();
+  } catch(e) {
+    showFlash(`❌ ${e.message}`, 'err');
+    btn.disabled = false;
+    btn.textContent = '📢 Enviar a todos';
+  }
+}
+
 </script>
 
 <!-- ── Historial Sheet ─────────────────────────────────────────────────────── -->
@@ -1318,6 +1397,110 @@ async function eliminarUsuario(username){
       <div style="display:flex;gap:.5rem;margin-top:.25rem">
         <button class="btn-save" id="cpBtn" onclick="doChangePassword()">✓ Guardar contraseña</button>
         <button class="btn-cancel" onclick="closeChangePassword()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Notificación Manual Modal ─────────────────────────────────────────── -->
+<div id="notificarSheet" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#1a1f2e;border-radius:16px;border-top:2px solid #f59e0b;width:100%;max-width:480px;max-height:90vh;box-shadow:0 20px 60px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid #1e2436;flex-shrink:0">
+      <span style="font-family:'DM Mono',monospace;font-size:.85rem;color:#f59e0b;font-weight:700">📢 Enviar notificación</span>
+      <button onclick="closeNotificar()" style="background:transparent;border:none;color:#6b7280;font-size:1.1rem;cursor:pointer">✕</button>
+    </div>
+    <div style="overflow-y:auto;flex:1;padding:1rem 1.25rem 1.5rem;display:flex;flex-direction:column;gap:.75rem">
+
+      <!-- Título -->
+      <div class="fg">
+        <label>Título</label>
+        <input type="text" id="notifTitulo" placeholder="Ej: Laboratorio cerrado" maxlength="80"
+          style="width:100%;background:#0d1117;border:1px solid #222733;color:#e8eaf0;padding:.5rem .75rem;border-radius:8px;font-size:.85rem;outline:none;box-sizing:border-box"
+          oninput="updateNotifPreview()">
+      </div>
+
+      <!-- Mensaje -->
+      <div class="fg">
+        <label>Mensaje</label>
+        <textarea id="notifMensaje" placeholder="Escribe el mensaje aquí..." maxlength="200" rows="3"
+          style="width:100%;background:#0d1117;border:1px solid #222733;color:#e8eaf0;padding:.5rem .75rem;border-radius:8px;font-size:.85rem;outline:none;box-sizing:border-box;resize:vertical;font-family:'DM Sans',sans-serif"
+          oninput="updateNotifPreview()"></textarea>
+        <div style="font-size:.62rem;color:#6b7280;text-align:right;margin-top:.2rem"><span id="notifCharCount">0</span>/200</div>
+      </div>
+
+      <!-- Laboratorio opcional -->
+      <div class="fg">
+        <label>Laboratorio (opcional)</label>
+        <select id="notifLab" onchange="updateNotifPreview()"
+          style="width:100%;background:#0d1117;border:1px solid #222733;color:#e8eaf0;padding:.5rem .75rem;border-radius:8px;font-size:.82rem;outline:none">
+          <option value="">— Sin laboratorio específico —</option>
+          <optgroup label="Edificio B">
+            <option value="B120">B120 — Geol. y Topografía</option>
+            <option value="B121">B121 — Materiales</option>
+            <option value="B123">B123 — Hidráulica</option>
+            <option value="B213">B213 — Lab. TIC</option>
+            <option value="B217">B217 — Comunicación</option>
+            <option value="B211">B211 — Comunicación 02</option>
+            <option value="B219">B219 — Programación</option>
+          </optgroup>
+          <optgroup label="Edificio C">
+            <option value="C001">C001 — Máquinas y Herram.</option>
+            <option value="C1002">C1002 — Taller de Bancos</option>
+            <option value="C101">C101 — Lab. Industrial</option>
+            <option value="C102">C102 — Automatización</option>
+            <option value="C103">C103 — Lab. Industrial 02</option>
+            <option value="C104">C104 — Lab. CAD CAM</option>
+            <option value="C105">C105 — Ing. Térmica</option>
+            <option value="C106">C106 — Lab. Neumática</option>
+            <option value="C107">C107 — Inst. Eléctricas</option>
+            <option value="C201">C201 — Lab. Informática</option>
+            <option value="C202">C202 — Lab. Informática 02</option>
+            <option value="C203">C203 — Lab. Informática 03</option>
+            <option value="C204">C204 — Lab. Informática 04</option>
+            <option value="C205">C205 — Lab. AutoCAD</option>
+            <option value="C206">C206 — Lab. Informática 06</option>
+            <option value="C207">C207 — Lab. Informática 07</option>
+            <option value="C208">C208 — Lab. Mecatrónica</option>
+            <option value="C413">C413 — Lab. Comunicación</option>
+            <option value="C414A">C414A — Lab. Electrónica</option>
+            <option value="C414B">C414B — Lab. Electrónica 02</option>
+            <option value="C415">C415 — Lab. Electricidad</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <!-- Enlace opcional -->
+      <div class="fg">
+        <label>Enlace al tocar (opcional)</label>
+        <input type="url" id="notifUrl" placeholder="https://..."
+          style="width:100%;background:#0d1117;border:1px solid #222733;color:#e8eaf0;padding:.5rem .75rem;border-radius:8px;font-size:.82rem;outline:none;box-sizing:border-box"
+          value="https://francisdominguez.github.io/horarios-laboratorios-utesa/"
+          oninput="updateNotifPreview()">
+      </div>
+
+      <!-- Previsualización -->
+      <div id="notifPreview" style="background:#0d1117;border:1px solid #2a3050;border-radius:10px;padding:.75rem 1rem;display:none">
+        <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;font-family:'DM Mono',monospace">Vista previa</div>
+        <div style="display:flex;align-items:flex-start;gap:.6rem">
+          <div style="width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🔔</div>
+          <div>
+            <div id="prev-titulo" style="font-size:.82rem;font-weight:700;color:#e8eaf0"></div>
+            <div id="prev-mensaje" style="font-size:.75rem;color:#9ca3af;margin-top:.15rem;line-height:1.4"></div>
+            <div id="prev-lab" style="font-size:.68rem;color:#f59e0b;margin-top:.2rem;display:none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div style="display:flex;gap:.5rem;margin-top:.25rem">
+        <button id="notifEnviarBtn" onclick="enviarNotificacion()"
+          style="flex:1;background:#f59e0b;color:#000;border:none;padding:.65rem;border-radius:8px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:filter .15s">
+          📢 Enviar a todos
+        </button>
+        <button onclick="closeNotificar()"
+          style="flex:1;background:transparent;border:1px solid #1e2436;color:#6b7280;padding:.65rem;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif">
+          Cancelar
+        </button>
       </div>
     </div>
   </div>
