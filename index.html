@@ -47,7 +47,7 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
   body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");opacity:.4}
-  header{position:sticky;top:0;z-index:100;background:var(--header-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:env(safe-area-inset-top,0px) 2rem 0;display:flex;align-items:center;gap:1.5rem;height:calc(64px + env(safe-area-inset-top,0px))}
+  header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,var(--surface2) 0%,var(--surface) 100%);backdrop-filter:blur(16px);border-bottom:2px solid var(--accent);padding:env(safe-area-inset-top,0px) 2rem 0;display:flex;align-items:center;gap:1.5rem;height:calc(64px + env(safe-area-inset-top,0px))}
   .logo{font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;color:var(--accent);letter-spacing:.05em}
   .logo span{color:var(--muted)}
   .hdiv{width:1px;height:28px;background:var(--border)}
@@ -82,6 +82,7 @@
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
   @keyframes pulse-badge{0%,100%{box-shadow:0 0 0 0 rgba(255,107,53,0)}50%{box-shadow:0 0 12px 2px rgba(255,107,53,.3)}}
   main{position:relative;z-index:1;padding:2rem;max-width:1440px;margin:0 auto}
+  #info-panel{position:sticky;top:calc(64px + env(safe-area-inset-top,0px));z-index:49;backdrop-filter:blur(12px)}
   .page-title{margin-bottom:2rem;animation:fadeUp .6s ease both}
   .page-title h1{font-family:'Space Mono',monospace;font-size:clamp(1.4rem,3vw,2rem);font-weight:700;letter-spacing:-.02em;line-height:1.2}
   .page-title h1 em{font-style:normal;color:var(--accent)}
@@ -187,8 +188,8 @@
   .modal-sub{font-size:.72rem;color:var(--muted);margin-top:.2rem}
   .modal-close{background:transparent;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1}
   .modal-close:hover{border-color:var(--accent2);color:var(--accent2)}
-  .modal-body{overflow:auto;display:flex;align-items:center;justify-content:center;padding:1rem;flex:1;touch-action:pan-x pan-y pinch-zoom}
-  .modal-body img{max-width:100%;max-height:75vh;object-fit:contain;border-radius:8px;border:1px solid var(--border);touch-action:pinch-zoom}
+  .modal-body{overflow:auto;display:flex;align-items:center;justify-content:center;padding:1rem;flex:1;touch-action:pan-x pan-y pinch-zoom;-webkit-overflow-scrolling:touch;cursor:grab}
+  .modal-body img{max-width:100%;max-height:75vh;object-fit:contain;border-radius:8px;border:1px solid var(--border);touch-action:pan-x pan-y pinch-zoom;cursor:zoom-in}
   .modal-foot{padding:.7rem 1.5rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted);font-family:'Space Mono',monospace;flex-shrink:0}
   .toast.toast-end{border-color:rgba(100,200,120,.4)}
   .toast.toast-end .toast-header{background:rgba(100,200,120,.12);border-bottom-color:rgba(100,200,120,.2)}
@@ -463,6 +464,8 @@
     body{padding-bottom:60px}
     main{padding:.75rem .75rem 1rem;width:100%;max-width:100vw;overflow-x:hidden}
     header{padding:env(safe-area-inset-top,0px) .75rem 0;height:calc(56px + env(safe-area-inset-top,0px));align-items:flex-end;padding-bottom:.5rem}
+    :root{--header-h:56px}
+    #info-panel{top:calc(56px + env(safe-area-inset-top,0px))}
     .logo{font-size:.75rem}
     .clock{font-size:.95rem}
     .clock-date{font-size:.62rem}
@@ -472,9 +475,7 @@
     .filters{display:none}
     .alert-config{display:none}
     .stats-bar{display:none}
-    .page-title{margin-bottom:.5rem}
-    .page-title h1{font-size:.95rem}
-    .page-title p{font-size:.65rem}
+    .page-title{margin-bottom:0}
     .table-wrapper{border-radius:0;margin:0 -.75rem;width:calc(100% + 1.5rem)}
     td{padding:.55rem .65rem;font-size:.78rem}
     thead th{padding:.55rem .65rem;font-size:.62rem}
@@ -592,10 +593,11 @@
     <span class="stat-sep" id="mSepFiltered">·</span>
     <div class="stat" id="mStatFilteredWrap" style="display:none"><span class="stat-val" id="mStatFiltered">0</span><span class="stat-lbl" id="mStatFilteredLbl">filtradas</span></div>
   </div>
-  <div class="page-title">
-    <h1>Distribución de <em>Laboratorios</em></h1>
-    <p id="cuatri-label" style="font-size:.7rem;cursor:default"></p>
-  </div>
+  <div id="info-panel" style="background:var(--surface2);border:1px solid var(--border);border-top:2px solid var(--accent);border-radius:14px;padding:.75rem .85rem .6rem;margin-bottom:.75rem">
+    <div style="margin-bottom:.5rem">
+      <h1 style="font-family:'Space Mono',monospace;font-size:clamp(.95rem,2.5vw,1.5rem);font-weight:700;letter-spacing:-.02em;line-height:1.2">Distribución de <em style="font-style:normal;color:var(--accent)">Laboratorios</em></h1>
+      <p id="cuatri-label" style="font-size:.68rem;color:var(--muted);margin-top:.2rem"></p>
+    </div>
   <div class="filters">
     <div class="fg">
       <label>Edificio</label>
@@ -678,7 +680,7 @@
     </div>
     <button class="btn-reset" onclick="resetFilters()">✕ Limpiar</button>
   </div>
-  <div id="occupancy-bar" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.75rem;animation:fadeUp .6s .28s ease both">
+  <div id="occupancy-bar" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.5rem">
     <div style="background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);border-radius:10px;padding:.4rem .5rem;text-align:center">
       <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">En curso</div>
       <div style="display:flex;align-items:center;justify-content:center;gap:.3rem">
@@ -717,16 +719,17 @@
     <span id="sepFiltered"></span>
     <span id="statTodayLbl"></span>
   </div>
-  <div id="global-search-wrap">
+  <div id="global-search-wrap" style="margin-bottom:.4rem">
     <input id="global-search" type="search" placeholder="🔍 Buscar aula, materia, grupo, día, hora..." oninput="onGlobalSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
     <button id="gs-clear" onclick="clearGlobalSearch()" title="Limpiar">✕</button>
   </div>
   <div id="gs-count"></div>
-  <div class="view-toggle" id="view-toggle">
+  <div class="view-toggle" id="view-toggle" style="margin-bottom:0">
     <button class="vt-btn" id="vt-list" onclick="switchView('list')">📋 Lista</button>
     <button class="vt-btn active" id="vt-card" onclick="switchView('card')">🃏 Tarjetas</button>
     <button class="vt-btn" id="vt-grid" onclick="switchView('grid')">📊 Cuadrícula</button>
     <button class="vt-btn" id="vt-group" onclick="toggleGroupEdificio()">🏷️ Agrupar</button>
+  </div>
   </div>
   <div id="card-view" class="active"></div>
   <!-- ✅ FIX: grid-view con overflow propio -->
