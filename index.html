@@ -306,7 +306,7 @@
   .sb-stats-val{font-family:'Space Mono',monospace;font-weight:700;color:var(--accent)}
   .sb-trigger{background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.3);color:var(--accent);width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
   /* Sidebar compacto */
-  .sb-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.1rem}
+  .sb-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.1rem}
   .sb-quick-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:.5rem .3rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.2rem;font-size:1.1rem;transition:all .15s;width:100%}
   .sb-quick-btn span{font-size:.65rem;color:var(--muted);font-family:'DM Sans',sans-serif;text-align:center;line-height:1.2}
   .sb-quick-btn:hover{border-color:var(--accent);background:rgba(0,229,160,.06)}
@@ -436,6 +436,7 @@
   #card-view{display:none}
   #card-view.active{display:block}
   .cv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.6rem}
+
   @media(max-width:768px){.cv-grid{grid-template-columns:1fr;gap:.55rem}}
   .cv-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;transition:box-shadow .15s,border-color .15s;position:relative}
   .cv-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.35);border-color:rgba(255,255,255,.12)}
@@ -466,6 +467,24 @@
   .cv-btn-desmarcar{background:rgba(107,114,128,.12);border-color:rgba(107,114,128,.3);color:#9ca3af}
   .cv-fav{background:none;border:none;cursor:pointer;font-size:.95rem;padding:0;line-height:1;flex-shrink:0}
   .cv-spacer{flex:1}
+
+
+  /* ── HISTORIAL NOTIFICACIONES ── */
+  #notif-history-modal{display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1rem}
+  #notif-history-modal.open{display:flex}
+  .nh-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:480px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .nh-header{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface2)}
+  .nh-title{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--accent);font-weight:700}
+  .nh-body{overflow-y:auto;flex:1}
+  .nh-item{padding:.75rem 1.1rem;border-bottom:1px solid var(--border);display:flex;gap:.75rem;align-items:flex-start}
+  .nh-item:last-child{border-bottom:none}
+  .nh-icon{width:34px;height:34px;border-radius:8px;background:rgba(0,229,160,.12);border:1px solid rgba(0,229,160,.2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+  .nh-content{flex:1;min-width:0}
+  .nh-item-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.15rem}
+  .nh-item-body{font-size:.72rem;color:var(--muted);line-height:1.4;white-space:pre-line}
+  .nh-item-time{font-size:.62rem;color:var(--border);font-family:'Space Mono',monospace;margin-top:.25rem}
+  .nh-empty{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:.85rem}
+  .nh-badge{background:var(--accent);color:#000;font-size:.58rem;font-weight:700;border-radius:10px;padding:.1rem .4rem;margin-left:.4rem;font-family:'Space Mono',monospace}
 
   @media(max-width:768px){
     body{padding-bottom:60px}
@@ -1676,12 +1695,14 @@ document.addEventListener('DOMContentLoaded', async function(){
       const body2=pending.map(({c,diff})=>
         `📍 ${c.aula} · ${c.mat} grp.${c.grp} · ${c.inicio}→${c.fin} · En ${diff}min`
       ).join('\n');
+      const _notifTag = `local-${Date.now()}`;
       navigator.serviceWorker.controller.postMessage({
         type:'SHOW_NOTIFICATION',
         title:`⏰ ${label2}`,
         body:body2,
-        tag:`local-${Date.now()}`
+        tag:_notifTag
       });
+      if(window._saveLocalNotif) window._saveLocalNotif(`⏰ ${label2}`, body2, _notifTag);
     }
     lastPending=pending;
     if(soundEnabled)playSound('upcoming');
@@ -1782,12 +1803,15 @@ document.addEventListener('DOMContentLoaded', async function(){
     if(navigator.vibrate)navigator.vibrate([200,100,200]);
     // Push notification via SW
     if('serviceWorker'in navigator&&navigator.serviceWorker.controller){
+      const _startTag = `start-${Date.now()}`;
+      const _startBody = started.map(({c})=>`${c.aula} · ${c.mat} grp.${c.grp} · ${c.inicio}→${c.fin}`).join('\n');
       navigator.serviceWorker.controller.postMessage({
         type:'SHOW_NOTIFICATION',
         title:`🟢 ${label}`,
-        body:started.map(({c})=>`${c.aula} · ${c.mat} grp.${c.grp} · ${c.inicio}→${c.fin}`).join('\n'),
-        tag:`start-${Date.now()}`
+        body:_startBody,
+        tag:_startTag
       });
+      if(window._saveLocalNotif) window._saveLocalNotif(`🟢 ${label}`, _startBody, _startTag);
     }
     setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),400);},9000);
   }
@@ -2383,6 +2407,87 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
   }
 
   updateClock(); render(); loadCuatri();
+  // ── Historial de notificaciones ──────────────────────────────────────────────
+  function getNotifHistory(){ return JSON.parse(localStorage.getItem('utesa-notif-history')||'[]'); }
+  function saveNotifToHistory(notif){
+    const h = getNotifHistory();
+    h.unshift({ ...notif, ts: notif.ts || Date.now() });
+    if(h.length > 50) h.length = 50; // máximo 50
+    localStorage.setItem('utesa-notif-history', JSON.stringify(h));
+    updateNotifBadge();
+  }
+
+  function updateNotifBadge(){
+    const h = getNotifHistory();
+    const lastSeen = parseInt(localStorage.getItem('utesa-notif-last-seen')||'0');
+    const unseen = h.filter(n => n.ts > lastSeen).length;
+    const badge = document.getElementById('nh-badge');
+    if(badge){
+      badge.style.display = unseen > 0 ? '' : 'none';
+      badge.textContent = unseen;
+    }
+  }
+
+  function openNotifHistory(){
+    const h = getNotifHistory();
+    const list = document.getElementById('nh-list');
+    localStorage.setItem('utesa-notif-last-seen', Date.now().toString());
+    updateNotifBadge();
+    closeSidebar();
+
+    if(!h.length){
+      list.innerHTML = '<div class="nh-empty">Sin notificaciones recibidas aún</div>';
+    } else {
+      list.innerHTML = h.map(n => {
+        const d = new Date(n.ts);
+        const fecha = d.toLocaleDateString('es-DO',{day:'2-digit',month:'2-digit',year:'2-digit'});
+        const hora  = d.toLocaleTimeString('es-DO',{hour:'2-digit',minute:'2-digit'});
+        const icon  = n.tag && n.tag.startsWith('manual') ? '📢'
+                    : n.tag && n.tag.startsWith('start')  ? '🟢'
+                    : n.tag && n.tag.startsWith('ended')  ? '✅'
+                    : '⏰';
+        return `<div class="nh-item">
+          <div class="nh-icon">${icon}</div>
+          <div class="nh-content">
+            <div class="nh-item-title">${n.title||''}</div>
+            <div class="nh-item-body">${n.body||''}</div>
+            <div class="nh-item-time">${fecha} · ${hora}</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    document.getElementById('notif-history-modal').classList.add('open');
+  }
+
+  function closeNotifHistory(){
+    document.getElementById('notif-history-modal').classList.remove('open');
+  }
+
+  function clearNotifHistory(){
+    localStorage.removeItem('utesa-notif-history');
+    localStorage.removeItem('utesa-notif-last-seen');
+    updateNotifBadge();
+    document.getElementById('nh-list').innerHTML = '<div class="nh-empty">Sin notificaciones recibidas aún</div>';
+  }
+
+  // Escuchar mensajes del SW para guardar notificaciones
+  navigator.serviceWorker && navigator.serviceWorker.addEventListener('message', e => {
+    if(e.data && e.data.type === 'SAVE_NOTIF_HISTORY'){
+      saveNotifToHistory(e.data.notif);
+    }
+  });
+
+  // Guardar también notificaciones locales (las que genera el JS de la app)
+  const _origShowToast = window.showToast;
+  window._saveLocalNotif = function(title, body, tag){
+    saveNotifToHistory({ title, body, tag, ts: Date.now() });
+  };
+
+  // Inicializar badge al cargar
+  updateNotifBadge();
+  document.getElementById('notif-history-modal').addEventListener('click', function(e){ if(e.target===this) closeNotifHistory(); });
+
+
 
 
 
@@ -2786,5 +2891,19 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
       </div>
     </div>
   </div>
+<!-- ══ HISTORIAL NOTIFICACIONES ══ -->
+<div id="notif-history-modal">
+  <div class="nh-box">
+    <div class="nh-header">
+      <span class="nh-title">🔔 Notificaciones recibidas</span>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <button onclick="clearNotifHistory()" style="background:transparent;border:1px solid var(--border);color:var(--muted);font-size:.68rem;padding:.2rem .55rem;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif">🗑️ Limpiar</button>
+        <button onclick="closeNotifHistory()" style="background:transparent;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer">✕</button>
+      </div>
+    </div>
+    <div class="nh-body" id="nh-list"></div>
+  </div>
+</div>
+
 </body>
 </html>
