@@ -505,6 +505,7 @@ self.addEventListener('message', e=>{
       requireInteraction: true,
       data:    { url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/' }
     });
+    saveNotifHistory({ title: e.data.title, body: e.data.body, ts: Date.now(), tag: e.data.tag||'local' });
     return;
   }
 });
@@ -515,14 +516,17 @@ self.addEventListener('push', e=>{
   let data;
   try { data = e.data.json(); } catch(err) { return; }
   e.waitUntil(
-    self.registration.showNotification(data.title||'UTESA Labs', {
-      body:             data.body||'',
-      icon:             data.icon||'/horarios-laboratorios-utesa/icon-192.png',
-      badge:            data.badge||'/horarios-laboratorios-utesa/icon-192.png',
-      tag:              data.tag||'utesa-push',
-      vibrate:          data.vibrate||[200,100,200],
-      data:             { url: data.url||'/horarios-laboratorios-utesa/' }
-    })
+    Promise.all([
+      self.registration.showNotification(data.title||'UTESA Labs', {
+        body:    data.body||'',
+        icon:    data.icon||'/horarios-laboratorios-utesa/icon-192.png',
+        badge:   data.badge||'/horarios-laboratorios-utesa/icon-192.png',
+        tag:     data.tag||'utesa-push',
+        vibrate: data.vibrate||[200,100,200],
+        data:    { url: data.url||'/horarios-laboratorios-utesa/' }
+      }),
+      saveNotifHistory({ title: data.title, body: data.body, ts: Date.now(), tag: data.tag||'push' })
+    ])
   );
 });
 
@@ -565,3 +569,11 @@ self.addEventListener('fetch', e=>{
     caches.match(e.request).then(cached=>cached||fetch(e.request))
   );
 });
+
+// ── Historial de notificaciones (localStorage vía clients) ───────────────────
+function saveNotifHistory(notif){
+  // Enviar a todos los clientes abiertos para que lo guarden en localStorage
+  self.clients.matchAll({type:'window'}).then(cls=>{
+    cls.forEach(c=>c.postMessage({ type:'SAVE_NOTIF_HISTORY', notif }));
+  });
+}
