@@ -564,7 +564,7 @@
 
 <div id="update-banner">
   <span class="upd-text">🆕 <strong>Nueva versión disponible</strong> — hay cambios en los horarios</span>
-  <button class="upd-btn" onclick="applyUpdate()">Actualizar</button>
+  <button class="upd-btn" title="Actualizar a la nueva versión" title="Actualizar a la nueva versión" onclick="applyUpdate()">Actualizar</button>
   <button class="upd-dismiss" onclick="document.getElementById('update-banner').classList.remove('show')">✕</button>
 </div>
 
@@ -689,7 +689,7 @@
       <label>Buscar código</label>
       <input type="text" id="filterMateria" placeholder="Ej: INF113, MED203...">
     </div>
-    <button class="btn-reset" onclick="resetFilters()">✕ Limpiar</button>
+    <button class="btn-reset" title="Limpiar todos los filtros" title="Limpiar todos los filtros" onclick="resetFilters()">✕ Limpiar</button>
   </div>
   <div id="occupancy-bar" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.5rem">
     <div style="background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);border-radius:10px;padding:.4rem .5rem;text-align:center">
@@ -736,10 +736,10 @@
   </div>
   <div id="gs-count"></div>
   <div class="view-toggle" id="view-toggle" style="margin-bottom:0">
-    <button class="vt-btn" id="vt-list" onclick="switchView('list')">📋 Lista</button>
-    <button class="vt-btn active" id="vt-card" onclick="switchView('card')">🃏 Tarjetas</button>
-    <button class="vt-btn" id="vt-grid" onclick="switchView('grid')">📊 Cuadrícula</button>
-    <button class="vt-btn" id="vt-group" onclick="toggleGroupEdificio()">🏷️ Agrupar</button>
+    <button class="vt-btn" id="vt-list" title="Vista lista" title="Vista lista" onclick="switchView('list')">📋 Lista</button>
+    <button class="vt-btn active" id="vt-card" title="Vista tarjetas" title="Vista tarjetas" onclick="switchView('card')">🃏 Tarjetas</button>
+    <button class="vt-btn" id="vt-grid" title="Vista cuadrícula" title="Vista cuadrícula" onclick="switchView('grid')">📊 Cuadrícula</button>
+    <button class="vt-btn" id="vt-group" title="Agrupar por edificio" title="Agrupar por edificio" onclick="toggleGroupEdificio()">🏷️ Agrupar</button>
   </div>
   </div>
   <div id="card-view" class="active"></div>
@@ -768,7 +768,7 @@
   <div class="modal-box">
     <div class="modal-header">
       <div><div class="modal-title" id="modalTitle">—</div><div class="modal-sub">Distribución del laboratorio</div></div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <button class="modal-close" title="Cerrar" title="Cerrar" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body"><img id="modalImg" src="" alt="Distribución del laboratorio"></div>
     <div class="modal-foot">ESC o clic fuera para cerrar</div>
@@ -782,7 +782,7 @@
         <div class="alert-modal-title" id="alertModalTitle">⏰ Clases próximas</div>
         <div class="alert-modal-sub">Clases que comienzan pronto hoy</div>
       </div>
-      <button class="alert-modal-close" onclick="closeAlertModal()">✕</button>
+      <button class="alert-modal-close" title="Cerrar" title="Cerrar" onclick="closeAlertModal()">✕</button>
     </div>
     <div class="alert-modal-body" id="alertModalBody"></div>
   </div>
@@ -2503,17 +2503,17 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
 
 <!-- ══ BOTTOM NAV ══ -->
 <nav id="bottom-nav">
-  <button class="bnav-btn active" id="bnav-today" onclick="mobileNavTab('today')">
+  <button class="bnav-btn active" id="bnav-today" title="Ver clases de hoy" title="Ver clases de hoy" onclick="mobileNavTab('today')">
     <span class="bnav-icon">📅</span>Hoy
   </button>
-  <button class="bnav-btn" id="bnav-filter" onclick="openFilterSheet()">
+  <button class="bnav-btn" id="bnav-filter" title="Filtrar clases" title="Filtrar clases" onclick="openFilterSheet()">
     <span class="bnav-icon">🔍</span>Filtrar por
     <span id="bnav-filter-count" style="display:none;font-size:.55rem;background:var(--accent);color:#000;border-radius:10px;padding:.05rem .35rem;margin-top:.1rem"></span>
   </button>
-  <button class="bnav-btn" id="bnav-all" onclick="mobileNavTab('all')">
+  <button class="bnav-btn" id="bnav-all" title="Ver todas las clases" title="Ver todas las clases" onclick="mobileNavTab('all')">
     <span class="bnav-icon">📋</span>Todos
   </button>
-  <button class="bnav-btn" onclick="showLabsFreeSidebar()">
+  <button class="bnav-btn" title="Ver laboratorios libres ahora" title="Ver laboratorios libres ahora" onclick="showLabsFreeSidebar()">
     <span class="bnav-icon">🟢</span>Labs libres
   </button>
 
@@ -2552,7 +2552,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
 <!-- ══ WEEK VIEW MODAL ══ -->
 <div id="week-modal">
   <div class="wm-box">
-    <div class="wm-header"><div class="wm-title" id="wm-title">Semana del lab</div><button class="wm-close" onclick="closeWeekModal()">✕</button></div>
+    <div class="wm-header"><div class="wm-title" id="wm-title">Semana del lab</div><button class="wm-close" title="Cerrar" title="Cerrar" onclick="closeWeekModal()">✕</button></div>
     <button class="wm-copy-btn" onclick="copyLabSchedule()">📋 Copiar horario al portapapeles</button>
     <div class="wm-body" id="wm-body"></div>
   </div>
@@ -2665,15 +2665,15 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
 </div>
 
 <!-- ══ SIDEBAR ══ -->
-<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="sidebar-overlay" title="Cerrar menú" title="Cerrar menú" onclick="closeSidebar()"></div>
 <div id="sidebar">
-  <div class="sb-header"><span class="sb-title">⚙️ Menú</span><button class="sb-close" onclick="closeSidebar()">✕</button></div>
+  <div class="sb-header"><span class="sb-title">⚙️ Menú</span><button class="sb-close" title="Cerrar menú" onclick="closeSidebar()">✕</button></div>
   <div class="sb-body">
 
     <!-- Acceso rápido -->
     <div class="sb-quick">
-      <button class="sb-quick-btn" id="sb-fav-toggle" onclick="toggleFavOnlySidebar()">⭐<span>Favoritos <span id="sb-fav-count" style="display:none;background:var(--accent);color:#000;border-radius:8px;padding:0 .3rem;font-size:.6rem">0</span></span></button>
-      <button class="sb-quick-btn" id="bnav-alert" onclick="openAlertSheet();closeSidebar()">⏰<span>Alertas</span></button>
+      <button class="sb-quick-btn" id="sb-fav-toggle" title="Mostrar solo favoritos" title="Mostrar solo favoritos" onclick="toggleFavOnlySidebar()">⭐<span>Favoritos <span id="sb-fav-count" style="display:none;background:var(--accent);color:#000;border-radius:8px;padding:0 .3rem;font-size:.6rem">0</span></span></button>
+      <button class="sb-quick-btn" id="bnav-alert" title="Configurar alertas" title="Configurar alertas" onclick="openAlertSheet();closeSidebar()">⏰<span>Alertas</span></button>
       <a href="admin.html" style="text-decoration:none;display:contents"><button class="sb-quick-btn" style="color:var(--accent)">🔐<span>Admin</span></button></a>
     </div>
 
@@ -2686,7 +2686,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
       <button class="sb-row-btn active" id="sb-vt-card" onclick="switchView('card');updateSbViewBtns()">🃏 Tarjetas</button>
       <button class="sb-row-btn" id="sb-vt-grid" onclick="switchView('grid');updateSbViewBtns()">📊 Cuadrícula</button>
     </div>
-    <button class="sb-btn" id="sb-vt-group" onclick="toggleGroupEdificio()" style="margin-top:.3rem"><span class="sb-btn-icon">🏷️</span><span class="sb-btn-label" id="sb-group-label">Agrupar por edificio</span></button>
+    <button class="sb-btn" id="sb-vt-group" title="Agrupar por edificio" onclick="toggleGroupEdificio()" style="margin-top:.3rem"><span class="sb-btn-icon">🏷️</span><span class="sb-btn-label" id="sb-group-label">Agrupar por edificio</span></button>
 
     <div class="sb-divider"></div>
 
@@ -2715,13 +2715,13 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
     <!-- Herramientas -->
     <div class="sb-section-title" style="margin-bottom:.35rem">Herramientas</div>
     <div class="sb-tools-grid">
-      <button class="sb-tool-btn" onclick="shareWhatsApp();closeSidebar()">💬<span>WhatsApp</span></button>
-      <button class="sb-tool-btn" onclick="copyShareLink()">🔗<span>Copiar enlace</span></button>
-      <button class="sb-tool-btn" onclick="openCompareSheet();closeSidebar()">📅<span>Comparar</span></button>
-      <button class="sb-tool-btn" onclick="exportCSV()">📥<span>Exportar CSV</span></button>
-      <button class="sb-tool-btn" onclick="printSchedule()">🖨️<span>Imprimir</span></button>
-      <button class="sb-tool-btn" onclick="clearAllFavs()">🗑️<span>Limpiar favs</span></button>
-      <button class="sb-tool-btn" id="bnav-theme-btn" onclick="toggleThemePicker()">🎨<span>Tema</span></button>
+      <button class="sb-tool-btn" title="Compartir por WhatsApp" title="Compartir por WhatsApp" onclick="shareWhatsApp();closeSidebar()">💬<span>WhatsApp</span></button>
+      <button class="sb-tool-btn" title="Copiar enlace de la app" title="Copiar enlace de la app" onclick="copyShareLink()">🔗<span>Copiar enlace</span></button>
+      <button class="sb-tool-btn" title="Comparar cuatrimestres" title="Comparar cuatrimestres" onclick="openCompareSheet();closeSidebar()">📅<span>Comparar</span></button>
+      <button class="sb-tool-btn" title="Exportar clases como CSV" title="Exportar clases como CSV" onclick="exportCSV()">📥<span>Exportar CSV</span></button>
+      <button class="sb-tool-btn" title="Imprimir horario" title="Imprimir horario" onclick="printSchedule()">🖨️<span>Imprimir</span></button>
+      <button class="sb-tool-btn" title="Limpiar todos los favoritos" title="Limpiar todos los favoritos" onclick="clearAllFavs()">🗑️<span>Limpiar favs</span></button>
+      <button class="sb-tool-btn" id="bnav-theme-btn" title="Cambiar tema visual" title="Cambiar tema visual" onclick="toggleThemePicker()">🎨<span>Tema</span></button>
     </div>
 
   </div>
@@ -2729,11 +2729,11 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(window.closeSide
 
 
 <div id="theme-picker" style="display:none">
-    <div class="tp-overlay" onclick="closeThemePicker()"></div>
+    <div class="tp-overlay" title="Cerrar" title="Cerrar" onclick="closeThemePicker()"></div>
     <div class="tp-box">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
         <div class="tp-title" style="margin-bottom:0">Apariencia</div>
-        <button onclick="closeThemePicker()" style="background:transparent;border:1px solid var(--border);color:var(--muted);width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center">✕</button>
+        <button title="Cerrar" onclick="closeThemePicker()" style="background:transparent;border:1px solid var(--border);color:var(--muted);width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center">✕</button>
       </div>
       <div class="tp-options">
         <button class="tp-opt active" data-t="dark" onclick="setTheme('dark')"><span class="tp-dot" data-t="dark"></span><span class="tp-label">Oscuro</span><span class="tp-check">✓</span></button>
