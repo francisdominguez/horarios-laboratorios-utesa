@@ -506,6 +506,8 @@
     td{padding:.55rem .65rem;font-size:.78rem}
     thead th{padding:.55rem .65rem;font-size:.62rem}
     .btn-img{padding:.2rem .45rem;font-size:.62rem}
+    #occupancy-bar > div{padding:.35rem .25rem}
+    #occupancy-bar span[id]{font-size:.85rem!important}
     .modal-body{padding:.5rem;overflow:scroll;min-height:60vw}
     .modal-body img{width:100%;max-height:80vh;touch-action:pan-x pan-y pinch-zoom}
     #bottom-nav{display:flex}
@@ -714,30 +716,30 @@
     </div>
     <button class="btn-reset" title="Limpiar todos los filtros" title="Limpiar todos los filtros" onclick="resetFilters()">✕ Limpiar</button>
   </div>
-  <div id="occupancy-bar" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.5rem">
+  <div id="occupancy-bar" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;margin-bottom:.5rem">
     <div style="background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);border-radius:10px;padding:.4rem .5rem;text-align:center">
-      <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">🟢 Activas</div>
+      <div style="font-size:.55rem;color:#6b7280;text-transform:uppercase;letter-spacing:.03em;margin-bottom:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🟢 Activas</div>
       <div style="display:flex;align-items:center;justify-content:center;gap:.3rem">
         <span style="width:7px;height:7px;border-radius:50%;background:#00e5a0;box-shadow:0 0 5px #00e5a0;flex-shrink:0"></span>
         <span id="occ-active" style="font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:#00e5a0">0</span>
       </div>
     </div>
     <div style="background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.2);border-radius:10px;padding:.4rem .5rem;text-align:center">
-      <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">⚡ Próximas</div>
+      <div style="font-size:.55rem;color:#6b7280;text-transform:uppercase;letter-spacing:.03em;margin-bottom:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">⚡ Próximas</div>
       <div style="display:flex;align-items:center;justify-content:center;gap:.3rem">
         <span style="width:7px;height:7px;border-radius:50%;background:#ff6b35;animation:pulse-badge 2s infinite;flex-shrink:0"></span>
         <span id="occ-imm" style="font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:#ff6b35">0</span>
       </div>
     </div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.4rem .5rem;text-align:center">
-      <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">⚪ Libres</div>
+      <div style="font-size:.55rem;color:#6b7280;text-transform:uppercase;letter-spacing:.03em;margin-bottom:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">⚪ Libres</div>
       <div style="display:flex;align-items:center;justify-content:center;gap:.3rem">
         <span style="width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0"></span>
         <span id="occ-free" style="font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:var(--text)">0</span>
       </div>
     </div>
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.4rem .5rem;text-align:center">
-      <div style="font-size:.6rem;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Labs total</div>
+      <div style="font-size:.55rem;color:#6b7280;text-transform:uppercase;letter-spacing:.03em;margin-bottom:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Labs total</div>
       <div style="font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:var(--muted)"><span id="occ-total">28</span></div>
     </div>
   </div>
