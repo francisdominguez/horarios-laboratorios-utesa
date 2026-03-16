@@ -505,7 +505,7 @@ self.addEventListener('message', e=>{
       requireInteraction: true,
       data:    { url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/' }
     });
-    saveNotifHistory({ title: e.data.title, body: e.data.body, ts: Date.now(), tag: e.data.tag||'local' });
+    // Solo guardar manuales, no las de clase
     return;
   }
 });
@@ -525,7 +525,7 @@ self.addEventListener('push', e=>{
         vibrate: data.vibrate||[200,100,200],
         data:    { url: data.url||'/horarios-laboratorios-utesa/' }
       }),
-      saveNotifHistory({ title: data.title, body: data.body, ts: Date.now(), tag: data.tag||'push' })
+      if(data.tag && data.tag.startsWith('manual')) saveNotifHistory({ title: data.title, body: data.body, ts: Date.now(), tag: data.tag })
     ])
   );
 });
