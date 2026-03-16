@@ -515,18 +515,16 @@ self.addEventListener('push', e=>{
   if(!e.data) return;
   let data;
   try { data = e.data.json(); } catch(err) { return; }
+  if(data.tag && data.tag.startsWith('manual')) saveNotifHistory({ title: data.title, body: data.body, ts: Date.now(), tag: data.tag });
   e.waitUntil(
-    Promise.all([
-      self.registration.showNotification(data.title||'UTESA Labs', {
-        body:    data.body||'',
-        icon:    data.icon||'/horarios-laboratorios-utesa/icon-192.png',
-        badge:   data.badge||'/horarios-laboratorios-utesa/icon-192.png',
-        tag:     data.tag||'utesa-push',
-        vibrate: data.vibrate||[200,100,200],
-        data:    { url: data.url||'/horarios-laboratorios-utesa/' }
-      }),
-      if(data.tag && data.tag.startsWith('manual')) saveNotifHistory({ title: data.title, body: data.body, ts: Date.now(), tag: data.tag })
-    ])
+    self.registration.showNotification(data.title||'UTESA Labs', {
+      body:    data.body||'',
+      icon:    data.icon||'/horarios-laboratorios-utesa/icon-192.png',
+      badge:   data.badge||'/horarios-laboratorios-utesa/icon-192.png',
+      tag:     data.tag||'utesa-push',
+      vibrate: data.vibrate||[200,100,200],
+      data:    { url: data.url||'/horarios-laboratorios-utesa/' }
+    })
   );
 });
 
