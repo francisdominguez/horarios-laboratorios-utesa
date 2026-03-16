@@ -5,6 +5,8 @@ on:
     - cron: '* 11-23 * * 1-6'
     - cron: '* 0-2 * * 2-6'
     - cron: '* 0-2 * * 0'
+  repository_dispatch:
+    types: [manual-notify]
   workflow_dispatch:
 
 jobs:
@@ -44,9 +46,10 @@ jobs:
 
       - name: Send notifications
         env:
-          VAPID_PUBLIC_KEY:  ${{ secrets.VAPID_PUBLIC_KEY }}
-          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
-          VAPID_EMAIL:       ${{ secrets.VAPID_EMAIL }}
-          WORKER_URL:        ${{ secrets.WORKER_URL }}
-          WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
+          VAPID_PUBLIC_KEY:   ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY:  ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_EMAIL:        ${{ secrets.VAPID_EMAIL }}
+          WORKER_URL:         ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN:  ${{ secrets.WORKER_AUTH_TOKEN }}
+          GITHUB_EVENT_NAME:  ${{ github.event_name }}
         run: node .github/scripts/send-notifications.js
