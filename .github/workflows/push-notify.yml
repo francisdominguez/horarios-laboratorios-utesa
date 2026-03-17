@@ -5,6 +5,7 @@ on:
     - cron: '* 11-23 * * 1-6'
     - cron: '* 0-2 * * 2-6'
     - cron: '* 0-2 * * 0'
+    - cron: '*/5 * * * *'
   repository_dispatch:
     types: [manual-notify]
   workflow_dispatch:
