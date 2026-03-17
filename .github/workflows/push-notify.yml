@@ -53,4 +53,224 @@ jobs:
           WORKER_URL:         ${{ secrets.WORKER_URL }}
           WORKER_AUTH_TOKEN:  ${{ secrets.WORKER_AUTH_TOKEN }}
           GITHUB_EVENT_NAME:  ${{ github.event_name }}
+        run: node .github/scripts/send-notifications.jsname: Push Notifications
+
+on:
+  schedule:
+    - cron: '* 11-23 * * 1-6'
+    - cron: '* 0-2 * * 2-6'
+    - cron: '* 0-2 * * 0'
+    - cron: '*/5 * * * *'
+  repository_dispatch:
+    types: [manual-notify]
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: Cache npm
+        uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-webpush
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install web-push
+
+      - name: Validate secrets
+        run: |
+          if [ -z "$VAPID_PUBLIC_KEY" ]; then echo "VAPID_PUBLIC_KEY vacio" && exit 1; fi
+          if [ -z "$VAPID_PRIVATE_KEY" ]; then echo "VAPID_PRIVATE_KEY vacio" && exit 1; fi
+          if [ -z "$WORKER_URL" ]; then echo "WORKER_URL vacio" && exit 1; fi
+          if [ -z "$WORKER_AUTH_TOKEN" ]; then echo "WORKER_AUTH_TOKEN vacio" && exit 1; fi
+          echo "✅ Secrets presentes"
+        env:
+          VAPID_PUBLIC_KEY:  ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          WORKER_URL:        ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
+
+      - name: Send notifications
+        env:
+          VAPID_PUBLIC_KEY:   ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY:  ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_EMAIL:        ${{ secrets.VAPID_EMAIL }}
+          WORKER_URL:         ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN:  ${{ secrets.WORKER_AUTH_TOKEN }}
+          GITHUB_EVENT_NAME:  ${{ github.event_name }}
+        run: node .github/scripts/send-notifications.jsname: Push Notifications
+
+on:
+  schedule:
+    - cron: '* 11-23 * * 1-6'
+    - cron: '* 0-2 * * 2-6'
+    - cron: '* 0-2 * * 0'
+    - cron: '*/5 * * * *'
+  repository_dispatch:
+    types: [manual-notify]
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: Cache npm
+        uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-webpush
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install web-push
+
+      - name: Validate secrets
+        run: |
+          if [ -z "$VAPID_PUBLIC_KEY" ]; then echo "VAPID_PUBLIC_KEY vacio" && exit 1; fi
+          if [ -z "$VAPID_PRIVATE_KEY" ]; then echo "VAPID_PRIVATE_KEY vacio" && exit 1; fi
+          if [ -z "$WORKER_URL" ]; then echo "WORKER_URL vacio" && exit 1; fi
+          if [ -z "$WORKER_AUTH_TOKEN" ]; then echo "WORKER_AUTH_TOKEN vacio" && exit 1; fi
+          echo "✅ Secrets presentes"
+        env:
+          VAPID_PUBLIC_KEY:  ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          WORKER_URL:        ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
+
+      - name: Send notifications
+        env:
+          VAPID_PUBLIC_KEY:   ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY:  ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_EMAIL:        ${{ secrets.VAPID_EMAIL }}
+          WORKER_URL:         ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN:  ${{ secrets.WORKER_AUTH_TOKEN }}
+          GITHUB_EVENT_NAME:  ${{ github.event_name }}
+        run: node .github/scripts/send-notifications.jsname: Push Notifications
+
+on:
+  schedule:
+    - cron: '* 11-23 * * 1-6'
+    - cron: '* 0-2 * * 2-6'
+    - cron: '* 0-2 * * 0'
+    - cron: '*/5 * * * *'
+  repository_dispatch:
+    types: [manual-notify]
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: Cache npm
+        uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-webpush
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install web-push
+
+      - name: Validate secrets
+        run: |
+          if [ -z "$VAPID_PUBLIC_KEY" ]; then echo "VAPID_PUBLIC_KEY vacio" && exit 1; fi
+          if [ -z "$VAPID_PRIVATE_KEY" ]; then echo "VAPID_PRIVATE_KEY vacio" && exit 1; fi
+          if [ -z "$WORKER_URL" ]; then echo "WORKER_URL vacio" && exit 1; fi
+          if [ -z "$WORKER_AUTH_TOKEN" ]; then echo "WORKER_AUTH_TOKEN vacio" && exit 1; fi
+          echo "✅ Secrets presentes"
+        env:
+          VAPID_PUBLIC_KEY:  ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          WORKER_URL:        ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
+
+      - name: Send notifications
+        env:
+          VAPID_PUBLIC_KEY:   ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY:  ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_EMAIL:        ${{ secrets.VAPID_EMAIL }}
+          WORKER_URL:         ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN:  ${{ secrets.WORKER_AUTH_TOKEN }}
+          GITHUB_EVENT_NAME:  ${{ github.event_name }}
+        run: node .github/scripts/send-notifications.jsname: Push Notifications
+
+on:
+  schedule:
+    - cron: '* 11-23 * * 1-6'
+    - cron: '* 0-2 * * 2-6'
+    - cron: '* 0-2 * * 0'
+    - cron: '*/5 * * * *'
+  repository_dispatch:
+    types: [manual-notify]
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: Cache npm
+        uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-webpush
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install web-push
+
+      - name: Validate secrets
+        run: |
+          if [ -z "$VAPID_PUBLIC_KEY" ]; then echo "VAPID_PUBLIC_KEY vacio" && exit 1; fi
+          if [ -z "$VAPID_PRIVATE_KEY" ]; then echo "VAPID_PRIVATE_KEY vacio" && exit 1; fi
+          if [ -z "$WORKER_URL" ]; then echo "WORKER_URL vacio" && exit 1; fi
+          if [ -z "$WORKER_AUTH_TOKEN" ]; then echo "WORKER_AUTH_TOKEN vacio" && exit 1; fi
+          echo "✅ Secrets presentes"
+        env:
+          VAPID_PUBLIC_KEY:  ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          WORKER_URL:        ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
+
+      - name: Send notifications
+        env:
+          VAPID_PUBLIC_KEY:   ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY:  ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_EMAIL:        ${{ secrets.VAPID_EMAIL }}
+          WORKER_URL:         ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN:  ${{ secrets.WORKER_AUTH_TOKEN }}
+          GITHUB_EVENT_NAME:  ${{ github.event_name }}
         run: node .github/scripts/send-notifications.js
