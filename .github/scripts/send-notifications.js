@@ -156,6 +156,7 @@ async function main() {
 
   const pending = [];
   const ended   = [];
+  const started = [];
 
   todayClasses.forEach(c => {
     const diff    = c.inicioM - m;
@@ -163,17 +164,32 @@ async function main() {
     const matchedRange = ALERT_RANGES.find(r => diff >= r.min && diff <= r.max);
     if (matchedRange) pending.push({ c, diff: matchedRange.label });
     if (diffEnd <= 0 && diffEnd >= -2) ended.push({ c });
+    if (diff <= 0 && diff >= -2) started.push({ c });
   });
 
-  if (!pending.length && !ended.length) {
+  if (!pending.length && !ended.length && !started.length) {
     console.log('Sin alertas en este minuto.');
     process.exit(0);
   }
 
-  console.log(`📬 ${pending.length} próximas, ${ended.length} finalizadas`);
+  console.log(`📬 ${pending.length} próximas, ${started.length} iniciadas, ${ended.length} finalizadas`);
 
   // ── 4. Construir notificaciones ──
   const notifications = [];
+
+  if (started.length > 0) {
+    const label = started.length === 1 ? 'Clase iniciada' : `${started.length} clases iniciadas`;
+    const body  = started.map(c => `🟢 ${c.aula} · ${c.mat} grp.${c.grp}\n⏰ ${c.inicio} → ${c.fin}`).join('\n\n');
+    notifications.push({
+      title: `🟢 ${label}`, body,
+      tag:   `started-${m}`,
+      icon:  '/horarios-laboratorios-utesa/icon-192.png',
+      badge: '/horarios-laboratorios-utesa/icon-192.png',
+      url:   'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
+      vibrate: [200, 100, 200],
+      requireInteraction: false,
+    });
+  }
 
   if (pending.length > 0) {
     const byDiff = {};
