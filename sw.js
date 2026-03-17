@@ -1,4 +1,4 @@
-const CACHE = 'utesa-labs-v27';
+const CACHE = 'utesa-labs-v23';
 const ASSETS = [
   '/horarios-laboratorios-utesa/',
   '/horarios-laboratorios-utesa/index.html',
@@ -514,7 +514,6 @@ self.addEventListener('push', e=>{
   if(!e.data) return;
   let data;
   try { data = e.data.json(); } catch(err) { return; }
-  if(data.tag && data.tag.startsWith('manual-')) saveNotifHistory({ title: data.title, body: data.body, ts: Date.now(), tag: data.tag });
   e.waitUntil(
     self.registration.showNotification(data.title||'UTESA Labs', {
       body:             data.body||'',
@@ -523,6 +522,10 @@ self.addEventListener('push', e=>{
       tag:              data.tag||'utesa-push',
       vibrate:          data.vibrate||[200,100,200],
       data:             { url: data.url||'/horarios-laboratorios-utesa/' }
+    }).then(function(){
+      if(data.tag && data.tag.indexOf('manual-')===0){
+        saveNotifHistory({ title:data.title, body:data.body, ts:Date.now(), tag:data.tag });
+      }
     })
   );
 });
@@ -567,9 +570,9 @@ self.addEventListener('fetch', e=>{
   );
 });
 
-// ── Historial notificaciones manuales ────────────────────────────────────────
+// ── Guardar historial notificaciones manuales ─────────────────────────────────
 function saveNotifHistory(notif){
-  self.clients.matchAll({type:'window'}).then(cls=>{
-    cls.forEach(c=>c.postMessage({ type:'SAVE_NOTIF_HISTORY', notif }));
+  self.clients.matchAll({type:'window'}).then(function(cls){
+    cls.forEach(function(c){ c.postMessage({ type:'SAVE_NOTIF_HISTORY', notif:notif }); });
   });
 }
