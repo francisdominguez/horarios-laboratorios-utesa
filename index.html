@@ -515,9 +515,14 @@
   }
   @media(min-width:769px){
     #bottom-nav{display:none!important}
-    #filter-sheet{display:none!important}
-    #alert-sheet{display:none!important}
     #mobile-stats{display:none!important}
+    /* En desktop los sheets se muestran como modal centrado */
+    #filter-sheet.open .fs-box{border-radius:16px;max-width:520px;margin:auto;position:relative;bottom:auto;animation:fadeUp .25s ease}
+    #filter-sheet.open{display:flex;align-items:center;justify-content:center}
+    #alert-sheet.open .as-box{border-radius:16px;max-width:420px;margin:auto;position:relative;bottom:auto;animation:fadeUp .25s ease}
+    #alert-sheet.open{display:flex;align-items:center;justify-content:center}
+    #compare-sheet.open .cmp-box{border-radius:16px;max-width:500px;margin:auto;position:relative;bottom:auto;animation:fadeUp .25s ease}
+    #compare-sheet.open{display:flex;align-items:center;justify-content:center}
   }
 </style>
 </head>
