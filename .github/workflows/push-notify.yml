@@ -52,5 +52,4 @@ jobs:
           VAPID_EMAIL:        ${{ secrets.VAPID_EMAIL }}
           WORKER_URL:         ${{ secrets.WORKER_URL }}
           WORKER_AUTH_TOKEN:  ${{ secrets.WORKER_AUTH_TOKEN }}
-          EVENT_NAME:  ${{ github.event_name }}
         run: node .github/scripts/send-notifications.js
