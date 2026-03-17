@@ -1921,6 +1921,12 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
     localStorage.setItem('utesa-push-sub', JSON.stringify(sub));
     console.log('📋 Suscripción lista. Copia este JSON al Secret PUSH_SUBSCRIPTIONS de GitHub:');
     console.log(JSON.stringify([sub], null, 2));
+    // Registrar automáticamente en el Worker
+    fetch('https://sweet-sun-577c.utesamonitores.workers.dev/subscribe', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(sub)
+    }).then(r=>r.json()).then(d=>console.log('✅ Suscripción registrada en Worker:', d)).catch(e=>console.warn('⚠️ No se pudo registrar en Worker:', e.message));
   }
 
   window.showPushJson = function(){
