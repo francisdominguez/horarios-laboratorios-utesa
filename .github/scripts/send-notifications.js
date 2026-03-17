@@ -109,8 +109,10 @@ async function main() {
     const pendingRes = await fetch(`${WORKER_URL}/admin/pending-notification`, {
       headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
     });
+    console.log('📦 pending-notification status:', pendingRes.status);
     if (pendingRes.ok) {
       const pending = await pendingRes.json();
+      console.log('📦 pending data:', JSON.stringify(pending));
       if (pending && pending.title) {
         console.log(`📢 Notificación manual: "${pending.title}"`);
         const payload = JSON.stringify(pending);
