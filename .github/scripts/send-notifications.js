@@ -32,57 +32,6 @@ function nowM() {
 }
 
 async function main() {
-  // ── 0. Verificar si hay notificación manual pendiente ──
-  try {
-    const pendingRes = await fetch(`${WORKER_URL}/admin/pending-notification`, {
-      headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
-    });
-    if (pendingRes.ok) {
-      const pending = await pendingRes.json();
-      if (pending && pending.title) {
-        console.log(`📢 Notificación manual: "${pending.title}"`);
-        const payload = JSON.stringify(pending);
-
-        // Obtener suscripciones
-        const subsRes = await fetch(`${WORKER_URL}/subscriptions`, {
-          headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
-        });
-        if (subsRes.ok) {
-          const subs = await subsRes.json();
-          let ok = 0, expired = 0, failed = 0;
-          for (const sub of subs) {
-            try {
-              await webpush.sendNotification(sub, payload);
-              ok++;
-            } catch (err) {
-              if (err.statusCode === 410 || err.statusCode === 404) {
-                await fetch(`${WORKER_URL}/unsubscribe`, {
-                  method: 'POST', headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(sub)
-                }).catch(() => {});
-                expired++;
-              } else { failed++; }
-            }
-          }
-          console.log(`"${pending.title}" → ✅ ${ok} | 🗑️ ${expired} expiradas | ❌ ${failed} errores`);
-
-          // Limpiar la notificación pendiente
-          await fetch(`${WORKER_URL}/admin/pending-notification`, {
-            method: 'DELETE',
-            headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
-          });
-        }
-        // Si era un dispatch manual, terminar aquí
-        if (process.env.GITHUB_EVENT_NAME === 'repository_dispatch') {
-          console.log('✅ Notificación manual enviada.');
-          process.exit(0);
-        }
-      }
-    }
-  } catch(e) {
-    console.warn('⚠️ No se pudo verificar notificación manual:', e.message);
-  }
-
   // ── 1. Obtener schedule fusionado del Worker (incluye admin overrides y disabled) ──
   let classes = [];
   try {
@@ -154,6 +103,43 @@ async function main() {
     process.exit(0);
   }
   console.log(`👥 ${subscriptions.length} suscriptor(es)`);
+
+  // ── 2b. Verificar notificación manual pendiente (siempre, independiente de clases) ──
+  try {
+    const pendingRes = await fetch(`${WORKER_URL}/admin/pending-notification`, {
+      headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
+    });
+    if (pendingRes.ok) {
+      const pending = await pendingRes.json();
+      if (pending && pending.title) {
+        console.log(`📢 Notificación manual: "${pending.title}"`);
+        const payload = JSON.stringify(pending);
+        let ok = 0, expired = 0, failed = 0;
+        for (const sub of subscriptions) {
+          try {
+            await webpush.sendNotification(sub, payload);
+            ok++;
+          } catch (err) {
+            if (err.statusCode === 410 || err.statusCode === 404) {
+              await fetch(`${WORKER_URL}/unsubscribe`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(sub)
+              }).catch(() => {});
+              expired++;
+            } else { failed++; }
+          }
+        }
+        console.log(`"${pending.title}" → ✅ ${ok} | 🗑️ ${expired} expiradas | ❌ ${failed} errores`);
+        await fetch(`${WORKER_URL}/admin/pending-notification`, {
+          method: 'DELETE', headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
+        }).catch(() => {});
+        // Si fue dispatch manual terminar aquí
+        if (process.env.GITHUB_EVENT_NAME === 'repository_dispatch') {
+          console.log('✅ Notificación manual enviada.'); process.exit(0);
+        }
+      }
+    }
+  } catch(e) { console.warn('⚠️ Error verificando notif manual:', e.message); }
 
   // ── 3. Calcular alertas ──
   const today = todayName();
