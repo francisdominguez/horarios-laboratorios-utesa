@@ -1,4 +1,4 @@
-const CACHE = 'utesa-labs-v23';
+const CACHE = 'utesa-labs-v24';
 const ASSETS = [
   '/horarios-laboratorios-utesa/',
   '/horarios-laboratorios-utesa/index.html',
@@ -565,6 +565,18 @@ self.addEventListener('install', e=>{
 });
 
 self.addEventListener('fetch', e=>{
+  const url = e.request.url;
+  // Nunca cachear llamadas al Worker ni peticiones POST
+  if(
+    url.includes('utesamonitores.workers.dev') ||
+    url.includes('api.github.com') ||
+    e.request.method === 'POST' ||
+    e.request.method === 'DELETE' ||
+    e.request.method === 'PUT'
+  ){
+    e.respondWith(fetch(e.request));
+    return;
+  }
   e.respondWith(
     caches.match(e.request).then(cached=>cached||fetch(e.request))
   );
