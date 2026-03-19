@@ -1391,7 +1391,7 @@ async function loadScheduleData(){
 async function fetchMissedNotifications(){
   const WORKER = 'https://sweet-sun-577c.utesamonitores.workers.dev';
   try {
-    const res = await fetch(`${WORKER}/notifications/history`);
+    const res = await fetch(`${WORKER}/notifications/historial`);
     if(!res.ok) return;
     const history = await res.json();
     if(!history.length) return;
