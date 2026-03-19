@@ -1,4 +1,4 @@
-const CACHE = 'utesa-labs-v24';
+const CACHE = 'utesa-labs-v25';
 const ASSETS = [
   '/horarios-laboratorios-utesa/',
   '/horarios-laboratorios-utesa/index.html',
@@ -494,6 +494,17 @@ self.addEventListener('message', e=>{
     // config stored for future background checks
     return;
   }
+  // Registrar token FCM en el Worker
+  if(e.data.type==='FCM_TOKEN'){
+    const token = e.data.token;
+    const WORKER = 'https://sweet-sun-577c.utesamonitores.workers.dev';
+    fetch(`${WORKER}/fcm-subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
+    }).catch(()=>{});
+    return;
+  }
   // ── Notificación local enviada desde la app (celular desbloqueado en background) ──
   if(e.data.type==='SHOW_NOTIFICATION'){
     self.registration.showNotification(e.data.title||'UTESA Labs', {
@@ -566,10 +577,11 @@ self.addEventListener('install', e=>{
 
 self.addEventListener('fetch', e=>{
   const url = e.request.url;
-  // Nunca cachear llamadas al Worker ni peticiones POST
+  // Nunca cachear llamadas al Worker ni peticiones POST/DELETE/PUT
   if(
     url.includes('utesamonitores.workers.dev') ||
     url.includes('api.github.com') ||
+    url.includes('fcm.googleapis.com') ||
     e.request.method === 'POST' ||
     e.request.method === 'DELETE' ||
     e.request.method === 'PUT'
