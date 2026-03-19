@@ -44,7 +44,12 @@ function makeJWT() {
   const signingInput = `${header}.${payload}`;
   const sign = createSign('RSA-SHA256');
   sign.update(signingInput);
-  const sig = sign.sign(FCM_KEY.replace(/\\n/g, '\n'), 'base64url');
+  // Normalizar la private key
+  let privateKey = FCM_KEY;
+  // Reemplazar \n literales con saltos de línea reales
+  privateKey = privateKey.replace(/\\n/g, '\n');
+  if (!privateKey.includes('\n')) privateKey = privateKey.replace(/\n/g, '\n');
+  const sig = sign.sign(privateKey, 'base64url');
   return `${signingInput}.${sig}`;
 }
 
