@@ -91,17 +91,20 @@ async function sendFCM(accessToken, fcmToken, notif) {
 }
 
 async function getFCMTokens() {
-  // Obtener tokens FCM del Worker
   const res = await fetch(`${WORKER_URL}/subscriptions`, {
     headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const subs = await res.json();
-  // Filtrar solo endpoints FCM
+  // Extraer token FCM del endpoint Web Push de Chrome
   return subs
     .filter(s => s?.endpoint?.includes('fcm.googleapis.com') || s?.endpoint?.includes('firebase'))
-    .map(s => s.endpoint.split('/').pop())
-    .filter(Boolean);
+    .map(s => {
+      // El token es la última parte del endpoint
+      const parts = s.endpoint.split('/');
+      return parts[parts.length - 1].trim();
+    })
+    .filter(t => t && t.length > 10);
 }
 
 async function sendToAll(accessToken, notif, tokens) {
