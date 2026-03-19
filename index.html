@@ -1387,6 +1387,31 @@ async function loadScheduleData(){
   }
 }
 
+// Cargar notificaciones perdidas del Worker (para cuando la app estaba cerrada)
+async function fetchMissedNotifications(){
+  const WORKER = 'https://sweet-sun-577c.utesamonitores.workers.dev';
+  try {
+    const res = await fetch(`${WORKER}/notifications/history`);
+    if(!res.ok) return;
+    const history = await res.json();
+    if(!history.length) return;
+
+    const lastSeen = parseInt(localStorage.getItem('utesa-notif-last-seen-worker')||'0');
+    const missed = history.filter(n => n.ts > lastSeen);
+    if(!missed.length) return;
+
+    // Guardar en historial local
+    missed.forEach(n => {
+      if(window.saveNotifToHistory) window.saveNotifToHistory(n);
+    });
+
+    // Actualizar marca de tiempo
+    localStorage.setItem('utesa-notif-last-seen-worker', Date.now().toString());
+
+    console.log(`📬 ${missed.length} notificación(es) perdida(s) recuperadas`);
+  } catch(_) {}
+}
+
 // Sync silencioso cada 30s
 async function syncClasesBackground(){
   const WORKER = 'https://sweet-sun-577c.utesamonitores.workers.dev';
@@ -1423,6 +1448,9 @@ async function syncClasesBackground(){
 document.addEventListener('DOMContentLoaded', async function(){
   // Cargar horario desde JSON antes de iniciar la app
   await loadScheduleData();
+
+  // Cargar notificaciones perdidas del Worker
+  fetchMissedNotifications();
   let sortCol='', sortDir=1, groupByEdificio=false;
   let filterDia='', filterLab='', filterMateria='', filterHora='', filterEdificio='', filterEstado='', globalSearch='';
   let alertEnabled=true, alertMinutes=15;
@@ -1897,7 +1925,7 @@ document.addEventListener('DOMContentLoaded', async function(){
   }
 
 // ── VAPID PUBLIC KEY ──
-const VAPID_PUBLIC_KEY = 'BN6MVWXjTMZ--dPwh94okEee5X_-Zg-P2EGPKAlELOlPJSX6epWTUKmQbpYAO5tBp5qLXnPOtX11eGg8ghbFs1o';
+const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eSzKJr58Mt4f8wE4rsP8_JdCAqx8iPsBp9c';
 
   function urlBase64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
