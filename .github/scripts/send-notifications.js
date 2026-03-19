@@ -254,6 +254,19 @@ async function main() {
     console.log(`"${notif.title}" → ✅ ${ok} | 🗑️ ${expired} expiradas | ❌ ${failed} errores`);
   }
 
+  // Guardar notificaciones de clases en historial del Worker
+  if(notifications.length) {
+    for (const notif of notifications) {
+      try {
+        await fetch(`${WORKER_URL}/notifications/save`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${WORKER_TOKEN}` },
+          body: JSON.stringify({ title: notif.title, body: notif.body, ts: Date.now(), tag: notif.tag, url: notif.url }),
+        });
+      } catch(_) {}
+    }
+  }
+
   console.log('✅ Proceso completado.');
 }
 
