@@ -1897,7 +1897,7 @@ document.addEventListener('DOMContentLoaded', async function(){
   }
 
 // ── VAPID PUBLIC KEY ──
-const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eSzKJr58Mt4f8wE4rsP8_JdCAqx8iPsBp9c';
+const VAPID_PUBLIC_KEY = 'BMoo2o9KbqMwl7rQ_MYZ6pTPMBCRdWJ4YTVWYrgILPu_LjnBKL-D3HPNyWbPydCfLQ0IK_2aW1PA354gdk6CFiA';
 
   function urlBase64ToUint8Array(base64String) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -1924,14 +1924,29 @@ const VAPID_PUBLIC_KEY = 'BJufclXTUYG72o8D9YDUKCxWT4s5NbsHcA2vuzpvtUypsGt385I3eS
 
   function savePushSubscription(sub) {
     localStorage.setItem('utesa-push-sub', JSON.stringify(sub));
-    console.log('📋 Suscripción lista. Copia este JSON al Secret PUSH_SUBSCRIPTIONS de GitHub:');
-    console.log(JSON.stringify([sub], null, 2));
-    // Registrar automáticamente en el Worker
+    // Registrar Web Push en el Worker (legacy)
     fetch('https://sweet-sun-577c.utesamonitores.workers.dev/subscribe', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(sub)
-    }).then(r=>r.json()).then(d=>console.log('✅ Suscripción registrada en Worker:', d)).catch(e=>console.warn('⚠️ No se pudo registrar en Worker:', e.message));
+    }).catch(e=>console.warn('⚠️ No se pudo registrar Web Push:', e.message));
+
+    // Registrar FCM token en el Worker (nuevo - para notificaciones con app cerrada)
+    const endpoint = sub.endpoint || '';
+    // El endpoint de FCM contiene el token al final
+    if(endpoint.includes('fcm.googleapis.com') || endpoint.includes('firebase')) {
+      const token = endpoint.split('/').pop();
+      if(token && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'FCM_TOKEN', token });
+      }
+      // También registrar directamente
+      fetch('https://sweet-sun-577c.utesamonitores.workers.dev/fcm-subscribe', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ token })
+      }).then(()=>console.log('✅ FCM token registrado')).catch(()=>{});
+    }
+    console.log('✅ Suscripción push activa');
   }
 
   window.showPushJson = function(){
