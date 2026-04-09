@@ -99,8 +99,8 @@ async function sendFCM(accessToken, fcmToken, notif) {
   return { ok: res.ok, status: res.status, data: await res.json() };
 }
 
-// ── Enviar a todos ────────────────────────────────────────────────────────────
-async function sendToAll(webSubs, fcmTokens, notif) {
+// ── Enviar a todos ─────────────────────────────────────────────────────────────
+async function sendToAll(webSubs, fcmTokens, fcmToken, notif) {
   let ok = 0, expired = 0, failed = 0;
 
   // Web Push (PWA)
@@ -128,10 +128,6 @@ async function sendToAll(webSubs, fcmTokens, notif) {
         if (result.ok) {
           ok++;
         } else if (result.data?.error?.details?.[0]?.errorCode === 'UNREGISTERED') {
-          await fetch(`${WORKER_URL}/fcm-unsubscribe`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token }),
-          }).catch(() => {});
           expired++;
         } else {
           console.warn(`FCM error ${result.status}:`, JSON.stringify(result.data));
@@ -147,7 +143,7 @@ async function sendToAll(webSubs, fcmTokens, notif) {
 }
 
 async function main() {
-  // ── Schedule ──────────────────────────────────────────────────────────────
+  // ── Schedule ──
   let classes = [];
   try {
     const res = await fetch(`${WORKER_URL}/schedule`);
@@ -174,33 +170,33 @@ async function main() {
     console.error('❌ Schedule error:', e.message); process.exit(1);
   }
 
-  // ── Suscripciones Web Push ────────────────────────────────────────────────
+  // ── Suscripciones Web Push ──
   let webSubs = [];
   try {
     const res = await fetch(`${WORKER_URL}/subscriptions`, {
       headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
     });
-    if (res.ok) {
-      webSubs = await res.json();
-    } else {
-      const errText = await res.text();
-      console.error(`❌ /subscriptions error ${res.status}: ${errText}`);
-    }
+    webSubs = res.ok ? await res.json() : [];
     console.log(`👥 ${webSubs.length} suscriptor(es) Web Push`);
   } catch(e) { console.warn('⚠️ Web Push subs error:', e.message); }
 
-  // ── Tokens FCM (Flutter) ──────────────────────────────────────────────────
+  // ── Tokens FCM (Flutter) ──
   let fcmTokens = [];
   try {
-    const res = await fetch(`${WORKER_URL}/fcm-tokens`, {
+    const res = await fetch(`${WORKER_URL}/subscriptions`, {
       headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
     });
     if (res.ok) {
-      fcmTokens = await res.json();
+      const all = await res.json();
+      // También obtener FCM tokens del KV directamente via endpoint especial
+    }
+    // Usar endpoint de FCM tokens
+    const fcmRes = await fetch(`${WORKER_URL}/fcm-tokens`, {
+      headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
+    });
+    if (fcmRes.ok) {
+      fcmTokens = await fcmRes.json();
       console.log(`📱 ${fcmTokens.length} token(s) FCM Flutter`);
-    } else {
-      const errText = await res.text();
-      console.error(`❌ /fcm-tokens error ${res.status}: ${errText}`);
     }
   } catch(e) { console.warn('⚠️ FCM tokens error:', e.message); }
 
@@ -208,7 +204,7 @@ async function main() {
     console.log('Sin suscriptores.'); process.exit(0);
   }
 
-  // ── Notificación manual pendiente ─────────────────────────────────────────
+  // ── Notificación manual pendiente ──
   try {
     const pendingRes = await fetch(`${WORKER_URL}/admin/pending-notification`, {
       headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
@@ -217,7 +213,7 @@ async function main() {
       const pending = await pendingRes.json();
       if (pending?.title) {
         console.log(`📢 Manual: "${pending.title}"`);
-        const result = await sendToAll(webSubs, fcmTokens, pending);
+        const result = await sendToAll(webSubs, fcmTokens, null, pending);
         console.log(`"${pending.title}" → ✅ ${result.ok} | 🗑️ ${result.expired} | ❌ ${result.failed}`);
         await fetch(`${WORKER_URL}/admin/pending-notification`, {
           method: 'DELETE', headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
@@ -229,13 +225,13 @@ async function main() {
     }
   } catch(e) { console.warn('⚠️ Manual notif error:', e.message); }
 
-  // ── Alertas de clases ─────────────────────────────────────────────────────
+  // ── Alertas de clases ──
   const today = todayName();
   const m     = nowM();
   console.log(`🕐 ${nowRD().toUTCString()} | ${today} | min: ${m}`);
 
   const todayClasses = classes.filter(c => c.dia === today);
-  if (!todayClasses.length) { console.log('Sin clases hoy.'); process.exit(0); }
+  if (!todayClasses.length) { console.log(`Sin clases hoy.`); process.exit(0); }
 
   const upcoming = [], ended = [], started = [];
   todayClasses.forEach(c => {
@@ -255,7 +251,7 @@ async function main() {
 
   if (started.length) notifications.push({
     title: `🟢 ${started.length === 1 ? 'Clase iniciada' : `${started.length} clases iniciadas`}`,
-    body: started.map(({ c }) => `${c.aula} · ${c.mat} grp.${c.grp}\n${c.inicio} → ${c.fin}`).join('\n\n'),
+    body: started.map(c => `${c.aula} · ${c.mat} grp.${c.grp}\n${c.inicio} → ${c.fin}`).join('\n\n'),
     tag: `started-${m}`, url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
     icon: '/horarios-laboratorios-utesa/icon-192.png',
     badge: '/horarios-laboratorios-utesa/icon-192.png',
@@ -285,8 +281,9 @@ async function main() {
   });
 
   for (const notif of notifications) {
-    const result = await sendToAll(webSubs, fcmTokens, notif);
+    const result = await sendToAll(webSubs, fcmTokens, null, notif);
     console.log(`"${notif.title}" → ✅ ${result.ok} | 🗑️ ${result.expired} | ❌ ${result.failed}`);
+    // Guardar en historial
     await fetch(`${WORKER_URL}/notifications/save`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${WORKER_TOKEN}` },
