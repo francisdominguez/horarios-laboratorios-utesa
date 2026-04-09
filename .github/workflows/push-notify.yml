@@ -1,5 +1,4 @@
 name: Push Notifications
-
 on:
   schedule:
     - cron: '* 11-23 * * 1-6'
@@ -9,29 +8,24 @@ on:
   repository_dispatch:
     types: [manual-notify]
   workflow_dispatch:
-
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: '24'
-
       - name: Cache npm
         uses: actions/cache@v5
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-webpush
           restore-keys: ${{ runner.os }}-node-
-
       - name: Install dependencies
         run: npm install web-push
-
       - name: Validate secrets
         run: |
           if [ -z "$VAPID_PUBLIC_KEY" ]; then echo "VAPID_PUBLIC_KEY vacio" && exit 1; fi
@@ -44,7 +38,12 @@ jobs:
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           WORKER_URL:        ${{ secrets.WORKER_URL }}
           WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
-
+      - name: Debug token
+        env:
+          WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
+        run: |
+          echo "Token length: ${#WORKER_AUTH_TOKEN}"
+          echo "Token prefix: ${WORKER_AUTH_TOKEN:0:8}..."
       - name: Send notifications
         env:
           VAPID_PUBLIC_KEY:   ${{ secrets.VAPID_PUBLIC_KEY }}
