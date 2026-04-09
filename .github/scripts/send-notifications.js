@@ -13,6 +13,31 @@ const FCM_KEY       = process.env.FIREBASE_PRIVATE_KEY;
 
 webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE);
 
+// ── DIAGNÓSTICO ──────────────────────────────────────────────────────────────
+console.log('🔍 DIAGNÓSTICO:');
+console.log(`   WORKER_URL: ${WORKER_URL}`);
+console.log(`   WORKER_TOKEN existe: ${!!WORKER_TOKEN}`);
+console.log(`   WORKER_TOKEN longitud: ${WORKER_TOKEN?.length || 0}`);
+console.log(`   WORKER_TOKEN valor: ${WORKER_TOKEN}`);
+
+try {
+  const testRes = await fetch(`${WORKER_URL}/fcm-tokens`, {
+    headers: { 'Authorization': `Bearer ${WORKER_TOKEN}` }
+  });
+  console.log(`   Status: ${testRes.status}`);
+  if (testRes.ok) {
+    const tokens = await testRes.json();
+    console.log(`   ✅ Token válido! ${tokens.length} tokens FCM encontrados`);
+  } else {
+    const text = await testRes.text();
+    console.log(`   ❌ Error: ${text}`);
+  }
+} catch(e) {
+  console.log(`   ❌ Exception: ${e.message}`);
+}
+console.log('='.repeat(50));
+
+// ── Resto del código original ─────────────────────────────────────────────────
 const DIAS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const ALERT_RANGES = [
   { min: 13, max: 15, label: 15 },
@@ -44,7 +69,6 @@ function parseTimeStr(str) {
   return h * 60 + (min || 0);
 }
 
-// ── FCM JWT ───────────────────────────────────────────────────────────────────
 function makeJWT() {
   const privateKey = FCM_KEY.replace(/\\n/g, '\n');
   const now = Math.floor(Date.now() / 1000);
@@ -98,11 +122,9 @@ async function sendFCM(accessToken, fcmToken, notif) {
   return { ok: res.ok, status: res.status, data: await res.json() };
 }
 
-// ── Enviar a todos ─────────────────────────────────────────────────────────────
 async function sendToAll(webSubs, fcmTokens, notif) {
   let ok = 0, expired = 0, failed = 0;
 
-  // Web Push (PWA)
   const payload = JSON.stringify(notif);
   for (const sub of webSubs) {
     try {
@@ -118,7 +140,6 @@ async function sendToAll(webSubs, fcmTokens, notif) {
     }
   }
 
-  // FCM (Flutter app)
   if (fcmTokens.length > 0) {
     try {
       const accessToken = await getFCMAccessToken();
@@ -130,11 +151,9 @@ async function sendToAll(webSubs, fcmTokens, notif) {
           } else if (result.data?.error?.details?.[0]?.errorCode === 'UNREGISTERED') {
             expired++;
           } else {
-            console.warn(`FCM error ${result.status}:`, JSON.stringify(result.data).substring(0, 200));
             failed++;
           }
         } catch (e) {
-          console.warn(`Error sending to token ${token.substring(0, 20)}...:`, e.message);
           failed++;
         }
       }
@@ -147,9 +166,8 @@ async function sendToAll(webSubs, fcmTokens, notif) {
 }
 
 async function main() {
-  console.log('🚀 Iniciando proceso de notificaciones...');
+  console.log('🚀 Iniciando proceso...');
   
-  // ── Schedule ──
   let classes = [];
   try {
     const res = await fetch(`${WORKER_URL}/schedule`);
@@ -177,7 +195,6 @@ async function main() {
     process.exit(1);
   }
 
-  // ── Suscripciones Web Push (separado) ──
   let webSubs = [];
   try {
     const res = await fetch(`${WORKER_URL}/subscriptions`, {
@@ -186,14 +203,11 @@ async function main() {
     if (res.ok) {
       webSubs = await res.json();
       console.log(`👥 ${webSubs.length} suscriptor(es) Web Push`);
-    } else {
-      console.warn(`⚠️ Web subs endpoint error: ${res.status}`);
     }
   } catch(e) { 
-    console.warn('⚠️ Web Push subs error:', e.message); 
+    console.warn('⚠️ Web Push error:', e.message); 
   }
 
-  // ── Tokens FCM (Flutter) - SEPARADO para que no afecte al anterior ──
   let fcmTokens = [];
   try {
     const fcmRes = await fetch(`${WORKER_URL}/fcm-tokens`, {
@@ -202,70 +216,31 @@ async function main() {
     if (fcmRes.ok) {
       fcmTokens = await fcmRes.json();
       console.log(`📱 ${fcmTokens.length} token(s) FCM Flutter`);
-      if (fcmTokens.length > 0) {
-        console.log(`   Primer token: ${fcmTokens[0].substring(0, 30)}...`);
-      }
     } else {
-      console.warn(`⚠️ FCM tokens endpoint error: ${fcmRes.status}`);
-      const text = await fcmRes.text();
-      console.warn(`   Response: ${text.substring(0, 200)}`);
+      console.log(`⚠️ FCM endpoint: ${fcmRes.status}`);
     }
   } catch(e) { 
-    console.warn('⚠️ FCM tokens error:', e.message); 
+    console.warn('⚠️ FCM error:', e.message); 
   }
 
-  // Verificar si hay algún suscriptor
   if (!webSubs.length && !fcmTokens.length) {
-    console.log('❌ Sin suscriptores Web Push ni FCM. Saliendo...');
+    console.log('❌ Sin suscriptores.');
     process.exit(0);
   }
 
-  console.log(`📊 Total canales: ${webSubs.length + fcmTokens.length}`);
-
-  // ── Notificación manual pendiente ──
-  try {
-    const pendingRes = await fetch(`${WORKER_URL}/admin/pending-notification`, {
-      headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
-    });
-    if (pendingRes.ok) {
-      const pending = await pendingRes.json();
-      if (pending && pending.title) {
-        console.log(`📢 Notificación manual encontrada: "${pending.title}"`);
-        const result = await sendToAll(webSubs, fcmTokens, pending);
-        console.log(`✅ "${pending.title}" → Enviadas: ${result.ok} | Expiradas: ${result.expired} | Fallidas: ${result.failed}`);
-        
-        // Eliminar notificación pendiente
-        await fetch(`${WORKER_URL}/admin/pending-notification`, {
-          method: 'DELETE', 
-          headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
-        }).catch(() => {});
-        
-        if (process.env.GITHUB_EVENT_NAME === 'repository_dispatch') {
-          console.log('✅ Notificación manual enviada correctamente.');
-          process.exit(0);
-        }
-      }
-    }
-  } catch(e) { 
-    console.warn('⚠️ Error checking manual notification:', e.message); 
-  }
-
-  // ── Alertas de clases ──
   const today = todayName();
-  const m     = nowM();
-  console.log(`🕐 ${nowRD().toUTCString()} | ${today} | minutos: ${m}`);
+  const m = nowM();
+  console.log(`🕐 ${today} | ${m} min`);
 
   const todayClasses = classes.filter(c => c.dia === today);
   if (!todayClasses.length) { 
-    console.log(`📅 Sin clases hoy (${today}). Saliendo...`); 
+    console.log(`📅 Sin clases hoy.`); 
     process.exit(0); 
   }
 
-  console.log(`📚 Clases hoy: ${todayClasses.length}`);
-
   const upcoming = [], ended = [], started = [];
   todayClasses.forEach(c => {
-    const diff    = c.inicioM - m;
+    const diff = c.inicioM - m;
     const diffEnd = c.finM - m;
     const range = ALERT_RANGES.find(r => diff >= r.min && diff <= r.max);
     if (range) upcoming.push({ c, diff: range.label });
@@ -274,12 +249,11 @@ async function main() {
   });
 
   if (!upcoming.length && !ended.length && !started.length) {
-    console.log('⏸️ Sin alertas programadas para este momento.');
+    console.log('⏸️ Sin alertas.');
     process.exit(0);
   }
 
   const notifications = [];
-
   if (started.length) {
     notifications.push({
       title: `🟢 ${started.length === 1 ? 'Clase iniciada' : `${started.length} clases iniciadas`}`,
@@ -291,13 +265,9 @@ async function main() {
       vibrate: [200, 100, 200],
     });
   }
-
   if (upcoming.length) {
     const byDiff = {};
-    upcoming.forEach(({ c, diff }) => { 
-      if (!byDiff[diff]) byDiff[diff] = []; 
-      byDiff[diff].push(c); 
-    });
+    upcoming.forEach(({ c, diff }) => { if (!byDiff[diff]) byDiff[diff] = []; byDiff[diff].push(c); });
     Object.entries(byDiff).forEach(([diff, cs]) => {
       notifications.push({
         title: `⏰ ${cs.length === 1 ? `Clase en ${diff} min` : `${cs.length} clases en ${diff} min`}`,
@@ -311,7 +281,6 @@ async function main() {
       });
     });
   }
-
   if (ended.length) {
     notifications.push({
       title: `✅ ${ended.length === 1 ? 'Clase finalizada' : `${ended.length} clases finalizadas`}`,
@@ -324,35 +293,12 @@ async function main() {
     });
   }
 
-  // Enviar cada notificación
   for (const notif of notifications) {
-    console.log(`📨 Enviando: "${notif.title}"`);
     const result = await sendToAll(webSubs, fcmTokens, notif);
-    console.log(`   ✅ ${result.ok} enviadas | 🗑️ ${result.expired} expiradas | ❌ ${result.failed} fallidas`);
-    
-    // Guardar en historial
-    try {
-      await fetch(`${WORKER_URL}/notifications/save`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${WORKER_TOKEN}` 
-        },
-        body: JSON.stringify({ 
-          title: notif.title, 
-          body: notif.body, 
-          ts: Date.now(), 
-          tag: notif.tag, 
-          url: notif.url 
-        }),
-      }).catch(() => {});
-    } catch(e) {}
+    console.log(`✅ "${notif.title}" → ${result.ok} enviadas, ${result.expired} expiradas, ${result.failed} fallidas`);
   }
 
-  console.log('✅ Proceso completado exitosamente.');
+  console.log('✅ Fin.');
 }
 
-main().catch(e => { 
-  console.error('❌ Error fatal:', e.message); 
-  process.exit(1); 
-});
+main().catch(e => { console.error('❌ Fatal:', e.message); process.exit(1); });
