@@ -180,7 +180,12 @@ async function main() {
     const res = await fetch(`${WORKER_URL}/subscriptions`, {
       headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
     });
-    webSubs = res.ok ? await res.json() : [];
+    if (res.ok) {
+      webSubs = await res.json();
+    } else {
+      const errText = await res.text();
+      console.error(`❌ /subscriptions error ${res.status}: ${errText}`);
+    }
     console.log(`👥 ${webSubs.length} suscriptor(es) Web Push`);
   } catch(e) { console.warn('⚠️ Web Push subs error:', e.message); }
 
@@ -193,6 +198,9 @@ async function main() {
     if (res.ok) {
       fcmTokens = await res.json();
       console.log(`📱 ${fcmTokens.length} token(s) FCM Flutter`);
+    } else {
+      const errText = await res.text();
+      console.error(`❌ /fcm-tokens error ${res.status}: ${errText}`);
     }
   } catch(e) { console.warn('⚠️ FCM tokens error:', e.message); }
 
