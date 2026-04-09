@@ -13,31 +13,6 @@ const FCM_KEY       = process.env.FIREBASE_PRIVATE_KEY;
 
 webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE);
 
-// ── DIAGNÓSTICO ──────────────────────────────────────────────────────────────
-console.log('🔍 DIAGNÓSTICO:');
-console.log(`   WORKER_URL: ${WORKER_URL}`);
-console.log(`   WORKER_TOKEN existe: ${!!WORKER_TOKEN}`);
-console.log(`   WORKER_TOKEN longitud: ${WORKER_TOKEN?.length || 0}`);
-console.log(`   WORKER_TOKEN valor: ${WORKER_TOKEN}`);
-
-try {
-  const testRes = await fetch(`${WORKER_URL}/fcm-tokens`, {
-    headers: { 'Authorization': `Bearer ${WORKER_TOKEN}` }
-  });
-  console.log(`   Status: ${testRes.status}`);
-  if (testRes.ok) {
-    const tokens = await testRes.json();
-    console.log(`   ✅ Token válido! ${tokens.length} tokens FCM encontrados`);
-  } else {
-    const text = await testRes.text();
-    console.log(`   ❌ Error: ${text}`);
-  }
-} catch(e) {
-  console.log(`   ❌ Exception: ${e.message}`);
-}
-console.log('='.repeat(50));
-
-// ── Resto del código original ─────────────────────────────────────────────────
 const DIAS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const ALERT_RANGES = [
   { min: 13, max: 15, label: 15 },
@@ -146,32 +121,26 @@ async function sendToAll(webSubs, fcmTokens, notif) {
       for (const token of fcmTokens) {
         try {
           const result = await sendFCM(accessToken, token, notif);
-          if (result.ok) {
-            ok++;
-          } else if (result.data?.error?.details?.[0]?.errorCode === 'UNREGISTERED') {
-            expired++;
-          } else {
-            failed++;
-          }
-        } catch (e) {
-          failed++;
-        }
+          if (result.ok) ok++;
+          else if (result.data?.error?.details?.[0]?.errorCode === 'UNREGISTERED') expired++;
+          else failed++;
+        } catch (e) { failed++; }
       }
-    } catch (e) {
-      console.warn('⚠️ FCM error:', e.message);
-    }
+    } catch (e) { console.warn('⚠️ FCM error:', e.message); }
   }
 
   return { ok, expired, failed };
 }
 
 async function main() {
-  console.log('🚀 Iniciando proceso...');
+  console.log('🚀 Iniciando...');
+  
+  // Diagnóstico
+  console.log(`🔍 Token: ${WORKER_TOKEN ? WORKER_TOKEN.substring(0,10)+'...' : 'NO TOKEN'}`);
   
   let classes = [];
   try {
     const res = await fetch(`${WORKER_URL}/schedule`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     const labelToM = {};
     SLOTS.forEach(s => { labelToM[s.l] = s.m; });
@@ -200,13 +169,9 @@ async function main() {
     const res = await fetch(`${WORKER_URL}/subscriptions`, {
       headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
     });
-    if (res.ok) {
-      webSubs = await res.json();
-      console.log(`👥 ${webSubs.length} suscriptor(es) Web Push`);
-    }
-  } catch(e) { 
-    console.warn('⚠️ Web Push error:', e.message); 
-  }
+    if (res.ok) webSubs = await res.json();
+    console.log(`👥 ${webSubs.length} Web Push`);
+  } catch(e) { console.warn('⚠️ Web error:', e.message); }
 
   let fcmTokens = [];
   try {
@@ -215,13 +180,13 @@ async function main() {
     });
     if (fcmRes.ok) {
       fcmTokens = await fcmRes.json();
-      console.log(`📱 ${fcmTokens.length} token(s) FCM Flutter`);
+      console.log(`📱 ${fcmTokens.length} FCM tokens`);
     } else {
-      console.log(`⚠️ FCM endpoint: ${fcmRes.status}`);
+      console.log(`⚠️ FCM status: ${fcmRes.status}`);
+      const text = await fcmRes.text();
+      console.log(`   Response: ${text}`);
     }
-  } catch(e) { 
-    console.warn('⚠️ FCM error:', e.message); 
-  }
+  } catch(e) { console.warn('⚠️ FCM error:', e.message); }
 
   if (!webSubs.length && !fcmTokens.length) {
     console.log('❌ Sin suscriptores.');
@@ -233,10 +198,7 @@ async function main() {
   console.log(`🕐 ${today} | ${m} min`);
 
   const todayClasses = classes.filter(c => c.dia === today);
-  if (!todayClasses.length) { 
-    console.log(`📅 Sin clases hoy.`); 
-    process.exit(0); 
-  }
+  if (!todayClasses.length) { console.log(`📅 Sin clases hoy.`); process.exit(0); }
 
   const upcoming = [], ended = [], started = [];
   todayClasses.forEach(c => {
@@ -260,9 +222,6 @@ async function main() {
       body: started.map(c => `${c.c.aula} · ${c.c.mat} grp.${c.c.grp}\n${c.c.inicio} → ${c.c.fin}`).join('\n\n'),
       tag: `started-${m}`,
       url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
-      icon: '/horarios-laboratorios-utesa/icon-192.png',
-      badge: '/horarios-laboratorios-utesa/icon-192.png',
-      vibrate: [200, 100, 200],
     });
   }
   if (upcoming.length) {
@@ -274,10 +233,6 @@ async function main() {
         body: cs.map(c => `${c.aula} · ${c.mat} grp.${c.grp}\n${c.inicio} → ${c.fin}`).join('\n\n'),
         tag: `upcoming-${diff}min-${m}`,
         url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
-        icon: '/horarios-laboratorios-utesa/icon-192.png',
-        badge: '/horarios-laboratorios-utesa/icon-192.png',
-        vibrate: [100, 50, 100, 50, 300, 100, 300],
-        requireInteraction: true,
       });
     });
   }
@@ -287,15 +242,12 @@ async function main() {
       body: ended.map(({ c }) => `${c.aula} · ${c.mat} grp.${c.grp} · ${c.inicio}→${c.fin}`).join('\n'),
       tag: `ended-${m}`,
       url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
-      icon: '/horarios-laboratorios-utesa/icon-192.png',
-      badge: '/horarios-laboratorios-utesa/icon-192.png',
-      vibrate: [200, 100, 200],
     });
   }
 
   for (const notif of notifications) {
     const result = await sendToAll(webSubs, fcmTokens, notif);
-    console.log(`✅ "${notif.title}" → ${result.ok} enviadas, ${result.expired} expiradas, ${result.failed} fallidas`);
+    console.log(`✅ "${notif.title}" → ${result.ok} enviadas`);
   }
 
   console.log('✅ Fin.');
