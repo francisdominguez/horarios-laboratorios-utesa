@@ -1,7 +1,6 @@
 const webpush = require('web-push');
 const { createSign } = require('crypto');
 
-// ── Config ────────────────────────────────────────────────────────────────────
 const VAPID_PUBLIC  = process.env.VAPID_PUBLIC_KEY;
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY;
 const VAPID_EMAIL   = process.env.VAPID_EMAIL || 'mailto:admin@utesa.edu';
@@ -94,7 +93,12 @@ async function sendFCM(accessToken, fcmToken, notif) {
       },
     }),
   });
-  return { ok: res.ok, status: res.status, data: await res.json() };
+  const responseData = await res.json();
+  // ── BUG 7 CORREGIDO: ruta correcta del error en FCM v1 API ──
+  const errorCode = responseData?.error?.status ?? responseData?.error?.details?.[0]?.['@type']?.includes('ErrorInfo')
+    ? responseData?.error?.details?.find(d => d['@type']?.includes('ErrorInfo'))?.reason
+    : null;
+  return { ok: res.ok, status: res.status, data: responseData, errorCode };
 }
 
 async function sendToAll(webSubs, fcmTokens, notif) {
@@ -121,9 +125,14 @@ async function sendToAll(webSubs, fcmTokens, notif) {
       for (const token of fcmTokens) {
         try {
           const result = await sendFCM(accessToken, token, notif);
-          if (result.ok) ok++;
-          else if (result.data?.error?.details?.[0]?.errorCode === 'UNREGISTERED') expired++;
-          else failed++;
+          if (result.ok) {
+            ok++;
+          // ── BUG 7 CORREGIDO: detección de token expirado con ruta correcta ──
+          } else if (result.data?.error?.status === 'NOT_FOUND' || result.errorCode === 'UNREGISTERED') {
+            expired++;
+          } else {
+            failed++;
+          }
         } catch (e) { failed++; }
       }
     } catch (e) { console.warn('⚠️ FCM error:', e.message); }
@@ -134,8 +143,6 @@ async function sendToAll(webSubs, fcmTokens, notif) {
 
 async function main() {
   console.log('🚀 Iniciando...');
-  
-  // Diagnóstico
   console.log(`🔍 Token: ${WORKER_TOKEN ? WORKER_TOKEN.substring(0,10)+'...' : 'NO TOKEN'}`);
   
   let classes = [];
