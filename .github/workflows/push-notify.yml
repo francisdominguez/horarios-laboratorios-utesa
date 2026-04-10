@@ -47,19 +47,14 @@ jobs:
           echo "Token prefix: ${WORKER_AUTH_TOKEN:0:8}..."
           echo "URL length: ${#WORKER_URL}"
           echo "URL value: ${WORKER_URL}"
-      - name: Test fcm-tokens directly
-        continue-on-error: true
-        env:
-          WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
-          WORKER_URL: ${{ secrets.WORKER_URL }}
-        run: |
-          echo "Calling: ${WORKER_URL}/fcm-tokens"
-          curl -v "${WORKER_URL}/fcm-tokens" -H "Authorization: Bearer ${WORKER_AUTH_TOKEN}" 2>&1 || true
       - name: Send notifications
         env:
-          VAPID_PUBLIC_KEY:   ${{ secrets.VAPID_PUBLIC_KEY }}
-          VAPID_PRIVATE_KEY:  ${{ secrets.VAPID_PRIVATE_KEY }}
-          VAPID_EMAIL:        ${{ secrets.VAPID_EMAIL }}
-          WORKER_URL:         ${{ secrets.WORKER_URL }}
-          WORKER_AUTH_TOKEN:  ${{ secrets.WORKER_AUTH_TOKEN }}
+          VAPID_PUBLIC_KEY:    ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY:   ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_EMAIL:         ${{ secrets.VAPID_EMAIL }}
+          WORKER_URL:          ${{ secrets.WORKER_URL }}
+          WORKER_AUTH_TOKEN:   ${{ secrets.WORKER_AUTH_TOKEN }}
+          FIREBASE_PROJECT_ID:   ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
+          FIREBASE_PRIVATE_KEY:  ${{ secrets.FIREBASE_PRIVATE_KEY }}
         run: node .github/scripts/send-notifications.js
