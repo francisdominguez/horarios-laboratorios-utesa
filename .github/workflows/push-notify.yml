@@ -44,6 +44,13 @@ jobs:
         run: |
           echo "Token length: ${#WORKER_AUTH_TOKEN}"
           echo "Token prefix: ${WORKER_AUTH_TOKEN:0:8}..."
+      - name: Test fcm-tokens directly
+        env:
+          WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
+          WORKER_URL: ${{ secrets.WORKER_URL }}
+        run: |
+          curl -v "$WORKER_URL/fcm-tokens" \
+            -H "Authorization: Bearer $WORKER_AUTH_TOKEN"
       - name: Send notifications
         env:
           VAPID_PUBLIC_KEY:   ${{ secrets.VAPID_PUBLIC_KEY }}
