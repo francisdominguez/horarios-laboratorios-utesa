@@ -32,7 +32,7 @@ jobs:
           if [ -z "$VAPID_PRIVATE_KEY" ]; then echo "VAPID_PRIVATE_KEY vacio" && exit 1; fi
           if [ -z "$WORKER_URL" ]; then echo "WORKER_URL vacio" && exit 1; fi
           if [ -z "$WORKER_AUTH_TOKEN" ]; then echo "WORKER_AUTH_TOKEN vacio" && exit 1; fi
-          echo "✅ Secrets presentes"
+          echo "Secrets presentes"
         env:
           VAPID_PUBLIC_KEY:  ${{ secrets.VAPID_PUBLIC_KEY }}
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
@@ -41,16 +41,20 @@ jobs:
       - name: Debug token
         env:
           WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
+          WORKER_URL: ${{ secrets.WORKER_URL }}
         run: |
           echo "Token length: ${#WORKER_AUTH_TOKEN}"
           echo "Token prefix: ${WORKER_AUTH_TOKEN:0:8}..."
+          echo "URL length: ${#WORKER_URL}"
+          echo "URL value: ${WORKER_URL}"
       - name: Test fcm-tokens directly
+        continue-on-error: true
         env:
           WORKER_AUTH_TOKEN: ${{ secrets.WORKER_AUTH_TOKEN }}
           WORKER_URL: ${{ secrets.WORKER_URL }}
         run: |
-          curl -v "$WORKER_URL/fcm-tokens" \
-            -H "Authorization: Bearer $WORKER_AUTH_TOKEN"
+          echo "Calling: ${WORKER_URL}/fcm-tokens"
+          curl -v "${WORKER_URL}/fcm-tokens" -H "Authorization: Bearer ${WORKER_AUTH_TOKEN}" 2>&1 || true
       - name: Send notifications
         env:
           VAPID_PUBLIC_KEY:   ${{ secrets.VAPID_PUBLIC_KEY }}
