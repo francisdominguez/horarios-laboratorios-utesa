@@ -100,7 +100,6 @@ async function sendFCM(accessToken, fcmToken, notif) {
   const errorStatus = responseData?.error?.status ?? null;
   const errorReason = responseData?.error?.details
     ?.find(d => d['@type']?.includes('ErrorInfo'))?.reason ?? null;
-  console.log("FCM response:", JSON.stringify(responseData).substring(0, 300));
   return { ok: res.ok, status: res.status, data: responseData, errorStatus, errorReason };
 }
 
