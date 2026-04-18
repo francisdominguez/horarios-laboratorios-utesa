@@ -13,11 +13,14 @@ const FCM_KEY       = process.env.FIREBASE_PRIVATE_KEY;
 webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE);
 
 const DIAS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+// FIX: ventanas ampliadas para tolerar retraso del cron de GitHub Actions (1-3 min)
 const ALERT_RANGES = [
-  { min: 13, max: 15, label: 15 },
-  { min:  8, max: 10, label: 10 },
-  { min:  3, max:  5, label:  5 },
+  { min: 10, max: 17, label: 15 },  // antes: 13-15
+  { min:  5, max: 12, label: 10 },  // antes: 8-10
+  { min:  1, max:  7, label:  5 },  // antes: 3-5
 ];
+
 const SLOTS = [
   {m:420,l:'7:00 AM'},{m:465,l:'7:45 AM'},{m:510,l:'8:30 AM'},{m:555,l:'9:15 AM'},
   {m:600,l:'10:00 AM'},{m:645,l:'10:45 AM'},{m:690,l:'11:30 AM'},{m:735,l:'12:15 PM'},
@@ -94,11 +97,10 @@ async function sendFCM(accessToken, fcmToken, notif) {
     }),
   });
   const responseData = await res.json();
-  // ── BUG 7 CORREGIDO: ruta correcta del error en FCM v1 API ──
-  const errorCode = responseData?.error?.status ?? responseData?.error?.details?.[0]?.['@type']?.includes('ErrorInfo')
-    ? responseData?.error?.details?.find(d => d['@type']?.includes('ErrorInfo'))?.reason
-    : null;
-  return { ok: res.ok, status: res.status, data: responseData, errorCode };
+  const errorStatus = responseData?.error?.status ?? null;
+  const errorReason = responseData?.error?.details
+    ?.find(d => d['@type']?.includes('ErrorInfo'))?.reason ?? null;
+  return { ok: res.ok, status: res.status, data: responseData, errorStatus, errorReason };
 }
 
 async function sendToAll(webSubs, fcmTokens, notif) {
@@ -127,8 +129,7 @@ async function sendToAll(webSubs, fcmTokens, notif) {
           const result = await sendFCM(accessToken, token, notif);
           if (result.ok) {
             ok++;
-          // ── BUG 7 CORREGIDO: detección de token expirado con ruta correcta ──
-          } else if (result.data?.error?.status === 'NOT_FOUND' || result.errorCode === 'UNREGISTERED') {
+          } else if (result.errorStatus === 'NOT_FOUND' || result.errorReason === 'UNREGISTERED') {
             expired++;
           } else {
             failed++;
@@ -144,7 +145,7 @@ async function sendToAll(webSubs, fcmTokens, notif) {
 async function main() {
   console.log('🚀 Iniciando...');
   console.log(`🔍 Token: ${WORKER_TOKEN ? WORKER_TOKEN.substring(0,10)+'...' : 'NO TOKEN'}`);
-  
+
   let classes = [];
   try {
     const res = await fetch(`${WORKER_URL}/schedule`);
@@ -167,7 +168,7 @@ async function main() {
     }).filter(c => c.inicioM > 0);
     console.log(`📋 ${classes.length} clases activas`);
   } catch(e) {
-    console.error('❌ Schedule error:', e.message); 
+    console.error('❌ Schedule error:', e.message);
     process.exit(1);
   }
 
@@ -190,8 +191,6 @@ async function main() {
       console.log(`📱 ${fcmTokens.length} FCM tokens`);
     } else {
       console.log(`⚠️ FCM status: ${fcmRes.status}`);
-      const text = await fcmRes.text();
-      console.log(`   Response: ${text}`);
     }
   } catch(e) { console.warn('⚠️ FCM error:', e.message); }
 
@@ -209,12 +208,13 @@ async function main() {
 
   const upcoming = [], ended = [], started = [];
   todayClasses.forEach(c => {
-    const diff = c.inicioM - m;
+    const diff    = c.inicioM - m;
     const diffEnd = c.finM - m;
-    const range = ALERT_RANGES.find(r => diff >= r.min && diff <= r.max);
+    const range   = ALERT_RANGES.find(r => diff >= r.min && diff <= r.max);
     if (range) upcoming.push({ c, diff: range.label });
-    if (diffEnd <= 0 && diffEnd >= -2) ended.push({ c });
-    if (diff <= 0 && diff >= -2) started.push({ c });
+    // FIX: ventana ampliada de 2 a 4 min para inicio y fin
+    if (diffEnd <= 0 && diffEnd >= -4) ended.push({ c });
+    if (diff    <= 0 && diff    >= -4) started.push({ c });
   });
 
   if (!upcoming.length && !ended.length && !started.length) {
@@ -254,7 +254,7 @@ async function main() {
 
   for (const notif of notifications) {
     const result = await sendToAll(webSubs, fcmTokens, notif);
-    console.log(`✅ "${notif.title}" → ${result.ok} enviadas`);
+    console.log(`✅ "${notif.title}" → ok:${result.ok} expired:${result.expired} failed:${result.failed}`);
   }
 
   console.log('✅ Fin.');
