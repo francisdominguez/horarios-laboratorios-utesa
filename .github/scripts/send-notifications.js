@@ -14,11 +14,10 @@ webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE);
 
 const DIAS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
-// FIX: ventanas ampliadas para tolerar retraso del cron de GitHub Actions (1-3 min)
 const ALERT_RANGES = [
-  { min: 10, max: 17, label: 15 },  // antes: 13-15
-  { min:  5, max: 12, label: 10 },  // antes: 8-10
-  { min:  1, max:  7, label:  5 },  // antes: 3-5
+  { min: 10, max: 17, label: 15 },
+  { min:  5, max: 12, label: 10 },
+  { min:  1, max:  7, label:  5 },
 ];
 
 const SLOTS = [
@@ -29,6 +28,31 @@ const SLOTS = [
   {m:1140,l:'7:00 PM'},{m:1185,l:'7:45 PM'},{m:1230,l:'8:30 PM'},{m:1275,l:'9:15 PM'},
   {m:1320,l:'10:00 PM'},
 ];
+
+// ── Nombres legibles de laboratorios ──────────────────────────────────────────
+const LAB_NAMES = {
+  'B120':'Geol. y Topografía','B121':'Materiales','B123':'Hidráulica',
+  'B213':'Lab. TIC','B217':'Comunicación','B211':'Comunicación 02','B219':'Programación',
+  'C001':'Máquinas y Herram.','C1002':'Taller de Bancos','C101':'Lab. Industrial',
+  'C102':'Automatización','C103':'Lab. Industrial 02','C104':'Lab. CAD CAM',
+  'C105':'Ing. Térmica','C106':'Lab. Neumática','C107':'Inst. Eléctricas',
+  'C201':'Lab. Informática','C202':'Lab. Informática 02','C203':'Lab. Informática 03',
+  'C204':'Lab. Informática 04','C205':'Lab. AutoCAD','C206':'Lab. Informática 06',
+  'C207':'Lab. Informática 07','C208':'Lab. Mecatrónica','C413':'Lab. Comunicación',
+  'C414A':'Lab. Electrónica','C414B':'Lab. Electrónica 02','C415':'Lab. Electricidad',
+};
+
+function labName(aula) { return LAB_NAMES[aula] || aula; }
+
+// Formato legible para una sola clase (notificación individual)
+function formatClaseSingle(c) {
+  return `🏫 ${c.aula} — ${labName(c.aula)}\n📚 ${c.mat}  Grp. ${c.grp}\n🕐 ${c.inicio} → ${c.fin}`;
+}
+
+// Formato compacto para listado de múltiples clases
+function formatClaseCompact(c) {
+  return `• ${c.aula} — ${c.mat} Grp.${c.grp}  |  ${c.inicio}`;
+}
 
 function nowRD() { return new Date(Date.now() - 4 * 3600000); }
 function todayName() { return DIAS[nowRD().getUTCDay()]; }
@@ -46,6 +70,7 @@ function parseTimeStr(str) {
   return h * 60 + (min || 0);
 }
 
+// ── FCM ───────────────────────────────────────────────────────────────────────
 function makeJWT() {
   const privateKey = FCM_KEY.replace(/\\n/g, '\n');
   const now = Math.floor(Date.now() / 1000);
@@ -59,8 +84,7 @@ function makeJWT() {
   const signingInput = `${header}.${payload}`;
   const sign = createSign('RSA-SHA256');
   sign.update(signingInput);
-  const sig = sign.sign(privateKey, 'base64url');
-  return `${signingInput}.${sig}`;
+  return `${signingInput}.${sign.sign(privateKey, 'base64url')}`;
 }
 
 async function getFCMAccessToken() {
@@ -96,17 +120,16 @@ async function sendFCM(accessToken, fcmToken, notif) {
       },
     }),
   });
-  const responseData = await res.json();
-  const errorStatus = responseData?.error?.status ?? null;
-  const errorReason = responseData?.error?.details
-    ?.find(d => d['@type']?.includes('ErrorInfo'))?.reason ?? null;
-  return { ok: res.ok, status: res.status, data: responseData, errorStatus, errorReason };
+  const data = await res.json();
+  const errorStatus = data?.error?.status ?? null;
+  const errorReason = data?.error?.details?.find(d => d['@type']?.includes('ErrorInfo'))?.reason ?? null;
+  return { ok: res.ok, status: res.status, errorStatus, errorReason };
 }
 
 async function sendToAll(webSubs, fcmTokens, notif) {
   let ok = 0, expired = 0, failed = 0;
-
   const payload = JSON.stringify(notif);
+
   for (const sub of webSubs) {
     try {
       await webpush.sendNotification(sub, payload);
@@ -127,16 +150,12 @@ async function sendToAll(webSubs, fcmTokens, notif) {
       for (const token of fcmTokens) {
         try {
           const result = await sendFCM(accessToken, token, notif);
-          if (result.ok) {
-            ok++;
-          } else if (result.errorStatus === 'NOT_FOUND' || result.errorReason === 'UNREGISTERED') {
-            expired++;
-          } else {
-            failed++;
-          }
-        } catch (e) { failed++; }
+          if (result.ok) { ok++; }
+          else if (result.errorStatus === 'NOT_FOUND' || result.errorReason === 'UNREGISTERED') { expired++; }
+          else { failed++; }
+        } catch(e) { failed++; }
       }
-    } catch (e) { console.warn('⚠️ FCM error:', e.message); }
+    } catch(e) { console.warn('⚠️ FCM error:', e.message); }
   }
 
   return { ok, expired, failed };
@@ -144,8 +163,8 @@ async function sendToAll(webSubs, fcmTokens, notif) {
 
 async function main() {
   console.log('🚀 Iniciando...');
-  console.log(`🔍 Token: ${WORKER_TOKEN ? WORKER_TOKEN.substring(0,10)+'...' : 'NO TOKEN'}`);
 
+  // ── Schedule ──
   let classes = [];
   try {
     const res = await fetch(`${WORKER_URL}/schedule`);
@@ -155,10 +174,8 @@ async function main() {
     classes = (data.clases || []).filter(c => c.activa !== false).map(c => {
       let inicioM, finM, inicio, fin;
       if (typeof c.si === 'number') {
-        inicioM = SLOTS[c.si].m;
-        finM    = SLOTS[c.ei]?.m || 1320;
-        inicio  = SLOTS[c.si].l;
-        fin     = SLOTS[c.ei]?.l || '10:00 PM';
+        inicioM = SLOTS[c.si].m; finM = SLOTS[c.ei]?.m || 1320;
+        inicio  = SLOTS[c.si].l; fin  = SLOTS[c.ei]?.l || '10:00 PM';
       } else {
         inicioM = labelToM[c.hora_inicio] || parseTimeStr(c.hora_inicio);
         finM    = labelToM[c.hora_fin]    || parseTimeStr(c.hora_fin);
@@ -167,44 +184,47 @@ async function main() {
       return { ...c, inicioM, finM, inicio, fin };
     }).filter(c => c.inicioM > 0);
     console.log(`📋 ${classes.length} clases activas`);
-  } catch(e) {
-    console.error('❌ Schedule error:', e.message);
-    process.exit(1);
-  }
+  } catch(e) { console.error('❌ Schedule error:', e.message); process.exit(1); }
 
+  // ── Suscriptores ──
   let webSubs = [];
   try {
-    const res = await fetch(`${WORKER_URL}/subscriptions`, {
-      headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
-    });
+    const res = await fetch(`${WORKER_URL}/subscriptions`, { headers: { Authorization: `Bearer ${WORKER_TOKEN}` } });
     if (res.ok) webSubs = await res.json();
     console.log(`👥 ${webSubs.length} Web Push`);
   } catch(e) { console.warn('⚠️ Web error:', e.message); }
 
   let fcmTokens = [];
   try {
-    const fcmRes = await fetch(`${WORKER_URL}/fcm-tokens`, {
-      headers: { Authorization: `Bearer ${WORKER_TOKEN}` }
-    });
-    if (fcmRes.ok) {
-      fcmTokens = await fcmRes.json();
-      console.log(`📱 ${fcmTokens.length} FCM tokens`);
-    } else {
-      console.log(`⚠️ FCM status: ${fcmRes.status}`);
+    const res = await fetch(`${WORKER_URL}/fcm-tokens`, { headers: { Authorization: `Bearer ${WORKER_TOKEN}` } });
+    if (res.ok) { fcmTokens = await res.json(); console.log(`📱 ${fcmTokens.length} FCM tokens`); }
+    else console.log(`⚠️ /fcm-tokens status: ${res.status}`);
+  } catch(e) { console.warn('⚠️ FCM tokens error:', e.message); }
+
+  if (!webSubs.length && !fcmTokens.length) { console.log('❌ Sin suscriptores.'); process.exit(0); }
+
+  // ── Notificación manual pendiente ──
+  try {
+    const res = await fetch(`${WORKER_URL}/admin/pending-notification`, { headers: { Authorization: `Bearer ${WORKER_TOKEN}` } });
+    if (res.ok) {
+      const pending = await res.json();
+      if (pending?.title) {
+        console.log(`📢 Manual: "${pending.title}"`);
+        const result = await sendToAll(webSubs, fcmTokens, pending);
+        console.log(`✅ "${pending.title}" → ok:${result.ok} exp:${result.expired} fail:${result.failed}`);
+        await fetch(`${WORKER_URL}/admin/pending-notification`, { method: 'DELETE', headers: { Authorization: `Bearer ${WORKER_TOKEN}` } }).catch(() => {});
+        if (process.env.GITHUB_EVENT_NAME === 'repository_dispatch') { console.log('✅ Fin.'); process.exit(0); }
+      }
     }
-  } catch(e) { console.warn('⚠️ FCM error:', e.message); }
+  } catch(e) { console.warn('⚠️ Manual error:', e.message); }
 
-  if (!webSubs.length && !fcmTokens.length) {
-    console.log('❌ Sin suscriptores.');
-    process.exit(0);
-  }
-
+  // ── Alertas de clases ──
   const today = todayName();
   const m = nowM();
   console.log(`🕐 ${today} | ${m} min`);
 
   const todayClasses = classes.filter(c => c.dia === today);
-  if (!todayClasses.length) { console.log(`📅 Sin clases hoy.`); process.exit(0); }
+  if (!todayClasses.length) { console.log('📅 Sin clases hoy.'); process.exit(0); }
 
   const upcoming = [], ended = [], started = [];
   todayClasses.forEach(c => {
@@ -212,41 +232,66 @@ async function main() {
     const diffEnd = c.finM - m;
     const range   = ALERT_RANGES.find(r => diff >= r.min && diff <= r.max);
     if (range) upcoming.push({ c, diff: range.label });
-    // FIX: ventana ampliada de 2 a 4 min para inicio y fin
     if (diffEnd <= 0 && diffEnd >= -4) ended.push({ c });
     if (diff    <= 0 && diff    >= -4) started.push({ c });
   });
 
-  if (!upcoming.length && !ended.length && !started.length) {
-    console.log('⏸️ Sin alertas.');
-    process.exit(0);
-  }
+  if (!upcoming.length && !ended.length && !started.length) { console.log('⏸️ Sin alertas.'); process.exit(0); }
 
   const notifications = [];
-  if (started.length) {
+
+  // ── Iniciadas ──
+  if (started.length === 1) {
+    const c = started[0].c;
     notifications.push({
-      title: `🟢 ${started.length === 1 ? 'Clase iniciada' : `${started.length} clases iniciadas`}`,
-      body: started.map(c => `${c.c.aula} · ${c.c.mat} grp.${c.c.grp}\n${c.c.inicio} → ${c.c.fin}`).join('\n\n'),
+      title: `🟢 Clase iniciada — ${c.aula}`,
+      body: formatClaseSingle(c),
+      tag: `started-${m}`,
+      url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
+    });
+  } else if (started.length > 1) {
+    notifications.push({
+      title: `🟢 ${started.length} clases iniciadas`,
+      body: started.map(({ c }) => formatClaseCompact(c)).join('\n'),
       tag: `started-${m}`,
       url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
     });
   }
-  if (upcoming.length) {
-    const byDiff = {};
-    upcoming.forEach(({ c, diff }) => { if (!byDiff[diff]) byDiff[diff] = []; byDiff[diff].push(c); });
-    Object.entries(byDiff).forEach(([diff, cs]) => {
+
+  // ── Próximas ──
+  const byDiff = {};
+  upcoming.forEach(({ c, diff }) => { if (!byDiff[diff]) byDiff[diff] = []; byDiff[diff].push(c); });
+  Object.entries(byDiff).forEach(([diff, cs]) => {
+    if (cs.length === 1) {
       notifications.push({
-        title: `⏰ ${cs.length === 1 ? `Clase en ${diff} min` : `${cs.length} clases en ${diff} min`}`,
-        body: cs.map(c => `${c.aula} · ${c.mat} grp.${c.grp}\n${c.inicio} → ${c.fin}`).join('\n\n'),
+        title: `⏰ Clase en ${diff} min — ${cs[0].aula}`,
+        body: formatClaseSingle(cs[0]),
         tag: `upcoming-${diff}min-${m}`,
         url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
       });
-    });
-  }
-  if (ended.length) {
+    } else {
+      notifications.push({
+        title: `⏰ ${cs.length} clases en ${diff} min`,
+        body: cs.map(c => formatClaseCompact(c)).join('\n'),
+        tag: `upcoming-${diff}min-${m}`,
+        url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
+      });
+    }
+  });
+
+  // ── Finalizadas ──
+  if (ended.length === 1) {
+    const c = ended[0].c;
     notifications.push({
-      title: `✅ ${ended.length === 1 ? 'Clase finalizada' : `${ended.length} clases finalizadas`}`,
-      body: ended.map(({ c }) => `${c.aula} · ${c.mat} grp.${c.grp} · ${c.inicio}→${c.fin}`).join('\n'),
+      title: `✅ Clase finalizada — ${c.aula}`,
+      body: formatClaseSingle(c),
+      tag: `ended-${m}`,
+      url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
+    });
+  } else if (ended.length > 1) {
+    notifications.push({
+      title: `✅ ${ended.length} clases finalizadas`,
+      body: ended.map(({ c }) => formatClaseCompact(c)).join('\n'),
       tag: `ended-${m}`,
       url: 'https://francisdominguez.github.io/horarios-laboratorios-utesa/',
     });
@@ -254,7 +299,13 @@ async function main() {
 
   for (const notif of notifications) {
     const result = await sendToAll(webSubs, fcmTokens, notif);
-    console.log(`✅ "${notif.title}" → ok:${result.ok} expired:${result.expired} failed:${result.failed}`);
+    console.log(`✅ "${notif.title}" → ok:${result.ok} exp:${result.expired} fail:${result.failed}`);
+    // Guardar en historial
+    await fetch(`${WORKER_URL}/notifications/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${WORKER_TOKEN}` },
+      body: JSON.stringify({ title: notif.title, body: notif.body, ts: Date.now(), tag: notif.tag, url: notif.url }),
+    }).catch(() => {});
   }
 
   console.log('✅ Fin.');
